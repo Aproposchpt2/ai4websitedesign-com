@@ -3,598 +3,231 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI4 Website Design Studio — Custom Websites Built Around Your Purpose</title>
-<meta name="description" content="Design-first AI website studio. Purpose drives design. Templates come second.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>AI4 Website Design Studio — Custom AI-Built Websites</title>
+<meta name="description" content="AI4 Website Design Studio builds premium, purpose-first websites using an AI design engine. Not templates. Real design direction.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#030816;
-  --bg2:#061225;
-  --panel:rgba(8,24,47,.72);
-  --panel-strong:rgba(11,16,32,.94);
-  --line:rgba(184,196,217,.14);
-  --line-strong:rgba(45,184,255,.34);
-  --blue:#1EA7FF;
-  --blue2:#2DB8FF;
-  --blue4:#5BD3FF;
-  --silver:#D5DEEA;
-  --white:#F5F8FF;
-  --muted:#AEBED3;
-  --muted2:#90A3BC;
-  --shadow:0 28px 90px rgba(0,0,0,.42);
-  --mono:'JetBrains Mono',monospace;
-  --sans:'Inter',sans-serif;
-  --display:'Syne',sans-serif;
-  --r-sm:10px;
-  --r-md:16px;
-  --r-lg:24px;
-  --r-xl:34px;
-  --accent:#4F6EF7;
-  --accent2:#7C3AED;
+  --bg:#030816;--bg2:#061225;--bg3:#07152a;
+  --line:rgba(184,196,217,.12);--line-s:rgba(45,184,255,.28);
+  --blue:#1EA7FF;--blue2:#2DB8FF;--blue4:#5BD3FF;
+  --silver:#D5DEEA;--white:#F5F8FF;--muted:#AEBED3;--muted2:#90A3BC;
+  --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;--display:'Syne',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 18% 12%,rgba(30,167,255,.18),transparent 26%),
-    radial-gradient(circle at 82% 10%,rgba(91,211,255,.10),transparent 30%),
-    linear-gradient(180deg,var(--bg) 0%,#02050e 52%,var(--bg2) 100%);
-  color:var(--muted);
-  font-family:var(--sans);
-  font-size:16px;
-  line-height:1.65;
-  overflow-x:hidden;
-}
-body::before{
-  content:'';
-  position:fixed;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
-  background-image:
-    linear-gradient(rgba(45,184,255,.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(45,184,255,.035) 1px,transparent 1px);
-  background-size:64px 64px;
-  mask-image:linear-gradient(180deg,rgba(0,0,0,.75),rgba(0,0,0,.18) 58%,rgba(0,0,0,.05));
-}
-a{color:inherit}
-button,input,textarea,select{font:inherit}
-.page-shell{position:relative;z-index:1;overflow:hidden}
-
-/* ── Nav ── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:900;
-  display:flex;align-items:center;justify-content:space-between;gap:1rem;
-  min-height:76px;padding:.75rem clamp(1rem,4vw,2.5rem);
-  background:rgba(3,8,22,.82);backdrop-filter:blur(22px);
-  border-bottom:1px solid rgba(184,196,217,.11);
-}
-.nav-brand{display:flex;align-items:center;gap:.78rem;color:var(--white);text-decoration:none}
-.nav-logo-mark{width:58px;height:36px;border-radius:12px;object-fit:cover;background:rgba(255,255,255,.04);border:1px solid rgba(91,211,255,.22);box-shadow:0 0 24px rgba(30,167,255,.18)}
-.nav-brand-text{display:flex;flex-direction:column;line-height:1.05}
-.nav-brand-name{font-family:var(--display);font-size:.92rem;font-weight:800;letter-spacing:.02em;white-space:nowrap}
-.nav-brand-sub{font-family:var(--mono);font-size:.58rem;color:var(--muted2);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
-.nav-badge{font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;color:var(--blue4);background:rgba(30,167,255,.1);border:1px solid rgba(30,167,255,.25);border-radius:20px;padding:4px 10px}
-
-/* ── Shared ── */
-.eyebrow{display:inline-flex;align-items:center;gap:.55rem;font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--blue4);letter-spacing:.18em;text-transform:uppercase;margin-bottom:1rem}
-.eyebrow::before{content:'';width:34px;height:1px;background:linear-gradient(90deg,var(--blue),transparent);box-shadow:0 0 16px rgba(30,167,255,.65)}
-.gradient-text{background:linear-gradient(135deg,var(--white) 0%,var(--silver) 34%,var(--blue4) 70%,var(--blue2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.panel{background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.018)),rgba(8,24,47,.66);border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--shadow);position:relative;overflow:hidden}
-.panel::before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.12),transparent 24%),radial-gradient(circle at 20% 0%,rgba(45,184,255,.18),transparent 34%);opacity:.88}
-.panel>*{position:relative;z-index:1}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.65rem;min-height:48px;border-radius:999px;padding:.85rem 1.35rem;text-decoration:none;border:1px solid transparent;cursor:pointer;font-weight:800;font-size:.92rem;transition:transform .22s ease,box-shadow .22s ease,background .22s ease}
-.btn-primary{color:#03101f;background:linear-gradient(135deg,var(--white),var(--blue4) 44%,var(--blue));border-color:rgba(245,248,255,.58);box-shadow:0 0 36px rgba(30,167,255,.34),inset 0 1px 0 rgba(255,255,255,.74)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 52px rgba(30,167,255,.48),0 18px 42px rgba(0,0,0,.28)}
-.btn-secondary{color:var(--white);background:rgba(255,255,255,.045);border-color:rgba(213,222,234,.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-.btn-secondary:hover{transform:translateY(-2px);border-color:var(--line-strong);box-shadow:0 0 34px rgba(30,167,255,.16)}
-.reveal{opacity:0;transform:translateY(22px);transition:opacity .75s cubic-bezier(.23,1,.32,1),transform .75s cubic-bezier(.23,1,.32,1)}
-.reveal.in{opacity:1;transform:translateY(0)}
-.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
-
-/* ── Hero ── */
-.studio-hero{
-  min-height:100vh;
-  padding:9rem 2rem 5rem;
-  display:flex;align-items:center;
-}
-.hero-inner{width:min(1120px,100%);margin:0 auto;text-align:center}
-.hero-logo-plate{
-  display:inline-block;
-  padding:1rem 1.6rem;
-  border:1px solid rgba(91,211,255,.22);
-  border-radius:var(--r-xl);
-  background:radial-gradient(circle at 50% 100%,rgba(30,167,255,.25),transparent 40%),linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.018));
-  box-shadow:0 0 76px rgba(30,167,255,.18),inset 0 1px 0 rgba(255,255,255,.12);
-  margin-bottom:2rem;
-}
-.hero-logo-plate img{height:64px;object-fit:contain;filter:drop-shadow(0 0 24px rgba(30,167,255,.3))}
-.studio-hero h1{font-family:var(--display);font-size:clamp(2.8rem,6.5vw,5.8rem);line-height:1.02;letter-spacing:-.055em;color:var(--white);margin-bottom:1.2rem}
-.studio-hero .hero-sub{max-width:680px;margin:0 auto 2.2rem;font-size:clamp(1rem,1.8vw,1.18rem);color:var(--silver);line-height:1.65}
-.hero-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:.85rem;margin-bottom:2.5rem}
-.sandbox-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);color:#f59e0b;font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;padding:6px 14px;border-radius:20px}
-
-/* ── Progress ── */
-.progress-wrap{width:min(700px,100%);margin:0 auto 48px}
-.progress-track{width:100%;height:2px;background:rgba(184,196,217,.12);border-radius:2px;overflow:hidden;margin-bottom:8px}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue4));border-radius:2px;transition:width .4s ease;box-shadow:0 0 8px rgba(30,167,255,.5)}
-.progress-label{font-family:var(--mono);font-size:.68rem;color:var(--muted2);letter-spacing:.1em;text-align:right}
-
-/* ── Form ── */
-.form-wrap{width:min(800px,100%);margin:0 auto}
-.form-step{display:none;animation:fadeUp .3s ease}
-.form-step.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.step-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;color:var(--blue4);text-transform:uppercase;margin-bottom:.5rem}
-.step-question{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.4rem);font-weight:700;color:var(--white);margin-bottom:.5rem;line-height:1.2;letter-spacing:-.04em}
-.step-hint{font-size:.9rem;color:var(--muted2);margin-bottom:2rem}
-
-/* ── Options ── */
-.options-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:.75rem;margin-bottom:2.5rem}
-.option-btn{
-  background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018)),rgba(8,24,47,.66);
-  border:1px solid var(--line);
-  border-radius:var(--r-lg);
-  padding:13px 15px;
-  color:var(--muted);
-  font-size:.86rem;
-  font-weight:600;
-  cursor:pointer;
-  text-align:left;
-  line-height:1.4;
-  transition:all .2s ease;
-}
-.option-btn:hover{border-color:var(--line-strong);color:var(--white);transform:translateY(-1px)}
-.option-btn.selected{border-color:var(--blue);color:var(--white);background:rgba(30,167,255,.12);box-shadow:0 0 0 1px var(--blue),0 0 20px rgba(30,167,255,.15)}
-.options-grid.multi-select .option-btn{padding-left:36px;position:relative}
-.options-grid.multi-select .option-btn::before{content:'';position:absolute;left:13px;top:50%;transform:translateY(-50%);width:14px;height:14px;border:1px solid var(--muted2);border-radius:3px;transition:all .2s}
-.options-grid.multi-select .option-btn.selected::before{background:var(--blue);border-color:var(--blue);content:'✓';color:white;font-size:10px;display:flex;align-items:center;justify-content:center}
-
-/* ── Inputs ── */
-.studio-input{width:100%;background:rgba(8,24,47,.8);border:1px solid var(--line);border-radius:var(--r-md);padding:15px 18px;color:var(--white);outline:none;transition:border-color .2s;margin-bottom:2.5rem;font-size:.96rem}
-.studio-input:focus{border-color:rgba(91,211,255,.5);box-shadow:0 0 0 3px rgba(30,167,255,.1)}
-.studio-input::placeholder{color:var(--muted2)}
-textarea.studio-input{min-height:120px;resize:vertical}
-
-/* ── Nav buttons ── */
-.step-nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.btn-back{background:transparent;border:1px solid var(--line);border-radius:999px;padding:12px 24px;color:var(--muted);cursor:pointer;font-weight:700;font-size:.86rem;transition:all .2s}
-.btn-back:hover{border-color:var(--line-strong);color:var(--white)}
-.btn-next,.btn-submit{color:#03101f;background:linear-gradient(135deg,var(--white),var(--blue4) 44%,var(--blue));border:1px solid rgba(245,248,255,.58);border-radius:999px;padding:14px 32px;font-weight:900;font-size:.92rem;cursor:pointer;box-shadow:0 0 36px rgba(30,167,255,.28),inset 0 1px 0 rgba(255,255,255,.74);transition:transform .2s,box-shadow .2s}
-.btn-next:hover,.btn-submit:hover{transform:translateY(-2px);box-shadow:0 0 52px rgba(30,167,255,.44)}
-.step-error{color:#f87171;font-size:.78rem;margin-bottom:12px;padding:8px 12px;background:rgba(239,68,68,.08);border-left:2px solid #f87171;border-radius:0 4px 4px 0}
-
-/* ── Pipeline loading ── */
-.pipeline-loading{display:none;text-align:center;padding:80px 20px}
-.pipeline-loading.active{display:block}
-.pipeline-title{font-family:var(--display);font-size:clamp(1.6rem,3vw,2.6rem);color:var(--white);font-weight:700;letter-spacing:-.04em;margin-bottom:.5rem}
-.pipeline-sub{color:var(--muted);font-size:.9rem;margin-bottom:3rem}
-.workflow-list{display:flex;flex-direction:column;gap:10px;max-width:500px;margin:0 auto 3rem}
-.workflow-item{display:flex;align-items:center;gap:14px;padding:13px 18px;border:1px solid var(--line);border-radius:var(--r-lg);background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.01));transition:all .3s}
-.workflow-item.running{border-color:var(--blue);background:rgba(30,167,255,.07)}
-.workflow-item.complete{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.04)}
-.workflow-icon{width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.workflow-item.running .workflow-icon{background:rgba(30,167,255,.2);animation:glow 1s ease infinite}
-.workflow-item.complete .workflow-icon{background:rgba(16,185,129,.2)}
-@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(30,167,255,.4)}50%{box-shadow:0 0 14px 4px rgba(30,167,255,.2)}}
-.workflow-name{font-size:.86rem;font-weight:600;color:var(--silver);flex:1}
-.workflow-status{font-family:var(--mono);font-size:.65rem;color:var(--muted2);letter-spacing:.08em}
-.workflow-item.running .workflow-status{color:var(--blue4)}
-.workflow-item.complete .workflow-status{color:#10b981}
-
-/* ── Results ── */
-.results-panel{display:none}
-.results-panel.active{display:block;animation:fadeUp .5s ease}
-.results-header{text-align:center;margin-bottom:3rem}
-.quality-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 18px;border-radius:20px;font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.1em;margin-bottom:1.2rem}
-.quality-badge.approved{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.35);color:#10b981}
-.quality-badge.needs_polish{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);color:#f59e0b}
-.quality-badge.redesign,.quality-badge.reject{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.35);color:#ef4444}
-.score-display{font-family:var(--display);font-size:clamp(52px,9vw,88px);font-weight:800;line-height:1;letter-spacing:-.06em;background:linear-gradient(135deg,var(--white),var(--blue4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
-.result-card{background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.018)),rgba(8,24,47,.7);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px}
-.result-card.full-width{grid-column:1/-1}
-.result-card-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;color:var(--blue4);text-transform:uppercase;margin-bottom:7px}
-.result-card-value{font-size:.92rem;font-weight:600;color:var(--white);line-height:1.55}
-.color-swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.swatch{width:34px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,.1);cursor:pointer;transition:transform .2s}
-.swatch:hover{transform:scale(1.15)}
-.section-list{display:flex;flex-direction:column;gap:7px;margin-top:6px}
-.section-item{display:flex;gap:10px;align-items:flex-start;font-size:.86rem;color:var(--muted)}
-.section-num{font-family:var(--mono);font-size:.65rem;color:var(--blue4);min-width:20px;padding-top:2px}
-.flags-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
-.flag-item{font-size:.86rem;color:#f59e0b;padding:6px 10px;background:rgba(245,158,11,.05);border-left:2px solid #f59e0b;border-radius:0 4px 4px 0}
-.results-cta{display:flex;gap:12px;justify-content:center;margin-top:2.5rem;flex-wrap:wrap}
-.btn-refine{background:transparent;border:1px solid var(--line-strong);border-radius:999px;padding:14px 28px;color:var(--muted);font-weight:700;font-size:.86rem;cursor:pointer;transition:all .2s}
-.btn-refine:hover{border-color:var(--blue);color:var(--white)}
-
-/* ── Footer ── */
-footer{padding:2rem;color:var(--muted2);text-align:center;border-top:1px solid rgba(184,196,217,.1);margin-top:4rem}
-.footer-brand{font-family:var(--display);color:var(--white);font-weight:800}
-.footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;margin-top:.7rem;font-size:.86rem}
-.footer-links a{text-decoration:none;color:var(--muted)}
-.footer-links a:hover{color:var(--white)}
-
-/* ── Responsive ── */
-@media(max-width:768px){
-  .studio-hero{padding:8rem 1.2rem 4rem}
-  .form-wrap{padding:0 4px}
-  .options-grid{grid-template-columns:1fr 1fr}
-  .step-nav{flex-direction:column-reverse}
-  .btn-next,.btn-submit,.btn-back{width:100%;text-align:center;justify-content:center}
-  .results-grid{grid-template-columns:1fr}
-  nav{min-height:68px;padding:.65rem 1rem}
-  .nav-brand-sub,.nav-badge{display:none}
-}
-@media(max-width:480px){.options-grid{grid-template-columns:1fr}}
+body{min-height:100vh;overflow-x:hidden;background:radial-gradient(circle at 18% 10%,rgba(30,167,255,.18),transparent 28%),radial-gradient(circle at 84% 12%,rgba(91,211,255,.10),transparent 32%),radial-gradient(circle at 50% 55%,rgba(30,167,255,.06),transparent 45%),linear-gradient(180deg,var(--bg) 0%,#02050e 54%,var(--bg2) 100%);color:var(--muted);font-family:var(--sans)}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(45,184,255,.038) 1px,transparent 1px),linear-gradient(90deg,rgba(45,184,255,.032) 1px,transparent 1px);background-size:64px 64px;mask-image:linear-gradient(180deg,rgba(0,0,0,.8),rgba(0,0,0,.18) 60%,rgba(0,0,0,.04))}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:72px;padding:.85rem clamp(1rem,4vw,2.75rem);background:rgba(3,8,22,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(24px)}
+.nav-left{display:flex;align-items:center;gap:.9rem;text-decoration:none}
+.nav-logo-img{width:76px;height:40px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(91,211,255,.22);box-shadow:0 0 22px rgba(30,167,255,.18);object-fit:cover;object-position:center 43%}
+.nav-logo-text{display:flex;flex-direction:column;line-height:1.08}
+.nav-logo-name{font-family:var(--display);font-size:.92rem;font-weight:800;color:var(--white);letter-spacing:.02em}
+.nav-logo-sub{font-family:var(--mono);font-size:.52rem;color:var(--muted2);letter-spacing:.13em;text-transform:uppercase}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+.nav-link{font-size:.82rem;color:var(--muted2);text-decoration:none;padding:.4rem .7rem;border-radius:6px;transition:color .2s}
+.nav-link:hover{color:var(--silver)}
+.nav-cta{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(135deg,var(--white),var(--blue4) 44%,var(--blue));border:none;border-radius:999px;padding:.6rem 1.4rem;font-size:.8rem;font-weight:800;color:#03101f;text-decoration:none;cursor:pointer;box-shadow:0 0 24px rgba(30,167,255,.28);transition:all .2s;font-family:var(--sans)}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 0 38px rgba(30,167,255,.44)}
+.hero{position:relative;z-index:1;min-height:calc(100vh - 72px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(2rem,5vw,4rem) clamp(1rem,4vw,2.5rem);text-align:center;gap:0}
+.hero-eyebrow{display:flex;align-items:center;justify-content:center;gap:.65rem;font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;color:var(--blue4);text-transform:uppercase;margin-bottom:1.4rem}
+.eyebrow-line{display:inline-block;width:28px;height:1px;background:linear-gradient(90deg,transparent,var(--blue4))}
+.eyebrow-line.r{background:linear-gradient(270deg,transparent,var(--blue4))}
+.hero-logo-wrap{position:relative;width:min(960px,88vw);height:clamp(320px,34vw,480px);margin:0 auto clamp(1.5rem,2.5vw,2.8rem);filter:drop-shadow(0 30px 60px rgba(0,0,0,.48))}
+.hero-logo-wrap::before{content:'';position:absolute;left:50%;top:8%;width:70%;height:55%;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(30,167,255,.26),rgba(30,167,255,.08) 48%,transparent 75%);filter:blur(32px);z-index:-1}
+.hero-logo-img{position:absolute;left:50%;top:10%;width:min(720px,76%);transform:translateX(-50%);height:auto;max-height:380px;object-fit:contain;display:block;filter:drop-shadow(0 24px 60px rgba(0,0,0,.52)) drop-shadow(0 0 30px rgba(30,167,255,.22))}
+.arc-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
+.hero-h1{font-family:var(--display);font-size:clamp(2.4rem,4.8vw,4rem);font-weight:800;line-height:1.06;letter-spacing:-.05em;color:var(--white);max-width:1000px;margin:0 auto .9rem}
+.grad{background:linear-gradient(135deg,var(--white) 0%,var(--silver) 28%,var(--blue4) 64%,var(--blue2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:clamp(.98rem,1.4vw,1.12rem);color:var(--silver);line-height:1.7;max-width:680px;margin:0 auto 1.8rem}
+.hero-actions{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.85rem}
+.btn-primary{display:inline-flex;align-items:center;gap:.65rem;background:linear-gradient(135deg,var(--white),var(--blue4) 44%,var(--blue));border:1px solid rgba(245,248,255,.55);border-radius:999px;padding:.95rem 2.1rem;font-weight:900;font-size:.96rem;color:#03101f;text-decoration:none;cursor:pointer;box-shadow:0 0 38px rgba(30,167,255,.32),inset 0 1px 0 rgba(255,255,255,.7);transition:all .22s;font-family:var(--sans)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 56px rgba(30,167,255,.5),0 16px 40px rgba(0,0,0,.28)}
+.btn-ghost{display:inline-flex;align-items:center;gap:.5rem;background:transparent;border:1px solid rgba(184,196,217,.22);border-radius:999px;padding:.85rem 1.8rem;font-size:.88rem;color:var(--muted);text-decoration:none;cursor:pointer;transition:all .2s;font-family:var(--sans)}
+.btn-ghost:hover{border-color:rgba(184,196,217,.4);color:var(--silver)}
+.hero-proof{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-top:2rem;flex-wrap:wrap}
+.proof-item{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;color:var(--muted2);text-transform:uppercase;display:flex;align-items:center;gap:.4rem}
+.proof-dot{width:4px;height:4px;border-radius:50%;background:var(--blue)}
+.section{position:relative;z-index:1;padding:clamp(4rem,8vw,7rem) clamp(1rem,4vw,2.5rem)}
+.section-inner{max-width:1080px;margin:0 auto}
+.section-eyebrow{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;color:var(--blue4);text-transform:uppercase;text-align:center;margin-bottom:.8rem}
+.section-title{font-family:var(--display);font-size:clamp(1.8rem,3.2vw,2.7rem);font-weight:800;letter-spacing:-.04em;color:var(--white);text-align:center;margin-bottom:.7rem}
+.section-sub{font-size:clamp(.88rem,1.2vw,1rem);color:var(--muted2);text-align:center;max-width:580px;margin:0 auto 3.5rem;line-height:1.7}
+.divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--blue),transparent);margin:0 auto 3.5rem;box-shadow:0 0 12px rgba(30,167,255,.5)}
+.flow-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1.2rem}
+.flow-step{background:rgba(6,18,37,.8);border:1px solid rgba(45,184,255,.14);border-radius:14px;padding:1.6rem 1.3rem;text-align:center;transition:border-color .2s}
+.flow-step:hover{border-color:rgba(45,184,255,.32)}
+.step-num{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;color:var(--blue4);text-transform:uppercase;margin-bottom:.8rem}
+.step-icon{font-size:1.5rem;margin-bottom:.7rem;display:block}
+.step-name{font-family:var(--display);font-size:.92rem;font-weight:700;color:var(--white);margin-bottom:.4rem}
+.step-desc{font-size:.76rem;color:var(--muted2);line-height:1.55}
+.systems-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+.system-card{background:rgba(6,18,37,.7);border:1px solid rgba(184,196,217,.1);border-radius:12px;padding:1.4rem;transition:all .22s}
+.system-card:hover{border-color:rgba(30,167,255,.3);background:rgba(6,18,37,.95);transform:translateY(-2px)}
+.sys-badge{font-family:var(--mono);font-size:.55rem;letter-spacing:.1em;color:var(--blue4);background:rgba(30,167,255,.1);border:1px solid rgba(30,167,255,.2);border-radius:20px;padding:3px 9px;display:inline-block;margin-bottom:.7rem;text-transform:uppercase}
+.sys-name{font-family:var(--display);font-size:.96rem;font-weight:700;color:var(--white);margin-bottom:.4rem}
+.sys-desc{font-size:.76rem;color:var(--muted2);line-height:1.55}
+.sys-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.75rem}
+.sys-tag{font-size:.67rem;color:var(--muted2);background:rgba(255,255,255,.04);border:1px solid rgba(184,196,217,.1);border-radius:4px;padding:2px 7px}
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem}
+.why-card{background:rgba(6,18,37,.6);border:1px solid rgba(184,196,217,.09);border-radius:14px;padding:1.6rem}
+.why-icon{font-size:1.4rem;margin-bottom:.8rem;display:block}
+.why-title{font-family:var(--display);font-size:1rem;font-weight:700;color:var(--white);margin-bottom:.4rem}
+.why-desc{font-size:.8rem;color:var(--muted2);line-height:1.6}
+.cta-section{position:relative;z-index:1;padding:clamp(4rem,8vw,7rem) clamp(1rem,4vw,2.5rem);text-align:center}
+.cta-card{max-width:760px;margin:0 auto;background:linear-gradient(135deg,rgba(6,18,37,.95),rgba(3,8,22,.98));border:1px solid rgba(30,167,255,.28);border-radius:20px;padding:clamp(2.5rem,5vw,4rem) clamp(1.5rem,4vw,3.5rem);position:relative;overflow:hidden}
+.cta-card::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(30,167,255,.1),transparent 70%);pointer-events:none}
+.cta-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;color:var(--blue4);text-transform:uppercase;margin-bottom:1rem}
+.cta-title{font-family:var(--display);font-size:clamp(1.7rem,3.2vw,2.6rem);font-weight:800;letter-spacing:-.04em;color:var(--white);margin-bottom:.8rem}
+.cta-sub{font-size:.92rem;color:var(--silver);line-height:1.7;margin-bottom:2rem;max-width:520px;margin-left:auto;margin-right:auto}
+.demo-number{font-family:var(--mono);font-size:.78rem;letter-spacing:.1em;color:var(--muted2);margin-top:1.2rem}
+.demo-number span{color:var(--blue4)}
+footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:2.2rem clamp(1rem,4vw,2.75rem);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.footer-logo-img{width:52px;height:28px;border-radius:6px;object-fit:cover;object-position:center 43%;opacity:.8}
+.footer-name{font-family:var(--display);font-size:.78rem;font-weight:700;color:var(--muted2)}
+.footer-links{display:flex;gap:1.2rem;flex-wrap:wrap}
+.footer-link{font-size:.75rem;color:var(--muted2);text-decoration:none;transition:color .2s}
+.footer-link:hover{color:var(--silver)}
+.footer-copy{font-family:var(--mono);font-size:.56rem;letter-spacing:.1em;color:rgba(144,163,188,.5);text-transform:uppercase}
+@media(max-width:680px){.nav-right .nav-link{display:none}.hero-logo-wrap{width:112vw;margin-left:-6vw;margin-right:-6vw;height:clamp(240px,58vw,360px)}}
+@media(max-width:460px){.hero-actions{flex-direction:column;width:100%}.btn-primary,.btn-ghost{width:100%;justify-content:center}}
 </style>
 </head>
 <body>
-<div class="page-shell">
+<nav>
+  <a class="nav-left" href="index.html">
+    <img class="nav-logo-img" src="AI4-approved-logo-transparent.png" alt="AI4 logo">
+    <span class="nav-logo-text">
+      <span class="nav-logo-name">AI4 Website Design Studio</span>
+      <span class="nav-logo-sub">Powered by Apropos Group LLC</span>
+    </span>
+  </a>
+  <div class="nav-right">
+    <a class="nav-link" href="#how-it-works">How It Works</a>
+    <a class="nav-link" href="#design-systems">Design Systems</a>
+    <a class="nav-cta" href="signup.html">Start Building →</a>
+  </div>
+</nav>
 
-  <!-- Nav -->
-  <nav>
-    <a class="nav-brand" href="index.html">
-      <img class="nav-logo-mark" src="AI4-approved-logo.png" alt="AI4 Design Studio">
-      <span class="nav-brand-text">
-        <span class="nav-brand-name">AI4 Website Design Studio</span>
-        <span class="nav-brand-sub">Powered by Apropos Group LLC</span>
-      </span>
-    </a>
-    <div style="display:flex;align-items:center;gap:.75rem">
-      <span class="nav-badge">DESIGN STUDIO ACTIVE</span>
+<section class="hero">
+  <div class="hero-eyebrow"><span class="eyebrow-line"></span>AI4 Website Design Studio — Purpose-First Engine<span class="eyebrow-line r"></span></div>
+  <div class="hero-logo-wrap">
+    <img class="hero-logo-img" src="AI4-approved-logo-transparent.png" alt="AI4 Website Design">
+    <svg class="arc-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <defs>
+        <linearGradient id="silver" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#1a1a28"/><stop offset="20%" stop-color="#7a8a9e"/><stop offset="45%" stop-color="#c8d8e8"/><stop offset="55%" stop-color="#eef8ff"/><stop offset="75%" stop-color="#a9bed2"/><stop offset="100%" stop-color="#1a1a28"/></linearGradient>
+        <linearGradient id="blueGlow" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#010a1c"/><stop offset="30%" stop-color="#0860b8"/><stop offset="55%" stop-color="#1ea7ff"/><stop offset="75%" stop-color="#5bd3ff"/><stop offset="100%" stop-color="#010a1c"/></linearGradient>
+        <filter id="engrave"><feDropShadow dx="0" dy="2" stdDeviation="1.3" flood-color="#000" flood-opacity="1"/></filter>
+        <filter id="softGlow"><feGaussianBlur stdDeviation="3.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <path id="arc" d="M 118,374 Q 188,44 550,42 Q 912,44 982,374"/>
+      </defs>
+      <text font-family="Georgia,'Times New Roman',serif" font-size="43" font-weight="700" letter-spacing="8" fill="#000810" filter="url(#engrave)"><textPath href="#arc" startOffset="50%" text-anchor="middle">AI4 WEBSITE DESIGN STUDIO</textPath></text>
+      <text font-family="Georgia,'Times New Roman',serif" font-size="43" font-weight="700" letter-spacing="8" fill="url(#silver)"><textPath href="#arc" startOffset="50%" text-anchor="middle">AI4 WEBSITE DESIGN STUDIO</textPath></text>
+      <text font-family="Georgia,'Times New Roman',serif" font-size="43" font-weight="700" letter-spacing="8" fill="rgba(255,255,255,0.38)"><textPath href="#arc" startOffset="50%" text-anchor="middle">AI4 WEBSITE DESIGN STUDIO</textPath></text>
+      <line x1="170" y1="466" x2="398" y2="466" stroke="url(#blueGlow)" stroke-width="1" filter="url(#softGlow)" opacity="0.55"/>
+      <line x1="702" y1="466" x2="930" y2="466" stroke="url(#blueGlow)" stroke-width="1" filter="url(#softGlow)" opacity="0.55"/>
+    </svg>
+  </div>
+
+  <!-- ✦ UPDATED HERO MESSAGE ✦ -->
+  <h1 class="hero-h1">You direct the build.<br><span class="grad">We launch it same day.</span></h1>
+  <p class="hero-sub">Tell us your purpose. Our AI design engine builds a creative brief, selects a matching design system, and scores it through a quality gate — before a single template is chosen.</p>
+  <div class="hero-actions">
+    <!-- ✦ REDIRECTS TO SIGNUP ✦ -->
+    <a class="btn-primary" href="signup.html">Start Building My Website →</a>
+    <a class="btn-ghost" href="#how-it-works">See How It Works</a>
+  </div>
+  <div class="hero-proof">
+    <div class="proof-item"><span class="proof-dot"></span>17 website purposes</div>
+    <div class="proof-item"><span class="proof-dot"></span>12 design systems</div>
+    <div class="proof-item"><span class="proof-dot"></span>AI quality gate</div>
+    <div class="proof-item"><span class="proof-dot"></span>Same-day launch</div>
+  </div>
+</section>
+
+<section class="section" id="how-it-works">
+  <div class="section-inner">
+    <div class="section-eyebrow">The AI4 Design Engine</div>
+    <h2 class="section-title">Purpose → Brief → System → Quality Gate</h2>
+    <p class="section-sub">Six AI agents work in sequence to produce a premium, purpose-built design direction. No generic templates. No guesswork.</p>
+    <div class="divider"></div>
+    <div class="flow-steps">
+      <div class="flow-step"><div class="step-num">Agent 01</div><span class="step-icon">🎯</span><div class="step-name">Purpose Classifier</div><div class="step-desc">Analyzes your website goal, audience, and intent to establish a site category and content priorities.</div></div>
+      <div class="flow-step"><div class="step-num">Agent 02</div><span class="step-icon">🎨</span><div class="step-name">Design Director</div><div class="step-desc">Selects a creative direction and recommends the matching design system based on your impression and audience.</div></div>
+      <div class="flow-step"><div class="step-num">Agent 03</div><span class="step-icon">📐</span><div class="step-name">Content Architect</div><div class="step-desc">Plans your site sections, section order, headline direction, and CTA hierarchy.</div></div>
+      <div class="flow-step"><div class="step-num">Agent 04</div><span class="step-icon">🖌️</span><div class="step-name">Visual Identity</div><div class="step-desc">Defines color mood, typography direction, layout rhythm, and the visual motif for your design system.</div></div>
+      <div class="flow-step"><div class="step-num">Agent 05</div><span class="step-icon">⚡</span><div class="step-name">Template Matcher</div><div class="step-desc">Matches your design brief to the correct design system and configures the preview direction.</div></div>
+      <div class="flow-step"><div class="step-num">Agent 06</div><span class="step-icon">✦</span><div class="step-name">Quality Gate</div><div class="step-desc">Scores your design direction against 10 premium criteria. Only approved directions proceed to preview.</div></div>
     </div>
-  </nav>
+  </div>
+</section>
 
-  <main style="padding-top:76px">
-
-    <!-- Hero -->
-    <section class="studio-hero" id="hero">
-      <div class="hero-inner">
-        <div class="hero-logo-plate reveal">
-          <img src="AI4-approved-logo.png" alt="AI4 Design Studio">
-        </div>
-        <div class="eyebrow reveal d1">AI4 Website Design Studio</div>
-        <h1 class="reveal d2">Your website.<br><span class="gradient-text">Built around your purpose.</span></h1>
-        <p class="hero-sub reveal d3">Start with your goal. Let the AI4 design engine shape the direction. Preview a website concept built for your purpose — not a generic template.</p>
-        <div class="hero-actions reveal d4">
-          <button class="btn btn-primary" onclick="startStudio()">
-            Start Building My Website
-            <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-        <div class="reveal d4"><span class="sandbox-badge">⚡ SANDBOX — NOT CONNECTED TO LIVE CHECKOUT</span></div>
-      </div>
-    </section>
-
-    <!-- Studio form section -->
-    <section id="studioSection" style="display:none;padding:3rem 2rem 6rem">
-      <div style="width:min(800px,100%);margin:0 auto">
-
-        <!-- Progress -->
-        <div class="progress-wrap">
-          <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:7.7%"></div></div>
-          <div class="progress-label" id="progressLabel">Step 1 of 13</div>
-        </div>
-
-        <!-- Form -->
-        <form id="studioForm">
-
-          <!-- Step 1 -->
-          <div class="form-step active" data-step="1">
-            <div class="step-label">Step 1 — Foundation</div>
-            <div class="step-question">What type of website are you building?</div>
-            <div class="step-hint">This is the most important decision. Everything follows from here.</div>
-            <div class="options-grid" data-field="websitePurpose" data-type="single">
-              <button type="button" class="option-btn" data-value="Business Website">Business Website</button>
-              <button type="button" class="option-btn" data-value="Personal Brand Website">Personal Brand</button>
-              <button type="button" class="option-btn" data-value="Portfolio Website">Portfolio</button>
-              <button type="button" class="option-btn" data-value="Blog / Publication">Blog / Publication</button>
-              <button type="button" class="option-btn" data-value="Creator / Influencer Website">Creator / Influencer</button>
-              <button type="button" class="option-btn" data-value="Event / Invitation Website">Event / Invitation</button>
-              <button type="button" class="option-btn" data-value="Product / Launch Page">Product / Launch Page</button>
-              <button type="button" class="option-btn" data-value="Nonprofit / Cause Website">Nonprofit / Cause</button>
-              <button type="button" class="option-btn" data-value="Resume / Career Website">Resume / Career</button>
-              <button type="button" class="option-btn" data-value="Course / Education Website">Course / Education</button>
-              <button type="button" class="option-btn" data-value="Community / Membership Website">Community / Membership</button>
-              <button type="button" class="option-btn" data-value="Artist / Music / Creative Showcase">Artist / Creative</button>
-              <button type="button" class="option-btn" data-value="Real Estate / Property Showcase">Real Estate</button>
-              <button type="button" class="option-btn" data-value="Restaurant / Hospitality Website">Restaurant / Hospitality</button>
-              <button type="button" class="option-btn" data-value="Local Service Website">Local Service</button>
-              <button type="button" class="option-btn" data-value="Ecommerce / Product Catalog">Ecommerce</button>
-              <button type="button" class="option-btn" data-value="AI / Tech Product">AI / Tech Product</button>
-              <button type="button" class="option-btn" data-value="Custom / Other">Custom / Other</button>
-            </div>
-            <div class="step-nav"><div></div><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 2 -->
-          <div class="form-step" data-step="2">
-            <div class="step-label">Step 2 — Goal</div>
-            <div class="step-question">What's the primary goal of this website?</div>
-            <div class="step-hint">What do you want visitors to do after they arrive?</div>
-            <div class="options-grid" data-field="primaryGoal" data-type="single">
-              <button type="button" class="option-btn" data-value="Get customers or leads">Get customers or leads</button>
-              <button type="button" class="option-btn" data-value="Showcase my work">Showcase my work</button>
-              <button type="button" class="option-btn" data-value="Promote myself">Promote myself</button>
-              <button type="button" class="option-btn" data-value="Publish content">Publish content</button>
-              <button type="button" class="option-btn" data-value="Sell a product">Sell a product</button>
-              <button type="button" class="option-btn" data-value="Announce an event">Announce an event</button>
-              <button type="button" class="option-btn" data-value="Build authority">Build authority</button>
-              <button type="button" class="option-btn" data-value="Tell a story">Tell a story</button>
-              <button type="button" class="option-btn" data-value="Collect signups">Collect signups</button>
-              <button type="button" class="option-btn" data-value="Create an online presence">Create an online presence</button>
-              <button type="button" class="option-btn" data-value="Other">Other</button>
-            </div>
-            <div class="step-nav"><button type="button" class="btn-back" onclick="prevStep()">← Back</button><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 3 -->
-          <div class="form-step" data-step="3">
-            <div class="step-label">Step 3 — Audience</div>
-            <div class="step-question">Who is this website for?</div>
-            <div class="step-hint">Knowing your audience shapes every design decision.</div>
-            <div class="options-grid" data-field="targetAudience" data-type="single">
-              <button type="button" class="option-btn" data-value="Consumers">Consumers</button>
-              <button type="button" class="option-btn" data-value="Business owners">Business owners</button>
-              <button type="button" class="option-btn" data-value="Executives">Executives</button>
-              <button type="button" class="option-btn" data-value="Fans / followers">Fans / followers</button>
-              <button type="button" class="option-btn" data-value="Recruiters / employers">Recruiters / employers</button>
-              <button type="button" class="option-btn" data-value="Event guests">Event guests</button>
-              <button type="button" class="option-btn" data-value="Students / learners">Students / learners</button>
-              <button type="button" class="option-btn" data-value="Donors / supporters">Donors / supporters</button>
-              <button type="button" class="option-btn" data-value="Local customers">Local customers</button>
-              <button type="button" class="option-btn" data-value="Online shoppers">Online shoppers</button>
-              <button type="button" class="option-btn" data-value="Mixed audience">Mixed audience</button>
-            </div>
-            <div class="step-nav"><button type="button" class="btn-back" onclick="prevStep()">← Back</button><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 4 -->
-          <div class="form-step" data-step="4">
-            <div class="step-label">Step 4 — First Impression</div>
-            <div class="step-question">How should visitors feel the moment they land?</div>
-            <div class="step-hint">This emotional trigger shapes your design system.</div>
-            <div class="options-grid" data-field="desiredImpression" data-type="single">
-              <button type="button" class="option-btn" data-value="Premium">Premium</button>
-              <button type="button" class="option-btn" data-value="Bold">Bold</button>
-              <button type="button" class="option-btn" data-value="Elegant">Elegant</button>
-              <button type="button" class="option-btn" data-value="Futuristic">Futuristic</button>
-              <button type="button" class="option-btn" data-value="Warm">Warm</button>
-              <button type="button" class="option-btn" data-value="Minimal">Minimal</button>
-              <button type="button" class="option-btn" data-value="Editorial">Editorial</button>
-              <button type="button" class="option-btn" data-value="Cinematic">Cinematic</button>
-              <button type="button" class="option-btn" data-value="Creative">Creative</button>
-              <button type="button" class="option-btn" data-value="Professional">Professional</button>
-              <button type="button" class="option-btn" data-value="Energetic">Energetic</button>
-              <button type="button" class="option-btn" data-value="Personal">Personal</button>
-              <button type="button" class="option-btn" data-value="Trustworthy">Trustworthy</button>
-              <button type="button" class="option-btn" data-value="Luxurious">Luxurious</button>
-            </div>
-            <div class="step-nav"><button type="button" class="btn-back" onclick="prevStep()">← Back</button><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 5 -->
-          <div class="form-step" data-step="5">
-            <div class="step-label">Step 5 — Visual Style</div>
-            <div class="step-question">Which visual direction resonates with you?</div>
-            <div class="step-hint">If you're unsure, let AI choose — it will match your purpose and audience automatically.</div>
-            <div class="options-grid" data-field="visualStylePreference" data-type="single">
-              <button type="button" class="option-btn" data-value="Luxury Reveal">Luxury Reveal</button>
-              <button type="button" class="option-btn" data-value="Executive Presence">Executive Presence</button>
-              <button type="button" class="option-btn" data-value="Cinematic">Cinematic</button>
-              <button type="button" class="option-btn" data-value="Digital Magazine">Digital Magazine</button>
-              <button type="button" class="option-btn" data-value="Portfolio Prestige">Portfolio Prestige</button>
-              <button type="button" class="option-btn" data-value="Creator Spotlight">Creator Spotlight</button>
-              <button type="button" class="option-btn" data-value="Product Launch">Product Launch</button>
-              <button type="button" class="option-btn" data-value="Minimal Modern">Minimal Modern</button>
-              <button type="button" class="option-btn" data-value="Bold Graphic">Bold Graphic</button>
-              <button type="button" class="option-btn" data-value="Warm Editorial">Warm Editorial</button>
-              <button type="button" class="option-btn" data-value="Futuristic Interface">Futuristic Interface</button>
-              <button type="button" class="option-btn" data-value="Artistic Showcase">Artistic Showcase</button>
-              <button type="button" class="option-btn" data-value="Not sure — let AI choose">Let AI choose</button>
-            </div>
-            <div class="step-nav"><button type="button" class="btn-back" onclick="prevStep()">← Back</button><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 6 -->
-          <div class="form-step" data-step="6">
-            <div class="step-label">Step 6 — Voice</div>
-            <div class="step-question">How should your website communicate?</div>
-            <div class="step-hint">This shapes your copy direction and content tone.</div>
-            <div class="options-grid" data-field="contentPersonality" data-type="single">
-              <button type="button" class="option-btn" data-value="Professional">Professional</button>
-              <button type="button" class="option-btn" data-value="Confident">Confident</button>
-              <button type="button" class="option-btn" data-value="Friendly">Friendly</button>
-              <button type="button" class="option-btn" data-value="Inspirational">Inspirational</button>
-              <button type="button" class="option-btn" data-value="Premium">Premium</button>
-              <button type="button" class="option-btn" data-value="Direct">Direct</button>
-              <button type="button" class="option-btn" data-value="Story-driven">Story-driven</button>
-              <button type="button" class="option-btn" data-value="Creative">Creative</button>
-              <button type="button" class="option-btn" data-value="Educational">Educational</button>
-              <button type="button" class="option-btn" data-value="Persuasive">Persuasive</button>
-            </div>
-            <div class="step-nav"><button type="button" class="btn-back" onclick="prevStep()">← Back</button><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 7 -->
-          <div class="form-step" data-step="7">
-            <div class="step-label">Step 7 — Structure</div>
-            <div class="step-question">Which sections do you need?</div>
-            <div class="step-hint">Select all that apply. AI will optimize the order and remove anything that doesn't serve your goal.</div>
-            <div class="options-grid multi-select" data-field="sectionsNeeded" data-type="multi">
-              <button type="button" class="option-btn" data-value="Hero / introduction">Hero / intro</button>
-              <button type="button" class="option-btn" data-value="About">About</button>
-              <button type="button" class="option-btn" data-value="Services">Services</button>
-              <button type="button" class="option-btn" data-value="Portfolio / gallery">Portfolio / gallery</button>
-              <button type="button" class="option-btn" data-value="Blog / articles">Blog / articles</button>
-              <button type="button" class="option-btn" data-value="Testimonials">Testimonials</button>
-              <button type="button" class="option-btn" data-value="Pricing">Pricing</button>
-              <button type="button" class="option-btn" data-value="Contact">Contact</button>
-              <button type="button" class="option-btn" data-value="Booking">Booking</button>
-              <button type="button" class="option-btn" data-value="Product showcase">Product showcase</button>
-              <button type="button" class="option-btn" data-value="Event details">Event details</button>
-              <button type="button" class="option-btn" data-value="Signup form">Signup form</button>
-              <button type="button" class="option-btn" data-value="FAQ">FAQ</button>
-              <button type="button" class="option-btn" data-value="Call to action">Call to action</button>
-              <button type="button" class="option-btn" data-value="Social links">Social links</button>
-              <button type="button" class="option-btn" data-value="Resume / experience">Resume / experience</button>
-              <button type="button" class="option-btn" data-value="Media / press">Media / press</button>
-              <button type="button" class="option-btn" data-value="Donation / support">Donation / support</button>
-            </div>
-            <div class="step-nav"><button type="button" class="btn-back" onclick="prevStep()">← Back</button><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 8 -->
-          <div class="form-step" data-step="8">
-            <div class="step-label">Step 8 — Identity</div>
-            <div class="step-question">What's the name of your website or brand?</div>
-            <div class="step-hint">This will appear throughout your design brief.</div>
-            <input type="text" class="studio-input" id="brandName" placeholder="e.g. FlowDesk Pro, Studio Nova, The Mitchell Group" maxlength="80">
-            <div class="step-nav"><button type="button" class="btn-back" onclick="prevStep()">← Back</button><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 9 -->
-          <div class="form-step" data-step="9">
-            <div class="step-label">Step 9 — Description</div>
-            <div class="step-question">Describe what you do in 1–3 sentences.</div>
-            <div class="step-hint">Write it the way you'd explain it to a potential customer.</div>
-            <textarea class="studio-input" id="shortDescription" placeholder="We help small businesses automate their intake and customer follow-up using AI-powered systems..." maxlength="400"></textarea>
-            <div class="step-nav"><button type="button" class="btn-back" onclick="prevStep()">← Back</button><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 10 -->
-          <div class="form-step" data-step="10">
-            <div class="step-label">Step 10 — Call to Action</div>
-            <div class="step-question">What's the main action you want visitors to take?</div>
-            <div class="step-hint">This becomes your primary CTA throughout the site.</div>
-            <div class="options-grid" data-field="mainCallToAction" data-type="single">
-              <button type="button" class="option-btn" data-value="Contact me">Contact me</button>
-              <button type="button" class="option-btn" data-value="Book a call">Book a call</button>
-              <button type="button" class="option-btn" data-value="View portfolio">View portfolio</button>
-              <button type="button" class="option-btn" data-value="Read the blog">Read the blog</button>
-              <button type="button" class="option-btn" data-value="Join the list">Join the list</button>
-              <button type="button" class="option-btn" data-value="Buy now">Buy now</button>
-              <button type="button" class="option-btn" data-value="Register">Register</button>
-              <button type="button" class="option-btn" data-value="Donate">Donate</button>
-              <button type="button" class="option-btn" data-value="Learn more">Learn more</button>
-              <button type="button" class="option-btn" data-value="Start here">Start here</button>
-              <button type="button" class="option-btn" data-value="Get a quote">Get a quote</button>
-              <button type="button" class="option-btn" data-value="Apply now">Apply now</button>
-            </div>
-            <div class="step-nav"><button type="button" class="btn-back" onclick="prevStep()">← Back</button><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 11 -->
-          <div class="form-step" data-step="11">
-            <div class="step-label">Step 11 — Budget</div>
-            <div class="step-question">What's your approximate budget?</div>
-            <div class="step-hint">This helps us recommend a realistic scope for your project.</div>
-            <div class="options-grid" data-field="budgetRange" data-type="single">
-              <button type="button" class="option-btn" data-value="Under $500">Under $500</button>
-              <button type="button" class="option-btn" data-value="$500 – $2,000">$500 – $2,000</button>
-              <button type="button" class="option-btn" data-value="$2,000 – $5,000">$2,000 – $5,000</button>
-              <button type="button" class="option-btn" data-value="$5,000+">$5,000+</button>
-              <button type="button" class="option-btn" data-value="Not sure yet">Not sure yet</button>
-            </div>
-            <div class="step-nav"><button type="button" class="btn-back" onclick="prevStep()">← Back</button><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 12 -->
-          <div class="form-step" data-step="12">
-            <div class="step-label">Step 12 — Timeline</div>
-            <div class="step-question">When do you need this website live?</div>
-            <div class="options-grid" data-field="timeline" data-type="single">
-              <button type="button" class="option-btn" data-value="ASAP">ASAP</button>
-              <button type="button" class="option-btn" data-value="1–2 weeks">1–2 weeks</button>
-              <button type="button" class="option-btn" data-value="1 month">1 month</button>
-              <button type="button" class="option-btn" data-value="No rush">No rush</button>
-            </div>
-            <div class="step-nav"><button type="button" class="btn-back" onclick="prevStep()">← Back</button><button type="button" class="btn-next" onclick="nextStep()">Continue →</button></div>
-          </div>
-
-          <!-- Step 13 -->
-          <div class="form-step" data-step="13">
-            <div class="step-label">Step 13 — Final Details</div>
-            <div class="step-question">Anything else the AI should know?</div>
-            <div class="step-hint">References, specific requirements, things that inspired you. Optional.</div>
-            <textarea class="studio-input" id="optionalNotes" placeholder="e.g. I love the feel of Apple.com. My brand colors are navy and gold..." maxlength="600"></textarea>
-            <div class="step-nav">
-              <button type="button" class="btn-back" onclick="prevStep()">← Back</button>
-              <button type="button" class="btn-submit" onclick="submitForm()">
-                Launch AI Pipeline →
-              </button>
-            </div>
-          </div>
-
-        </form>
-
-        <!-- Pipeline loading -->
-        <div class="pipeline-loading" id="pipelineLoading">
-          <div class="eyebrow" style="justify-content:center">Design Brief In Progress</div>
-          <div class="pipeline-title">Building your <span class="gradient-text">design brief</span></div>
-          <div class="pipeline-sub">This takes 30–60 seconds. Your design direction is being prepared.</div>
-          <div class="workflow-list" id="workflowList">
-            <div class="workflow-item" id="workflow-1"><div class="workflow-icon">🎯</div><div class="workflow-name">Purpose Analysis</div><div class="workflow-status">waiting</div></div>
-            <div class="workflow-item" id="workflow-2"><div class="workflow-icon">🎨</div><div class="workflow-name">Creative Direction</div><div class="workflow-status">waiting</div></div>
-            <div class="workflow-item" id="workflow-3"><div class="workflow-icon">🏗️</div><div class="workflow-name">Site Structure</div><div class="workflow-status">waiting</div></div>
-            <div class="workflow-item" id="workflow-4"><div class="workflow-icon">✨</div><div class="workflow-name">Visual Identity</div><div class="workflow-status">waiting</div></div>
-            <div class="workflow-item" id="workflow-5"><div class="workflow-icon">🔧</div><div class="workflow-name">Concept Match</div><div class="workflow-status">waiting</div></div>
-            <div class="workflow-item" id="workflow-6"><div class="workflow-icon">⭐</div><div class="workflow-name">Quality Review</div><div class="workflow-status">waiting</div></div>
-            <div class="workflow-item" id="workflow-7"><div class="workflow-icon">🚀</div><div class="workflow-name">Final Assembly</div><div class="workflow-status">waiting</div></div>
-          </div>
-        </div>
-
-        <!-- Results -->
-        <div class="results-panel" id="resultsPanel">
-          <div class="results-header">
-            <div class="quality-badge" id="qualityBadge">⬛ PROCESSING</div>
-            <div class="score-display" id="scoreDisplay">—</div>
-            <div style="font-size:.96rem;color:var(--muted);margin-top:.5rem" id="approvalMessage"></div>
-          </div>
-          <div class="results-grid" id="resultsGrid"></div>
-          <div id="flagsSection" style="display:none">
-            <div class="result-card full-width" style="margin-bottom:14px">
-              <div class="result-card-label">Quality Notes</div>
-              <div class="flags-list" id="flagsList"></div>
-            </div>
-          </div>
-          <div class="results-cta" id="resultsCta"></div>
-        </div>
-
-      </div>
-    </section>
-
-  </main>
-
-  <footer>
-    <div class="footer-brand">AI4 Website Design Studio</div>
-    <div style="margin-top:.3rem">© 2026 Apropos Group LLC</div>
-    <div class="footer-links">
-      <a href="https://aiflowdeskpro.com">FlowDesk Pro</a>
-      <a href="https://ai4websitedesign.com">AI4 Website Design</a>
-      <a href="https://ai4businesses.org">AI4 Businesses</a>
+<section class="section" id="design-systems" style="padding-top:0">
+  <div class="section-inner">
+    <div class="section-eyebrow">Design System Library</div>
+    <h2 class="section-title">12 Distinct Design Systems</h2>
+    <p class="section-sub">Each system has a different structural DNA — not just a color swap. The AI selects the system that matches your purpose.</p>
+    <div class="divider"></div>
+    <div class="systems-grid">
+      <div class="system-card"><div class="sys-badge">Luxury</div><div class="sys-name">Luxury Reveal</div><div class="sys-desc">Cinematic hero, elegant typography, spacious premium layout.</div><div class="sys-tags"><span class="sys-tag">Luxury services</span><span class="sys-tag">Real estate</span></div></div>
+      <div class="system-card"><div class="sys-badge">Authority</div><div class="sys-name">Executive Presence</div><div class="sys-desc">Editorial hero, trust-building sections, clean metrics layout.</div><div class="sys-tags"><span class="sys-tag">Business leaders</span><span class="sys-tag">B2B</span></div></div>
+      <div class="system-card"><div class="sys-badge">Creative</div><div class="sys-name">Cinematic Portfolio</div><div class="sys-desc">Full-screen visual entry, large project panels, motion rhythm.</div><div class="sys-tags"><span class="sys-tag">Designers</span><span class="sys-tag">Photographers</span></div></div>
+      <div class="system-card"><div class="sys-badge">Editorial</div><div class="sys-name">Digital Magazine</div><div class="sys-desc">Editorial grid, featured story section, magazine typography.</div><div class="sys-tags"><span class="sys-tag">Blogs</span><span class="sys-tag">Publications</span></div></div>
+      <div class="system-card"><div class="sys-badge">Creator</div><div class="sys-name">Creator Spotlight</div><div class="sys-desc">Personal hero, social proof bar, featured content modules.</div><div class="sys-tags"><span class="sys-tag">Influencers</span><span class="sys-tag">Podcasters</span></div></div>
+      <div class="system-card"><div class="sys-badge">Personal</div><div class="sys-name">Personal Brand Authority</div><div class="sys-desc">Strong personal hero, bio story, authority blocks.</div><div class="sys-tags"><span class="sys-tag">Coaches</span><span class="sys-tag">Speakers</span></div></div>
+      <div class="system-card"><div class="sys-badge">Launch</div><div class="sys-name">Product Launch</div><div class="sys-desc">Conversion-first hero, benefit cards, feature reveal, pricing CTA.</div><div class="sys-tags"><span class="sys-tag">SaaS</span><span class="sys-tag">App launches</span></div></div>
+      <div class="system-card"><div class="sys-badge">Event</div><div class="sys-name">Event Invitation</div><div class="sys-desc">Date-forward hero, event details, agenda timeline, RSVP block.</div><div class="sys-tags"><span class="sys-tag">Conferences</span><span class="sys-tag">Weddings</span></div></div>
+      <div class="system-card"><div class="sys-badge">Cause</div><div class="sys-name">Nonprofit Story</div><div class="sys-desc">Human story hero, mission section, impact stats, donation CTA.</div><div class="sys-tags"><span class="sys-tag">Nonprofits</span><span class="sys-tag">Causes</span></div></div>
+      <div class="system-card"><div class="sys-badge">Artistic</div><div class="sys-name">Artist Showcase</div><div class="sys-desc">Expressive visual hero, gallery, featured work, performance blocks.</div><div class="sys-tags"><span class="sys-tag">Musicians</span><span class="sys-tag">Artists</span></div></div>
+      <div class="system-card"><div class="sys-badge">Local</div><div class="sys-name">Modern Trust</div><div class="sys-desc">Clean trust-first hero, service explanation, reviews, contact CTA.</div><div class="sys-tags"><span class="sys-tag">Local services</span><span class="sys-tag">Small business</span></div></div>
+      <div class="system-card"><div class="sys-badge">Tech</div><div class="sys-name">Futuristic Interface</div><div class="sys-desc">Dark interface feel, grid overlays, neon accents, data-card layout.</div><div class="sys-tags"><span class="sys-tag">AI products</span><span class="sys-tag">Tech tools</span></div></div>
     </div>
-  </footer>
+  </div>
+</section>
 
-</div>
+<section class="section" style="padding-top:0">
+  <div class="section-inner">
+    <div class="section-eyebrow">Why AI4 Website Design</div>
+    <h2 class="section-title">Not a template builder. A design engine.</h2>
+    <p class="section-sub">The difference between a website that converts and one that sits there is design intent. AI4 builds intent first.</p>
+    <div class="divider"></div>
+    <div class="why-grid">
+      <div class="why-card"><span class="why-icon">🎯</span><div class="why-title">Purpose-first intake</div><div class="why-desc">17 website purposes. The system never forces you into a generic business-site pattern.</div></div>
+      <div class="why-card"><span class="why-icon">🤖</span><div class="why-title">AI creative direction</div><div class="why-desc">Six AI agents analyze your answers and produce a structured design brief before any template is selected.</div></div>
+      <div class="why-card"><span class="why-icon">✦</span><div class="why-title">Built-in quality gate</div><div class="why-desc">10 premium criteria scored before output is approved. Low-end output is flagged automatically.</div></div>
+      <div class="why-card"><span class="why-icon">🖼️</span><div class="why-title">12 structural design systems</div><div class="why-desc">Each system has a different layout DNA — different structure, rhythm, and visual signature.</div></div>
+      <div class="why-card"><span class="why-icon">⚡</span><div class="why-title">Same-day launch path</div><div class="why-desc">From brief approval to live site in one session. The design engine removes the guesswork.</div></div>
+      <div class="why-card"><span class="why-icon">🔒</span><div class="why-title">No generic output</div><div class="why-desc">The quality gate exists specifically to prevent boring, similar-looking websites. Premium or nothing.</div></div>
+    </div>
+  </div>
+</section>
 
-<script src="design-systems.js?v=20260513-private-workflow-v5"></script>
-<script src="design-workflow-engine.js?v=20260513-private-workflow-v5"></script>
-<script>
-function startStudio() {
-  document.getElementById('hero').style.display = 'none';
-  document.getElementById('studioSection').style.display = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-window.addEventListener('load', () => {
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-});
-</script>
+<section class="cta-section">
+  <div class="cta-card">
+    <div class="cta-label">Ready to build?</div>
+    <h2 class="cta-title">You direct the build.<br><span class="grad">We launch it same day.</span></h2>
+    <p class="cta-sub">Answer 11 questions. Let the AI4 Design Engine create your brief, select your system, and score your direction — then move forward with a same-day launch path.</p>
+    <div class="hero-actions" style="justify-content:center">
+      <!-- ✦ REDIRECTS TO SIGNUP ✦ -->
+      <a class="btn-primary" href="signup.html">Start Building My Website →</a>
+    </div>
+    <div class="demo-number">Or call our AI demo line: <span>(702) 710-2622</span></div>
+  </div>
+</section>
+
+<footer>
+  <a class="footer-logo" href="index.html">
+    <img class="footer-logo-img" src="AI4-approved-logo-transparent.png" alt="AI4 logo">
+    <span class="footer-name">AI4 Website Design Studio</span>
+  </a>
+  <div class="footer-links">
+    <a class="footer-link" href="signup.html">Design Studio</a>
+    <a class="footer-link" href="#how-it-works">How It Works</a>
+    <a class="footer-link" href="#design-systems">Design Systems</a>
+    <a class="footer-link" href="offer.html">Pricing</a>
+  </div>
+  <div class="footer-copy">© 2025 Apropos Group LLC — All rights reserved</div>
+</footer>
 </body>
 </html>

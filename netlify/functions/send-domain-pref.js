@@ -30,7 +30,7 @@ const RESEND_FROM_EMAIL =
 const PLAN_LABELS = {
   starter: 'Exclusive Founder’s Offer',
   premier: 'Premier',
-  business: 'Business Bundle'
+  pro: 'Entrepreneur’s Bundle'
 };
 
 const PLAN_ALIASES = {
@@ -49,10 +49,14 @@ const PLAN_ALIASES = {
   'premium': 'premier',
   'advanced': 'premier',
   'avanzado': 'premier',
-  'business': 'business',
-  'business-bundle': 'business',
-  'business_bundle': 'business',
-  'business bundle': 'business'
+  'pro': 'pro',
+  'professional': 'pro',
+  'profesional': 'pro',
+  'entrepreneur': 'pro',
+  'entrepreneur-bundle': 'pro',
+  'entrepreneurs-bundle': 'pro',
+  'entrepreneur’s bundle': 'pro',
+  'entrepreneur bundle': 'pro'
 };
 
 function normalizeDomainPreferences(value = '') {

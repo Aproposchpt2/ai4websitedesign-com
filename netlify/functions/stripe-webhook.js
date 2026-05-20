@@ -45,38 +45,34 @@ const PLAN_DEFINITIONS = {
     expected_amount_cents: 11999,
     includes_domain_credit: true
   },
-  business: {
-    plan_name: 'Business Bundle',
-    sites_purchased: 1,
-    expected_amount_cents: 24999,
-    includes_domain_credit: false
+  pro: {
+    plan_name: 'Entrepreneur’s Bundle',
+    sites_purchased: 5,
+    expected_amount_cents: 44999,
+    includes_domain_credit: true
   }
 };
 
-// Current English Stripe Payment Links. Do not migrate orphan package links.
+// Current English Stripe Payment Links from CURRENT STRIPE PAYMENT LINKS.txt.
+// Stripe webhook session.payment_link usually arrives as a Stripe Payment Link ID,
+// not the public URL. These URL mappings are retained only when Stripe supplies
+// a public URL through metadata or custom configuration.
 const PAYMENT_LINK_PLAN = {
   'https://buy.stripe.com/cNi6oG53A6Kz8xdfHq7EQ0w': 'starter',
   'https://buy.stripe.com/dRmbJ067E4Cr9Bhan67EQ0H': 'premier',
-  'https://buy.stripe.com/aFa6oGgMi4Cr14L52M7EQ0P': 'business'
+  'https://buy.stripe.com/8x27sKbrY1qffZFan67EQ0G': 'pro'
 };
 
-// Current English Stripe Price IDs verified in the existing live configuration.
-// Business Bundle is also safely resolved by its active Payment Link and amount.
+// Current English Stripe Price IDs from CURRENT STRIPE PAYMENT LINKS.txt.
 const PRICE_ID_PLAN = {
   'price_1TSMYmBMRgYNYb8DYbKniWmO': 'starter',
-  'price_1TTLcrBMRgYNYb8D7akPPeHq': 'premier'
+  'price_1TTLcrBMRgYNYb8D7akPPeHq': 'premier',
+  'price_1TTLfrBMRgYNYb8DCBCX3jGc': 'pro'
 };
 
-function amountMatches(actualCents, expectedCents) {
-  if (!actualCents || !expectedCents) return false;
-  const tolerance = Math.max(100, Math.round(expectedCents * 0.02));
-  return Math.abs(Number(actualCents) - Number(expectedCents)) <= tolerance;
-}
-
 function amountToPlanKey(amountTotal = 0) {
-  const amount = Number(amountTotal || 0);
-  if (amount >= Math.round(PLAN_DEFINITIONS.business.expected_amount_cents * 0.9)) return 'business';
-  if (amount >= Math.round(PLAN_DEFINITIONS.premier.expected_amount_cents * 0.9)) return 'premier';
+  if (amountTotal >= PLAN_DEFINITIONS.pro.expected_amount_cents) return 'pro';
+  if (amountTotal >= PLAN_DEFINITIONS.premier.expected_amount_cents) return 'premier';
   return 'starter';
 }
 
@@ -96,9 +92,11 @@ function normalizePlanKey(value = '') {
     'exclusive founder’s offer': 'starter',
     'premier': 'premier',
     'premium': 'premier',
-    'business': 'business',
-    'business-bundle': 'business',
-    'business bundle': 'business'
+    'pro': 'pro',
+    'entrepreneur': 'pro',
+    'entrepreneur-bundle': 'pro',
+    'entrepreneurs-bundle': 'pro',
+    'entrepreneur’s bundle': 'pro'
   };
 
   return aliases[raw] || '';
@@ -143,7 +141,7 @@ function resolvePlan(session, lineItems = []) {
   // Safety guard: if a mapped link/price charges a clearly lower amount,
   // classify by actual amount so older/conflicting links cannot grant the wrong plan.
   if (mappedKey && amountTotal > 0) {
-    const expected = PLAN_DEFINITIONS[mappedKey] ? PLAN_DEFINITIONS[mappedKey].expected_amount_cents : 0;
+    const expected = PLAN_DEFINITIONS[mappedKey].expected_amount_cents;
     const minimumAccepted = Math.round(expected * 0.9);
 
     if (amountTotal < minimumAccepted) {

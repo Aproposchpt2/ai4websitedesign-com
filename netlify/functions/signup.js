@@ -70,7 +70,7 @@ async function supabaseRequest(method, path, body = null) {
 
 async function sendEmail(to, subject, html, text) {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL || `${BRAND.name} <jmitchell@ai4websitedesign.com>`;
+  const from = process.env.RESEND_FROM_EMAIL || `${BRAND.name} <support@ai4websitedesign.com>`;
   if (!apiKey) return;
   const body = JSON.stringify({ from, to: [to], subject, html, text });
   return new Promise((resolve) => {
@@ -155,10 +155,10 @@ exports.handler = async (event) => {
       <h2 style="color:${BRAND.text};margin:0 0 8px">Welcome, ${firstName}! 👋</h2>
       <p style="color:${BRAND.muted};font-size:14px;line-height:1.6;margin-bottom:16px">Your account is ready. Return to the builder and let’s create something strong for your business.</p>
       <a href="${BRAND.siteUrl}/build.html" style="display:inline-block;background:linear-gradient(135deg,${BRAND.accent},${BRAND.accent2});color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;margin-bottom:16px">Continue Building →</a>
-      <p style="color:${BRAND.muted};font-size:12px;margin-top:16px">Questions? Reply to this email or contact us at jmitchell@ai4websitedesign.com</p>
+      <p style="color:${BRAND.muted};font-size:12px;margin-top:16px">Questions? Reply to this email or contact us at support@ai4websitedesign.com</p>
       <p style="color:#484f58;font-size:11px;margin-top:8px">${BRAND.name} · ${BRAND.entity} · Las Vegas, NV</p>
     </div>`,
-    `Welcome to ai4websitedesign, ${firstName}!\n\nYour account is ready. Return to the builder and let’s create something strong.\n\n${BRAND.siteUrl}/build.html\n\nQuestions? jmitchell@ai4websitedesign.com`
+    `Welcome to ai4websitedesign, ${firstName}!\n\nYour account is ready. Return to the builder and let’s create something strong.\n\n${BRAND.siteUrl}/build.html\n\nQuestions? support@ai4websitedesign.com`
   ).catch(err => console.error('Welcome email error:', err.message));
 
   return {

@@ -64,9 +64,9 @@ const CARE_PLANS_BY_PRICE_ID = {
     purchase_timing: 'Purchased Later'
   },
   price_1TTNU0BMRgYNYb8DAJ094sBW: {
-    plan_key: 'business_bundle_initial_package_purchase',
-    plan_name: 'Business Bundle Site Management — Initial Package Purchase',
-    stripe_product_name: 'ai4websitedesign Business Bundle Care Package I',
+    plan_key: 'entrepreneur_initial_package_purchase',
+    plan_name: 'Entrepreneur Site Management — Initial Package Purchase',
+    stripe_product_name: 'ai4websitedesign Entrepreneur Care Package I',
     stripe_price_id: 'price_1TTNU0BMRgYNYb8DAJ094sBW',
     stripe_link: 'https://buy.stripe.com/28E4gy9jQd8X7t9fHq7EQ0L',
     public_price: '$99.99/month at initial package purchase',
@@ -75,13 +75,13 @@ const CARE_PLANS_BY_PRICE_ID = {
     currency: 'usd',
     update_allowance: '25 total website updates per month across your launched sites',
     monthly_update_limit: 25,
-    support_tier: 'Business Bundle Site Management',
+    support_tier: 'Entrepreneur Site Management',
     purchase_timing: 'Initial Package Purchase'
   },
   price_1TTNYNBMRgYNYb8DGGxicuxF: {
-    plan_key: 'business_bundle_purchased_later',
-    plan_name: 'Business Bundle Site Management — Purchased Later',
-    stripe_product_name: 'ai4websitedesign Business Bundle Care Package II',
+    plan_key: 'entrepreneur_purchased_later',
+    plan_name: 'Entrepreneur Site Management — Purchased Later',
+    stripe_product_name: 'ai4websitedesign Entrepreneur Care Package II',
     stripe_price_id: 'price_1TTNYNBMRgYNYb8DGGxicuxF',
     stripe_link: 'https://buy.stripe.com/14A6oGanUd8X14L1QA7EQ0J',
     public_price: '$199.99/month when purchased later',
@@ -90,7 +90,7 @@ const CARE_PLANS_BY_PRICE_ID = {
     currency: 'usd',
     update_allowance: '25 total website updates per month across your launched sites',
     monthly_update_limit: 25,
-    support_tier: 'Business Bundle Site Management',
+    support_tier: 'Entrepreneur Site Management',
     purchase_timing: 'Purchased Later'
   }
 };
@@ -199,7 +199,7 @@ function getCarePlanByAmountCents(amountCents) {
     return {
       ...CARE_PLANS_BY_PRICE_ID.price_1TTNU0BMRgYNYb8DAJ094sBW,
       stripe_price_id: '',
-      stripe_product_name: 'AI4 subscription amount fallback — Business Bundle Care Plan I'
+      stripe_product_name: 'AI4 subscription amount fallback — Entrepreneur Care Plan I'
     };
   }
 
@@ -207,7 +207,7 @@ function getCarePlanByAmountCents(amountCents) {
     return {
       ...CARE_PLANS_BY_PRICE_ID.price_1TTNYNBMRgYNYb8DGGxicuxF,
       stripe_price_id: '',
-      stripe_product_name: 'AI4 subscription amount fallback — Business Bundle Care Plan II'
+      stripe_product_name: 'AI4 subscription amount fallback — Entrepreneur Care Plan II'
     };
   }
 

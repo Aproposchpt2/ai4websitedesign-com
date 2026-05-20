@@ -261,7 +261,7 @@ exports.handler = async (event) => {
           <p><strong>Submitted:</strong> ${submittedAt} PT</p>
         </div>
         <div class="footer">
-          Questions? Reply to this email or contact <a href="mailto:jmitchell@ai4websitedesign.com">jmitchell@ai4websitedesign.com</a><br><br>
+          Questions? Reply to this email or contact <a href="mailto:support@ai4websitedesign.com">support@ai4websitedesign.com</a><br><br>
           Powered by Apropos Group LLC · ai4websitedesign.com · © 2026
         </div>
       </div>
@@ -271,7 +271,7 @@ exports.handler = async (event) => {
 
   try {
     await sendResendEmail({
-      to: process.env.RESEND_TO_EMAIL || 'jmitchell@ai4websitedesign.com',
+      to: process.env.RESEND_TO_EMAIL || 'support@ai4websitedesign.com',
       subject: `🤝 Partner MSP Inquiry — ${payload.full_name}${payload.company ? ` / ${payload.company}` : ''}`,
       html: internalHtml
     });

@@ -24,7 +24,7 @@ const headers = {
   'Content-Type': 'application/json'
 };
 
-const HISTORICAL_ENTREPRENEUR_TOTAL_BUILDS = 5;
+const ENTREPRENEUR_TOTAL_BUILDS = 5;
 
 function normalizeEmail(value = '') {
   return String(value || '').trim().toLowerCase();
@@ -55,7 +55,6 @@ function getPlanKey(row = {}) {
     row.stripe_product_name
   ].filter(Boolean).join(' ').toLowerCase();
 
-  if (raw.includes('business bundle') || raw.includes('business_bundle') || raw.includes('business-bundle')) return 'business';
   if (raw.includes('entrepreneur') || raw.includes('pro')) return 'entrepreneur';
   if (raw.includes('premier') || raw.includes('premium')) return 'premier';
   if (raw.includes('founder') || raw.includes('starter')) return 'founder';
@@ -110,7 +109,7 @@ function getBuildSummary(order = null, sites = []) {
 
   const allowed =
     planKey === 'entrepreneur'
-      ? HISTORICAL_ENTREPRENEUR_TOTAL_BUILDS
+      ? ENTREPRENEUR_TOTAL_BUILDS
       : (allowedFromOrder || 1);
 
   const usedFromOrder =

@@ -1,10 +1,11 @@
-# ============================================================
-# netlify.toml — AI4 Website Design Studio Go-Live Candidate
+# ================================================================
+# netlify.toml — AI4 Website Design Studio
 # ai4websitedesign.com | Apropos Group LLC
-# ============================================================
+# ================================================================
 
 [build]
   publish = "."
+  command = "npm run build"
   functions = "netlify/functions"
 
 [build.environment]
@@ -31,10 +32,15 @@
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
+[[redirects]]
+  from = "/studio"
+  to = "/ai4-design-studio.html"
+  status = 200
+
+[[redirects]]
+  from = "/preview"
+  to = "/ai4-design-studio-preview.html"
+  status = 200
 
 [[redirects]]
   from = "/"
@@ -42,18 +48,11 @@
   status = 200
 
 [[redirects]]
-  from = "/studio"
-  to = "/ai4-design-studio.html"
-  status = 200
-
-[[redirects]]
   from = "/es"
-  to = "https://espanola.ai4websitedesign.com"
+  to = "https://espanol.ai4websitedesign.com"
   status = 301
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-# ============================================================

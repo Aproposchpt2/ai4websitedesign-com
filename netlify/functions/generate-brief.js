@@ -442,8 +442,8 @@ async function generatePdfFromHtml(htmlContent, accessToken) {
 function sendAlertEmail(brief, leadId, timestamp) {
   return new Promise((resolve) => {
     const resendKey = process.env.RESEND_API_KEY;
-    const fromEmail = process.env.RESEND_FROM_EMAIL || `${BRAND.name} <jmitchell@ai4websitedesign.com>`;
-    const toEmail   = process.env.RESEND_TO_EMAIL   || 'jmitchell@ai4websitedesign.com';
+    const fromEmail = process.env.RESEND_FROM_EMAIL || `${BRAND.name} <support@ai4websitedesign.com>`;
+    const toEmail   = process.env.RESEND_TO_EMAIL   || 'jmitchell@aiflowdeskpro.com';
 
     if (!resendKey) { console.error('RESEND: No API key'); return resolve(null); }
 
