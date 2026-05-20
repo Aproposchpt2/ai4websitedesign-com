@@ -20,7 +20,7 @@ body{min-height:100vh;overflow-x:hidden;background:radial-gradient(circle at 18%
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(45,184,255,.038) 1px,transparent 1px),linear-gradient(90deg,rgba(45,184,255,.032) 1px,transparent 1px);background-size:64px 64px;mask-image:linear-gradient(180deg,rgba(0,0,0,.8),rgba(0,0,0,.18) 60%,rgba(0,0,0,.04))}
 nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:72px;padding:.85rem clamp(1rem,4vw,2.75rem);background:rgba(3,8,22,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(24px)}
 .nav-left{display:flex;align-items:center;gap:.9rem;text-decoration:none}
-.nav-logo-img{width:76px;height:40px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(91,211,255,.22);box-shadow:0 0 22px rgba(30,167,255,.18);object-fit:cover;object-position:center 43%}
+.nav-logo-img{height:80px;width:auto;filter:drop-shadow(0 0 18px rgba(30,167,255,0.5));object-fit:contain}
 .nav-logo-text{display:flex;flex-direction:column;line-height:1.08}
 .nav-logo-name{font-family:var(--display);font-size:.92rem;font-weight:800;color:var(--white);letter-spacing:.02em}
 .nav-logo-sub{font-family:var(--mono);font-size:.52rem;color:var(--muted2);letter-spacing:.13em;text-transform:uppercase}
@@ -80,8 +80,6 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .cta-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;color:var(--blue4);text-transform:uppercase;margin-bottom:1rem}
 .cta-title{font-family:var(--display);font-size:clamp(1.7rem,3.2vw,2.6rem);font-weight:800;letter-spacing:-.04em;color:var(--white);margin-bottom:.8rem}
 .cta-sub{font-size:.92rem;color:var(--silver);line-height:1.7;margin-bottom:2rem;max-width:520px;margin-left:auto;margin-right:auto}
-.demo-number{font-family:var(--mono);font-size:.78rem;letter-spacing:.1em;color:var(--muted2);margin-top:1.2rem}
-.demo-number span{color:var(--blue4)}
 footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:2.2rem clamp(1rem,4vw,2.75rem);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
 .footer-logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
 .footer-logo-img{width:52px;height:28px;border-radius:6px;object-fit:cover;object-position:center 43%;opacity:.8}
@@ -97,7 +95,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:2.2r
 <body>
 <nav>
   <a class="nav-left" href="index.html">
-    <img class="nav-logo-img" src="AI4-approved-logo-transparent.png" alt="AI4 logo">
+    <img class="nav-logo-img" src="AI4-approved-logo.png" alt="AI4 logo">
     <span class="nav-logo-text">
       <span class="nav-logo-name">AI4 Website Design Studio</span>
       <span class="nav-logo-sub">Powered by Apropos Group LLC</span>
@@ -113,7 +111,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:2.2r
 <section class="hero">
   <div class="hero-eyebrow"><span class="eyebrow-line"></span>AI4 Website Design Studio — Purpose-First Engine<span class="eyebrow-line r"></span></div>
   <div class="hero-logo-wrap">
-    <img class="hero-logo-img" src="AI4-approved-logo-transparent.png" alt="AI4 Website Design">
+    <img class="hero-logo-img" src="AI4-approved-logo.png" alt="AI4 Website Design">
     <svg class="arc-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
       <defs>
         <linearGradient id="silver" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#1a1a28"/><stop offset="20%" stop-color="#7a8a9e"/><stop offset="45%" stop-color="#c8d8e8"/><stop offset="55%" stop-color="#eef8ff"/><stop offset="75%" stop-color="#a9bed2"/><stop offset="100%" stop-color="#1a1a28"/></linearGradient>
@@ -130,11 +128,9 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:2.2r
     </svg>
   </div>
 
-  <!-- ✦ UPDATED HERO MESSAGE ✦ -->
   <h1 class="hero-h1">You direct the build.<br><span class="grad">We launch it same day.</span></h1>
   <p class="hero-sub">Tell us your purpose. Our AI design engine builds a creative brief, selects a matching design system, and scores it through a quality gate — before a single template is chosen.</p>
   <div class="hero-actions">
-    <!-- ✦ REDIRECTS TO SIGNUP ✦ -->
     <a class="btn-primary" href="signup.html">Start Building My Website →</a>
     <a class="btn-ghost" href="#how-it-works">See How It Works</a>
   </div>
@@ -207,12 +203,10 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:2.2r
   <div class="cta-card">
     <div class="cta-label">Ready to build?</div>
     <h2 class="cta-title">You direct the build.<br><span class="grad">We launch it same day.</span></h2>
-    <p class="cta-sub">Answer 11 questions. Let the AI4 Design Engine create your brief, select your system, and score your direction — then move forward with a same-day launch path.</p>
+    <p class="cta-sub">Answer 5 questions. Let the AI4 Design Engine create your brief, select your system, and score your direction — then move forward with a same-day launch path.</p>
     <div class="hero-actions" style="justify-content:center">
-      <!-- ✦ REDIRECTS TO SIGNUP ✦ -->
       <a class="btn-primary" href="signup.html">Start Building My Website →</a>
     </div>
-    <div class="demo-number">Or call our AI demo line: <span>(702) 710-2622</span></div>
   </div>
 </section>
 
