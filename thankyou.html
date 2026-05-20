@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>You're In — AI4 Website Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Lato:wght@300;400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080c10;--bg2:#0f1419;--bg3:#161d25;
+  --accent:#4F6EF7;--accent2:#7C3AED;
+  --green:#3fb950;--gold:#f0a500;
+  --text1:#f0f6fc;--text2:#c9d1d9;--text3:#8b949e;
+  --border:rgba(255,255,255,.07);--border-m:rgba(255,255,255,.14);
+  --mono:'JetBrains Mono',monospace;--sans:'Lato',sans-serif;--display:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text2);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
+
+/* BG GLOW */
+body::before{content:'';position:fixed;top:-20vh;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(63,185,80,.08) 0%,transparent 60%);pointer-events:none;z-index:0;}
+
+nav{background:rgba(8,12,16,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-brand{font-family:var(--display);font-size:.95rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-tag{font-family:var(--mono);font-size:.6rem;color:var(--green);letter-spacing:.1em;display:flex;align-items:center;gap:6px;}
+.nav-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* MAIN */
+.main{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:56px 24px 80px;text-align:center;}
+
+/* SUCCESS ICON */
+.success-ring{width:88px;height:88px;border-radius:50%;background:rgba(63,185,80,.1);border:2px solid rgba(63,185,80,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 28px;animation:ringPop .6s cubic-bezier(.23,1,.32,1) both;}
+@keyframes ringPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.success-icon{font-size:2.2rem;animation:iconPop .6s cubic-bezier(.23,1,.32,1) .2s both;}
+@keyframes iconPop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* HEADLINE */
+.confirmed-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:999px;padding:7px 18px;margin-bottom:20px;font-family:var(--mono);font-size:.65rem;color:var(--green);letter-spacing:.1em;text-transform:uppercase;animation:fadeUp .6s cubic-bezier(.23,1,.32,1) .3s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+h1{font-family:var(--display);font-size:clamp(1.65rem,3.8vw,2.3rem);font-weight:800;color:var(--text1);line-height:1.28;margin-bottom:34px;letter-spacing:-.02em;animation:fadeUp .6s cubic-bezier(.23,1,.32,1) .4s both;overflow:visible;}
+h1 .headline-line{display:block;line-height:1.24;overflow:visible;padding:.04em 0 .18em;}
+h1 .headline-name{
+  background:none;
+  -webkit-text-fill-color:var(--text1);
+  color:var(--text1);
+  padding-bottom:.05em;
+}
+h1 .headline-gradient{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  transform:translateZ(0);
+}
+h1 .headline-small{font-size:.9em;}
+.hero-sub{font-size:1rem;color:var(--text3);line-height:1.75;max-width:500px;margin:0 auto 32px;animation:fadeUp .6s cubic-bezier(.23,1,.32,1) .5s both;}
+
+/* PLAN BADGE */
+.plan-badge{display:inline-flex;align-items:center;gap:12px;background:rgba(240,165,0,.08);border:1px solid rgba(240,165,0,.2);border-radius:14px;padding:14px 24px;margin-bottom:40px;animation:fadeUp .6s cubic-bezier(.23,1,.32,1) .6s both;}
+.plan-badge-icon{font-size:1.6rem;}
+.plan-badge-info{}
+.plan-badge-name{font-family:var(--display);font-size:1.1rem;font-weight:800;color:var(--text1);line-height:1;}
+.plan-badge-detail{font-family:var(--mono);font-size:.65rem;color:var(--gold);margin-top:3px;letter-spacing:.04em;}
+
+/* TIMELINE */
+.timeline{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:32px;text-align:left;animation:fadeUp .6s cubic-bezier(.23,1,.32,1) .7s both;}
+.timeline-label{font-family:var(--mono);font-size:.6rem;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.timeline-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.tl-steps{display:flex;flex-direction:column;gap:0;}
+.tl-step{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);position:relative;}
+.tl-step:last-child{border-bottom:none;padding-bottom:0;}
+.tl-left{display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0;width:32px;}
+.tl-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;}
+.tl-dot.done{background:rgba(63,185,80,.15);border:1px solid rgba(63,185,80,.3);color:var(--green);}
+.tl-dot.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 0 16px rgba(79,110,247,.4);}
+.tl-dot.pending{background:var(--bg3);border:1px solid var(--border);color:var(--text3);}
+.tl-line{flex:1;width:1px;background:var(--border);margin:4px auto 0;}
+.tl-step:last-child .tl-line{display:none;}
+.tl-body{padding-top:4px;flex:1;}
+.tl-title{font-size:.9rem;font-weight:700;color:var(--text1);margin-bottom:3px;}
+.tl-desc{font-size:.78rem;color:var(--text3);line-height:1.6;}
+.tl-time{font-family:var(--mono);font-size:.62rem;color:var(--accent);margin-top:4px;font-weight:700;}
+
+/* DOMAIN CALLOUT */
+.domain-card{background:linear-gradient(135deg,rgba(79,110,247,.1),rgba(124,58,237,.08));border:1px solid rgba(79,110,247,.25);border-radius:16px;padding:24px 28px;margin-bottom:32px;text-align:left;animation:fadeUp .6s cubic-bezier(.23,1,.32,1) .8s both;}
+.domain-card-label{font-family:var(--mono);font-size:.6rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+.domain-card h3{font-family:var(--display);font-size:1rem;font-weight:700;color:var(--text1);margin-bottom:6px;}
+.domain-card p{font-size:.83rem;color:var(--text3);line-height:1.7;margin-bottom:14px;}
+.domain-input-wrap{display:flex;gap:8px;}
+.domain-input{flex:1;background:var(--bg);border:1px solid var(--border-m);border-radius:10px;padding:11px 14px;font-family:var(--mono);font-size:.82rem;color:var(--text1);outline:none;transition:border-color .2s;}
+.domain-input:focus{border-color:var(--accent);}
+.domain-input::placeholder{color:var(--text3);}
+.btn-send-domain{padding:11px 20px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-family:var(--display);font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.btn-send-domain:hover{opacity:.88;transform:translateY(-1px);}
+.btn-send-domain:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.domain-sent{display:none;font-family:var(--mono);font-size:.72rem;color:var(--green);margin-top:8px;}
+
+/* WHAT WE NEED */
+.info-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-bottom:32px;text-align:left;animation:fadeUp .6s cubic-bezier(.23,1,.32,1) .85s both;}
+.info-card-label{font-family:var(--mono);font-size:.6rem;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;}
+.info-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.info-list li{display:flex;align-items:flex-start;gap:10px;font-size:.83rem;color:var(--text2);}
+.info-list li::before{content:'→';color:var(--accent);font-weight:700;flex-shrink:0;}
+
+/* CTA BUTTONS */
+.cta-wrap{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px;animation:fadeUp .6s cubic-bezier(.23,1,.32,1) .9s both;}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-family:var(--display);font-size:.9rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .25s;box-shadow:0 8px 20px rgba(79,110,247,.25);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(79,110,247,.4);}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;background:transparent;border:1px solid var(--border-m);color:var(--text1);font-family:var(--display);font-size:.9rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .25s;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+
+
+/* CARE PLAN MEMBERSHIP */
+.btn-care-learn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:14px 28px;
+  border-radius:12px;
+  background:rgba(240,165,0,.08);
+  border:1px solid rgba(240,165,0,.32);
+  color:var(--gold);
+  font-family:var(--display);
+  font-size:.9rem;
+  font-weight:700;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all .25s;
+}
+.btn-care-learn:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 12px 24px rgba(240,165,0,.12);}
+.care-plan-section{
+  background:linear-gradient(135deg,rgba(79,110,247,.1),rgba(240,165,0,.07));
+  border:1px solid rgba(79,110,247,.25);
+  border-radius:20px;
+  padding:28px;
+  margin-bottom:32px;
+  text-align:left;
+  animation:fadeUp .6s cubic-bezier(.23,1,.32,1) .95s both;
+  scroll-margin-top:82px;
+}
+.care-plan-label{
+  font-family:var(--mono);
+  font-size:.6rem;
+  color:var(--gold);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.care-plan-section h2{
+  font-family:var(--display);
+  font-size:1.35rem;
+  line-height:1.2;
+  font-weight:800;
+  color:var(--text1);
+  margin-bottom:8px;
+}
+.care-plan-intro{
+  font-size:.86rem;
+  color:var(--text3);
+  line-height:1.75;
+  margin-bottom:18px;
+}
+.care-highlight{
+  background:rgba(8,12,16,.48);
+  border:1px solid var(--border-m);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:18px;
+}
+.care-highlight strong{color:var(--text1);}
+.care-highlight p{
+  font-size:.82rem;
+  color:var(--text3);
+  line-height:1.7;
+  margin:0;
+}
+.care-options{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+  margin-bottom:18px;
+}
+.care-option{
+  background:rgba(8,12,16,.42);
+  border:1px solid var(--border-m);
+  border-radius:16px;
+  padding:18px;
+}
+.care-option h3{
+  font-family:var(--display);
+  font-size:1rem;
+  color:var(--text1);
+  margin-bottom:6px;
+}
+.care-price{
+  font-family:var(--mono);
+  font-size:.74rem;
+  color:var(--green);
+  letter-spacing:.04em;
+  margin-bottom:10px;
+}
+.care-option p{
+  font-size:.8rem;
+  color:var(--text3);
+  line-height:1.65;
+  margin-bottom:14px;
+}
+.care-btn{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  width:100%;
+  min-height:42px;
+  padding:11px 14px;
+  border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;
+  font-family:var(--display);
+  font-size:.82rem;
+  font-weight:700;
+  text-decoration:none;
+  transition:all .25s;
+}
+.care-btn.gold{background:linear-gradient(135deg,var(--gold),#e09400);color:#000;}
+.care-btn:hover{transform:translateY(-2px);}
+.care-scope{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+}
+.care-scope-title{
+  font-family:var(--mono);
+  font-size:.62rem;
+  color:var(--accent);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.care-scope ul{
+  list-style:none;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px 14px;
+  margin-bottom:14px;
+}
+.care-scope li{
+  font-size:.8rem;
+  color:var(--text2);
+  display:flex;
+  gap:8px;
+  align-items:flex-start;
+}
+.care-scope li::before{
+  content:'✓';
+  color:var(--green);
+  font-weight:700;
+  flex-shrink:0;
+}
+.care-guardrail{
+  font-size:.76rem;
+  color:var(--text3);
+  line-height:1.7;
+  border-top:1px solid var(--border);
+  padding-top:12px;
+}
+
+/* SUPPORT */
+.support-note{font-family:var(--mono);font-size:.65rem;color:var(--text3);line-height:1.9;animation:fadeUp .6s cubic-bezier(.23,1,.32,1) 1s both;}
+.support-note a{color:var(--accent);text-decoration:none;}
+.support-note a:hover{text-decoration:underline;}
+
+/* FOOTER */
+.page-footer{margin-top:auto;padding:12px 20px;background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;}
+.footer-left{font-size:.65rem;color:var(--text3);}
+.footer-links{display:flex;gap:14px;}
+.footer-links a{font-size:.65rem;color:var(--accent);text-decoration:none;}
+
+@media(max-width:680px){
+  .care-options,.care-scope ul{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  h1{font-size:clamp(1.45rem,8vw,2rem);line-height:1.22;margin-bottom:28px;}
+  .domain-input-wrap{flex-direction:column;}
+  .cta-wrap{flex-direction:column;align-items:center;}
+  .btn-primary,.btn-ghost,.btn-care-learn{width:100%;justify-content:center;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">ai4websitedesign</div>
+  <div class="nav-tag">Order Confirmed</div>
+</nav>
+
+<div class="main">
+
+  <!-- HEADLINE -->
+  <div class="confirmed-badge">✓ Payment Confirmed</div>
+  <h1>
+    <span class="headline-line headline-name" id="customer-name-line">Thank You</span>
+    <span class="headline-line headline-gradient headline-small">Next Step:</span>
+    <span class="headline-line headline-gradient">Website Name Review.</span>
+  </h1>
+  <p class="hero-sub">Your order is confirmed and our team is already on it. Share your preferred website name options below, and we will check availability, apply the standard domain registration credit when included, and continue the launch process.</p>
+
+  <!-- PLAN BADGE -->
+  <div class="plan-badge" id="plan-badge">
+    <div class="plan-badge-icon" id="plan-icon">🌐</div>
+    <div class="plan-badge-info">
+      <div class="plan-badge-name" id="plan-name">Exclusive Founder’s Offer</div>
+      <div class="plan-badge-detail" id="plan-detail">1 Site · Delivered Instantly · Ready to Launch</div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline">
+    <div class="timeline-label">// What Happens Next</div>
+    <div class="tl-steps">
+      <div class="tl-step">
+        <div class="tl-left">
+          <div class="tl-dot done">✓</div>
+          <div class="tl-line"></div>
+        </div>
+        <div class="tl-body">
+          <div class="tl-title">Payment Confirmed</div>
+          <div class="tl-desc">Your order is in our system and your package is active.</div>
+          <div class="tl-time">// Right now</div>
+        </div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-left">
+          <div class="tl-dot active">2</div>
+          <div class="tl-line"></div>
+        </div>
+        <div class="tl-body">
+          <div class="tl-title">Domain Registration</div>
+          <div class="tl-desc">We review your preferred domain and apply the standard domain registration credit included with your purchase. If a premium domain, specialty extension, renewal, or upgrade costs extra, we'll confirm before proceeding.</div>
+          <div class="tl-time">// Within 1 hour</div>
+        </div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-left">
+          <div class="tl-dot pending">3</div>
+          <div class="tl-line"></div>
+        </div>
+        <div class="tl-body">
+          <div class="tl-title">Hosting Setup</div>
+          <div class="tl-desc">Your site is deployed to our servers, SSL certificate installed, and everything tested across all devices.</div>
+          <div class="tl-time">// Within 2 hours</div>
+        </div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-left">
+          <div class="tl-dot pending">4</div>
+          <div class="tl-line"></div>
+        </div>
+        <div class="tl-body">
+          <div class="tl-title">Your Site Goes Live</div>
+          <div class="tl-desc">We email you the live URL, login credentials, and everything you need. Your business is open.</div>
+          <div class="tl-time">// Within 4 hours</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOMAIN PREFERENCE -->
+  <div class="domain-card">
+    <div class="domain-card-label">// Optional — Domain Preference</div>
+    <h3>Enter 3 website names you would like for us to secure for your site.</h3>
+    <p>Enter up to 3 website name options below. We will check availability and use the included standard domain registration credit up to $20 for the first year when applicable. Premium domains, specialty extensions, renewals, and domain upgrades may cost extra.</p>
+    <div class="domain-input-wrap">
+      <input class="domain-input" id="domain-input" type="text" placeholder="e.g. mybusiness.com" maxlength="80"/>
+      <button class="btn-send-domain" id="domain-btn" onclick="sendDomainPref()">Send Preference →</button>
+    </div>
+    <div class="domain-sent" id="domain-sent">✓ Domain preference sent — we'll check availability right away.</div>
+  </div>
+
+  <!-- WHAT WE NEED FROM YOU -->
+  <div class="info-card">
+    <div class="info-card-label">// We Handle Everything — Here's What to Expect</div>
+    <ul class="info-list">
+      <li>Check your inbox — you'll receive a confirmation email from us shortly</li>
+      <li>We'll email you after your domain preference is reviewed and confirmed</li>
+      <li>Your live URL will be emailed to you within 4 hours of payment</li>
+      <li>Reply to any of our emails if you need changes or have questions</li>
+      <li id="multi-site-note" style="display:none;">For additional sites in your package — just return to ai4websitedesign.com and build another</li>
+    </ul>
+  </div>
+
+  <!-- CTA BUTTONS -->
+  <div class="cta-wrap">
+    <a class="btn-primary" href="/build.html">Build Another Site →</a>
+    <a class="btn-ghost" href="/">Back to Home</a>
+    <a class="btn-care-learn" href="#care-plan-membership">Optional Care Plan Learn More ↓</a>
+  </div>
+
+  <!-- OPTIONAL CARE PLAN MEMBERSHIP -->
+  <div class="care-plan-section" id="care-plan-membership">
+    <div class="care-plan-label">// Optional Monthly Site Management</div>
+    <h2>Become a Subscriber Member</h2>
+    <p class="care-plan-intro">After your website is delivered or launched, you can continue receiving support through Site Management Services. Subscriber members can request updates, small content changes, and continued website support each month based on the selected plan.</p>
+
+    <div class="care-highlight">
+      <p><strong>Best offer after purchase:</strong> Care Plan I is available immediately after your website package purchase. If you prefer to decide later, the purchased-later Care Plan II option remains available at the later monthly rate.</p>
+    </div>
+
+    <div class="care-options">
+      <div class="care-option">
+        <h3>Premiere Care Plan I</h3>
+        <div class="care-price">$19.99/month at initial package purchase</div>
+        <p>Designed for customers who want a practical support path with 5 website updates per month.</p>
+        <a class="care-btn" href="https://buy.stripe.com/eVq9AS3Zw8SH7t99j27EQ0O">Add Premiere Care Plan I — $19.99/mo</a>
+      </div>
+
+      <div class="care-option">
+        <h3>Business Bundle Care Plan I</h3>
+        <div class="care-price">$99.99/month at initial package purchase</div>
+        <p>Designed for Business Bundle customers with 25 total website updates per month across your launched sites.</p>
+        <a class="care-btn gold" href="https://buy.stripe.com/28E4gy9jQd8X7t9fHq7EQ0L">Add Business Bundle Care Plan I — $99.99/mo</a>
+      </div>
+    </div>
+
+    <div class="care-scope">
+      <div class="care-scope-title">// Monthly updates may include</div>
+      <ul>
+        <li>Text changes</li>
+        <li>Image swaps</li>
+        <li>Basic section edits</li>
+        <li>Link updates</li>
+        <li>Small layout adjustments</li>
+        <li>Content refreshes</li>
+      </ul>
+      <div class="care-guardrail">Large redesigns, new pages, advanced integrations, custom automation, third-party platform setup, or major rebuilds may require a separate quote.</div>
+    </div>
+  </div>
+
+  <!-- SUPPORT -->
+  <div class="support-note">
+    Questions? Email us at <a href="mailto:jmitchell@ai4websitedesign.com">jmitchell@ai4websitedesign.com</a><br>
+    We respond within 1 business hour · Mon–Fri 9am–6pm PT<br><br>
+    Powered by Apropos Group LLC · ai4websitedesign.com · © 2026
+  </div>
+
+</div>
+
+<div class="page-footer">
+  <div class="footer-left">Powered by Apropos Group LLC</div>
+  <div class="footer-links">
+    <a href="https://ai4businesses.org" target="_blank">AI4Businesses.org</a>
+    <a href="https://aiflowdeskpro.com" target="_blank">FlowDesk Pro</a>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const AI4_LANGUAGE = 'en';
+const AI4_EMAIL_KEYS = [
+  'ai4_email',
+  'ai4_customer_email',
+  'customer_email',
+  'email',
+  'signup_email'
+];
+
+const AI4_NAME_KEYS = [
+  'ai4_customer_name',
+  'ai4_full_name',
+  'ai4_name',
+  'customer_name',
+  'customer_full_name',
+  'full_name',
+  'fullName',
+  'name',
+  'signup_name',
+  'signup_full_name',
+  'lead_name',
+  'lead_full_name'
+];
+
+const AI4_PLAN_ALIASES = {
+  'starter': 'starter',
+  'business-starter': 'starter',
+  'business_starter': 'starter',
+  'business starter': 'starter',
+  'premier': 'premier',
+  'premium': 'premier',
+  'advanced': 'premier',
+  'avanzado': 'premier',
+  'business': 'business',
+  'business-bundle': 'business',
+  'business_bundle': 'business',
+  'business bundle': 'business'
+};
+
+const AI4_PLANS = {
+  starter: {
+    icon:   '🌐',
+    name:   'Exclusive Founder’s Offer',
+    detail: '1 Site · Delivered Instantly · Ready to Launch',
+    sites:  1
+  },
+  premier: {
+    icon:   '🚀',
+    name:   'Premium',
+    detail: '1 Site · Domain Credit up to $20 · Hosting · Launch',
+    sites:  1
+  },
+  business: {
+    icon:   '🏢',
+    name:   'Business Bundle',
+    detail: '1 Site · Launch · First Year Hosting · Customer Intake System',
+    sites:  1
+  }
+};
+
+let ai4PurchaseContext = {
+  plan: 'starter',
+  planName: AI4_PLANS.starter.name,
+  sites: AI4_PLANS.starter.sites,
+  language: AI4_LANGUAGE,
+  email: '',
+  customerName: ''
+};
+
+function normalizePlan(value) {
+  const raw = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\+/g, ' ')
+    .replace(/_/g, '-');
+
+  return AI4_PLAN_ALIASES[raw] || 'starter';
+}
+
+function getStoredValue(keys) {
+  for (const key of keys) {
+    try {
+      const sessionValue = sessionStorage.getItem(key);
+      if (sessionValue) return sessionValue;
+    } catch (e) {}
+
+    try {
+      const localValue = localStorage.getItem(key);
+      if (localValue) return localValue;
+    } catch (e) {}
+  }
+
+  return '';
+}
+
+function persistValue(key, value) {
+  if (!value) return;
+
+  try {
+    sessionStorage.setItem(key, value);
+  } catch (e) {}
+
+  try {
+    localStorage.setItem(key, value);
+  } catch (e) {}
+}
+
+function getCustomerEmail(params) {
+  const fromUrl =
+    params.get('email') ||
+    params.get('customer_email') ||
+    params.get('prefilled_email') ||
+    params.get('client_email') ||
+    '';
+
+  const email = (fromUrl || getStoredValue(AI4_EMAIL_KEYS)).trim().toLowerCase();
+
+  if (email) {
+    persistValue('ai4_email', email);
+  }
+
+  return email;
+}
+
+function getCustomerName(params) {
+  const fromUrl =
+    params.get('name') ||
+    params.get('customer_name') ||
+    params.get('full_name') ||
+    params.get('client_name') ||
+    '';
+
+  const customerName = (fromUrl || getStoredValue(AI4_NAME_KEYS)).trim();
+
+  if (customerName) {
+    persistValue('ai4_customer_name', customerName);
+  }
+
+  return customerName;
+}
+
+function getFirstName(fullName) {
+  const cleanName = String(fullName || '').trim();
+  if (!cleanName) return '';
+  return cleanName.split(/\s+/)[0];
+}
+
+function updateCustomerHeadline(customerName) {
+  const line = document.getElementById('customer-name-line');
+  if (!line) return;
+
+  const firstName = getFirstName(customerName);
+  line.textContent = firstName ? `Thank you, ${firstName}` : 'Thank You';
+}
+
+async function hydrateCustomerFromCheckoutSession(sessionId) {
+  if (!sessionId || !sessionId.startsWith('cs_')) return;
+
+  try {
+    const response = await fetch(`/.netlify/functions/get-checkout-session?session_id=${encodeURIComponent(sessionId)}`, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const customerName = String(data.customer_name || '').trim();
+    const customerEmail = String(data.customer_email || '').trim().toLowerCase();
+
+    if (customerName) {
+      persistValue('ai4_customer_name', customerName);
+      ai4PurchaseContext.customerName = customerName;
+      updateCustomerHeadline(customerName);
+    }
+
+    if (customerEmail) {
+      persistValue('ai4_email', customerEmail);
+      ai4PurchaseContext.email = customerEmail;
+    }
+  } catch (e) {
+    console.warn('Checkout session customer lookup skipped:', e);
+  }
+}
+
+function getPlanFromContext() {
+  const params = new URLSearchParams(window.location.search);
+  return normalizePlan(
+    params.get('plan') ||
+    params.get('package') ||
+    params.get('tier') ||
+    getStoredValue(['ai4_purchase_type', 'ai4_plan', 'purchase_type', 'plan'])
+  );
+}
+
+// ── READ PLAN FROM URL PARAMS ─────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const plan = getPlanFromContext();
+  const email = getCustomerEmail(params);
+  const customerName = getCustomerName(params);
+  const sessionId = params.get('session_id') || '';
+  const p = AI4_PLANS[plan] || AI4_PLANS.starter;
+
+  ai4PurchaseContext = {
+    plan,
+    planName: p.name,
+    sites: p.sites,
+    language: AI4_LANGUAGE,
+    email,
+    customerName
+  };
+
+  persistValue('ai4_purchase_type', plan);
+  persistValue('ai4_plan', plan);
+  persistValue('ai4_language', AI4_LANGUAGE);
+
+  updateCustomerHeadline(customerName);
+
+  document.getElementById('plan-icon').textContent   = p.icon;
+  document.getElementById('plan-name').textContent   = p.name;
+  document.getElementById('plan-detail').textContent = p.detail;
+
+  // Show multi-site note for Business Bundle
+  if (p.sites > 1) {
+    document.getElementById('multi-site-note').style.display = 'flex';
+  }
+
+  hydrateCustomerFromCheckoutSession(sessionId);
+});
+
+// ── SEND DOMAIN PREFERENCE ─────────────────────────────────────
+async function sendDomainPref() {
+  const input  = document.getElementById('domain-input');
+  const btn    = document.getElementById('domain-btn');
+  const sent   = document.getElementById('domain-sent');
+  const domain = input.value.trim();
+
+  if (!domain) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const plan = ai4PurchaseContext.plan || getPlanFromContext();
+  const planDetails = AI4_PLANS[plan] || AI4_PLANS.starter;
+  const email = ai4PurchaseContext.email || getCustomerEmail(params);
+
+  btn.disabled    = true;
+  btn.textContent = 'Sending...';
+
+  try {
+    const response = await fetch('/.netlify/functions/send-domain-pref', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        domain,
+        email,
+        plan,
+        plan_name: planDetails.name,
+        language: AI4_LANGUAGE,
+        source_url: window.location.href
+      })
+    });
+
+    if (!response.ok) {
+      const message = await response.text();
+      throw new Error(message || 'Domain preference request failed');
+    }
+
+    btn.textContent    = 'Sent ✓';
+    sent.style.display = 'block';
+    input.disabled     = true;
+  } catch(e) {
+    console.error('Domain pref error:', e);
+    btn.disabled    = false;
+    btn.textContent = 'Send Preference →';
+    alert('We could not send your domain preference. Please try again or email jmitchell@ai4websitedesign.com.');
+  }
+}
+</script>
+</body>
+</html>

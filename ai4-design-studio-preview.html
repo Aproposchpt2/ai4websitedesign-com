@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI4 Design Studio — Your Design Brief</title>
+  <link rel="stylesheet" href="ai4-design-studio.css?v=20260513-freeze-fix-v4">
+  <style>
+    /* ── RESET for full-screen section ── */
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    /* ── SECTION 1: Full-screen website reveal ── */
+    #site-reveal {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #020510;
+      overflow: hidden;
+    }
+
+    /* Browser chrome bar */
+    #browser-chrome {
+      height: 48px;
+      min-height: 48px;
+      background: rgba(13, 20, 35, 0.97);
+      border-bottom: 1px solid rgba(79, 110, 247, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      flex-shrink: 0;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+    }
+
+    .chrome-dots {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .chrome-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .chrome-dot.red   { background: #ff5f57; }
+    .chrome-dot.amber { background: #febc2e; }
+    .chrome-dot.green { background: #28c840; }
+
+    .chrome-url {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(79,110,247,0.15);
+      border-radius: 6px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      max-width: 400px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .chrome-url-lock { margin-right: 6px; opacity: 0.5; }
+
+    .device-toggle {
+      display: flex;
+      gap: 2px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(79,110,247,0.15);
+      border-radius: 8px;
+      padding: 3px;
+      flex-shrink: 0;
+    }
+    .device-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.35);
+      font-size: 13px;
+      cursor: pointer;
+      padding: 3px 8px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      line-height: 1;
+    }
+    .device-btn:hover { color: rgba(255,255,255,0.7); }
+    .device-btn.active { background: rgba(79,110,247,0.25); color: #4F6EF7; }
+
+    /* Iframe viewport wrapper */
+    #iframe-viewport {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      background: #020510;
+      transition: background 0.3s;
+    }
+
+    #site-iframe {
+      border: none;
+      height: 100%;
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s;
+    }
+    #site-iframe.desktop { width: 100%; box-shadow: none; }
+    #site-iframe.tablet  { width: 768px; box-shadow: 0 0 60px rgba(0,0,0,0.8); }
+    #site-iframe.mobile  { width: 390px; box-shadow: 0 0 60px rgba(0,0,0,0.8); }
+
+    /* Iframe placeholder */
+    #iframe-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      color: rgba(255,255,255,0.3);
+      font-family: 'Inter', sans-serif;
+    }
+    #iframe-placeholder .spinner {
+      width: 40px;
+      height: 40px;
+      border: 2px solid rgba(79,110,247,0.2);
+      border-top-color: #4F6EF7;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #iframe-placeholder p { font-size: 14px; }
+
+    /* Scroll-down arrow */
+    #scroll-hint {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 16px;
+      background: linear-gradient(to bottom, transparent, rgba(2,5,16,0.85));
+      z-index: 5;
+      pointer-events: none;
+    }
+    #scroll-hint-btn {
+      pointer-events: all;
+      background: rgba(13,20,35,0.9);
+      border: 1px solid rgba(79,110,247,0.3);
+      border-radius: 24px;
+      padding: 8px 20px;
+      color: rgba(255,255,255,0.6);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      backdrop-filter: blur(8px);
+    }
+    #scroll-hint-btn:hover {
+      border-color: rgba(79,110,247,0.6);
+      color: rgba(255,255,255,0.9);
+    }
+    .hint-arrow {
+      animation: bounce 1.8s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(4px); }
+    }
+
+    /* ── SECTION 2: Design brief (below fold) ── */
+    #design-brief {
+      position: relative;
+      z-index: 1;
+    }
+
+    .preview-hero {
+      text-align: center;
+      padding: 60px 0 48px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+    .preview-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .preview-section { margin-bottom: 40px; }
+    .preview-section-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .design-system-card {
+      background: var(--bg-card);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .design-system-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .system-name { font-family: var(--font-display); font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .system-tagline { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; font-style: italic; }
+    .system-direction { font-size: 15px; color: var(--text-secondary); line-height: 1.7; }
+    .color-palette {
+      display: flex;
+      gap: 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      height: 64px;
+      margin-bottom: 12px;
+    }
+    .palette-swatch { flex: 1; position: relative; cursor: pointer; transition: flex 0.2s ease; }
+    .palette-swatch:hover { flex: 2; }
+    .palette-swatch-label {
+      position: absolute;
+      bottom: 6px; left: 0; right: 0;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: rgba(255,255,255,0.7);
+      mix-blend-mode: difference;
+    }
+    .font-preview {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 12px;
+    }
+    .font-heading-sample { font-size: 32px; font-weight: 700; line-height: 1.1; margin-bottom: 8px; }
+    .font-body-sample { font-size: 15px; color: var(--text-secondary); line-height: 1.6; }
+    .wireframe {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .wireframe-section {
+      background: var(--bg-elevated);
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .wireframe-num { font-family: var(--font-mono); font-size: 11px; color: var(--accent); min-width: 24px; }
+    .wireframe-name { font-size: 13px; font-weight: 500; }
+    .wireframe-desc { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+    .cta-section {
+      text-align: center;
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 48px;
+    }
+
+    /* ── STICKY ACTION BAR (fixed bottom) ── */
+    #sticky-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: rgba(5, 8, 16, 0.88);
+      border-top: 1px solid rgba(79, 110, 247, 0.2);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 1000;
+      gap: 12px;
+    }
+    #sticky-bar-info {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+    #sticky-bar-info strong {
+      color: rgba(255,255,255,0.8);
+      font-weight: 600;
+    }
+    .sticky-score {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(79,110,247,0.12);
+      border: 1px solid rgba(79,110,247,0.25);
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 11px;
+      color: #4F6EF7;
+      font-weight: 600;
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+    .sticky-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .sticky-btn-refine {
+      background: transparent;
+      border: 1px solid rgba(79,110,247,0.3);
+      border-radius: 8px;
+      padding: 7px 16px;
+      color: rgba(255,255,255,0.55);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .sticky-btn-refine:hover { border-color: rgba(79,110,247,0.6); color: rgba(255,255,255,0.9); }
+    .sticky-btn-purchase {
+      background: linear-gradient(135deg, #4F6EF7, #7C3AED);
+      border: none;
+      border-radius: 8px;
+      padding: 7px 18px;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      box-shadow: 0 2px 12px rgba(79,110,247,0.35);
+      text-decoration: none;
+      display: inline-block;
+    }
+    .sticky-btn-purchase:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(79,110,247,0.5); }
+
+    /* Give the brief content bottom padding so sticky bar doesn't cover last elements */
+    #design-brief .studio-wrapper { padding-bottom: 100px; }
+
+    @media (max-width: 600px) {
+      #sticky-bar { padding: 0 12px; }
+      #sticky-bar-info .sticky-score { display: none; }
+      .sticky-btn-refine { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     SECTION 1 — FULL-SCREEN WEBSITE REVEAL
+     ══════════════════════════════════════════ -->
+<div id="site-reveal">
+
+  <!-- Browser chrome bar -->
+  <div id="browser-chrome">
+    <div class="chrome-dots">
+      <div class="chrome-dot red"></div>
+      <div class="chrome-dot amber"></div>
+      <div class="chrome-dot green"></div>
+    </div>
+    <div class="chrome-url">
+      <span class="chrome-url-lock">🔒</span>
+      <span id="chrome-url-text">yourwebsite.com</span>
+    </div>
+    <div class="device-toggle">
+      <button class="device-btn active" data-device="desktop" title="Desktop">🖥</button>
+      <button class="device-btn" data-device="tablet" title="Tablet">⬛</button>
+      <button class="device-btn" data-device="mobile" title="Mobile">📱</button>
+    </div>
+  </div>
+
+  <!-- Iframe viewport -->
+  <div id="iframe-viewport">
+    <div id="iframe-placeholder">
+      <div class="spinner"></div>
+      <p>Your website is loading…</p>
+    </div>
+    <iframe id="site-iframe" class="desktop" scrolling="yes" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+
+  <!-- Scroll hint -->
+  <div id="scroll-hint">
+    <button id="scroll-hint-btn" onclick="document.getElementById('design-brief').scrollIntoView({behavior:'smooth'})">
+      <span>View Design Details</span>
+      <span class="hint-arrow">↓</span>
+    </button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     SECTION 2 — DESIGN BRIEF
+     ══════════════════════════════════════════ -->
+<div id="design-brief">
+<div class="studio-wrapper">
+
+  <div class="preview-hero">
+    <div class="studio-logo">AI4 Design Studio</div>
+    <h1 id="previewTitle">Your Design Brief</h1>
+    <p id="previewSubtitle" style="font-size:15px;color:var(--text-secondary);max-width:500px;margin:0 auto"></p>
+    <div style="margin-top:16px">
+      <span class="quality-badge approved" id="previewBadge">✅ APPROVED</span>
+      <span style="font-size:24px;font-weight:700;font-family:var(--font-display);margin-left:16px" id="previewScore">—</span>
+    </div>
+  </div>
+
+  <!-- Design System -->
+  <div class="preview-section">
+    <div class="preview-section-title">Selected Design System</div>
+    <div class="design-system-card">
+      <div class="system-name" id="dsName">—</div>
+      <div class="system-tagline" id="dsTagline">—</div>
+      <div class="system-direction" id="dsDirection">—</div>
+    </div>
+  </div>
+
+  <!-- Color System -->
+  <div class="preview-section">
+    <div class="preview-section-title">Color System</div>
+    <div class="color-palette" id="colorPalette"></div>
+    <div style="font-size:13px;color:var(--text-muted)" id="colorMoodDesc"></div>
+  </div>
+
+  <!-- Typography -->
+  <div class="preview-section">
+    <div class="preview-section-title">Typography System</div>
+    <div class="font-preview">
+      <div class="font-heading-sample" id="fontHeadingSample">The quick brown fox</div>
+      <div class="font-body-sample" id="fontBodySample">Your website copy flows here, guiding visitors through your story with clarity and purpose. Every word earns its place.</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:12px;font-family:var(--font-mono)" id="fontLabels">—</div>
+    </div>
+  </div>
+
+  <!-- Site Structure -->
+  <div class="preview-section">
+    <div class="preview-section-title">Site Structure</div>
+    <div class="wireframe" id="wireframe"></div>
+  </div>
+
+  <!-- CTA Strategy -->
+  <div class="preview-section">
+    <div class="preview-section-title">CTA Strategy</div>
+    <div class="results-grid" id="ctaGrid"></div>
+  </div>
+
+  <!-- Actions -->
+  <div class="cta-section">
+    <h2 style="font-family:var(--font-display);font-size:28px;margin-bottom:12px">Ready to build this?</h2>
+    <p style="color:var(--text-secondary);margin-bottom:32px">Your design brief is complete. The next step is bringing it to life.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn-proceed" href="offer.html">Continue to Purchase Plans →</a>
+      <button class="btn-refine" onclick="history.back()">← Refine My Design</button>
+      <button class="btn-refine" onclick="window.location='ai4-design-studio.html'">Start New Design</button>
+    </div>
+    <div style="margin-top:20px"><span class="sandbox-badge">Design brief saved for purchase handoff</span></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     STICKY ACTION BAR
+     ══════════════════════════════════════════ -->
+<div id="sticky-bar">
+  <div id="sticky-bar-info">
+    <strong id="sticky-name">AI4 Design Studio</strong>
+    <span class="sticky-score" id="sticky-score" style="display:none"></span>
+  </div>
+  <div class="sticky-actions">
+    <button class="sticky-btn-refine" onclick="history.back()">← Refine</button>
+    <a class="sticky-btn-purchase" href="offer.html">Purchase →</a>
+  </div>
+</div>
+
+<script src="design-systems.js?v=20260513-freeze-fix-v4"></script>
+<script>
+  /* ─── Device toggle ─────────────────────────────── */
+  const iframe = document.getElementById('site-iframe');
+  document.querySelectorAll('.device-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const device = btn.dataset.device;
+      iframe.className = device;
+    });
+  });
+
+  /* ─── Load iframe from sessionStorage ──────────── */
+  (function loadIframe() {
+    const builtHtml = sessionStorage.getItem('ai4_built_html');
+    const placeholder = document.getElementById('iframe-placeholder');
+    if (builtHtml) {
+      try {
+        const blob = new Blob([builtHtml], { type: 'text/html' });
+        iframe.src = URL.createObjectURL(blob);
+        iframe.addEventListener('load', () => {
+          placeholder.style.display = 'none';
+          iframe.style.opacity = '1';
+        });
+        iframe.style.opacity = '0';
+        iframe.style.transition = 'opacity 0.4s ease';
+        // fallback: show after 3s regardless
+        setTimeout(() => {
+          placeholder.style.display = 'none';
+          iframe.style.opacity = '1';
+        }, 3000);
+      } catch (e) {
+        placeholder.querySelector('p').textContent = 'Preview unavailable — see design details below.';
+      }
+    } else {
+      placeholder.querySelector('p').textContent = 'No website preview found. See your design details below.';
+      // auto-scroll to brief after 2s
+      setTimeout(() => {
+        document.getElementById('design-brief').scrollIntoView({ behavior: 'smooth' });
+      }, 2000);
+    }
+  })();
+
+  /* ─── Populate design brief from sessionStorage ── */
+  const raw = sessionStorage.getItem('ai4DesignBrief');
+  if (!raw) {
+    document.querySelector('.preview-hero h1').textContent = 'No design brief found.';
+  } else {
+    const data = JSON.parse(raw);
+    const brief = data.userFacingBrief || data || {};
+    const status = data.status || 'approved';
+
+    /* handoff save */
+    try {
+      const siteData = {
+        source: 'ai4-design-studio-preview',
+        language: 'en',
+        businessName: brief.brandName || 'AI4 Design Studio Preview',
+        business_name: brief.brandName || 'AI4 Design Studio Preview',
+        websitePurpose: brief.websitePurpose || data.purposeCategory || '',
+        primaryGoal: '',
+        targetAudience: '',
+        designSystem: brief.recommendedDesignSystem || data.recommendedDesignSystem || '',
+        creativeDirection: brief.creativeDirection || data.creativeDirection || '',
+        sectionPlan: brief.sectionPlan || data.sectionPlan || [],
+        qualityScore: brief.qualityScore || data.qualityScore || null,
+        designBrief: data
+      };
+      sessionStorage.setItem('ai4_design_brief', JSON.stringify(data));
+      sessionStorage.setItem('ai4_site_data', JSON.stringify(siteData));
+      if (!sessionStorage.getItem('ai4_built_html')) {
+        sessionStorage.setItem('ai4_built_html', '<!DOCTYPE html><html><body style=\'font-family:Inter,Arial,sans-serif;background:#030816;color:#f5f8ff;padding:48px\'><h1>' + siteData.businessName + '</h1><p>' + siteData.creativeDirection.replace(/</g, '&lt;') + '</p></body></html>');
+        // retry iframe load now that we set it
+        loadIframeRetry();
+      }
+    } catch (error) { console.warn('Preview handoff save skipped:', error); }
+
+    /* update chrome URL bar */
+    if (brief.brandName) {
+      const slug = brief.brandName.toLowerCase().replace(/[^a-z0-9]+/g, '') + '.com';
+      document.getElementById('chrome-url-text').textContent = slug;
+    }
+
+    /* sticky bar */
+    if (brief.brandName) {
+      document.getElementById('sticky-name').textContent = brief.brandName;
+    }
+    if (brief.qualityScore || data.qualityScore) {
+      const scoreEl = document.getElementById('sticky-score');
+      scoreEl.textContent = '★ ' + (brief.qualityScore || data.qualityScore) + '/100';
+      scoreEl.style.display = 'inline-flex';
+    }
+
+    /* hero */
+    document.getElementById('previewTitle').textContent = brief.brandName ? `${brief.brandName} — Design Brief` : 'Your Design Brief';
+    document.getElementById('previewSubtitle').textContent = brief.creativeDirection || '';
+    document.getElementById('previewScore').textContent = brief.qualityScore ? `${brief.qualityScore}/100` : '';
+
+    const badge = document.getElementById('previewBadge');
+    badge.className = `quality-badge ${status}`;
+    badge.textContent = status === 'approved' ? '✅ APPROVED — PREMIUM' : status === 'needs_polish' ? '⚠️ NEEDS POLISH' : '🔄 REVIEW';
+
+    /* design system */
+    const dsId = (brief.recommendedDesignSystem || '').toLowerCase().replace(/\s+/g, '-');
+    const ds = typeof designSystems !== 'undefined' ? designSystems[dsId] : null;
+    document.getElementById('dsName').textContent = brief.recommendedDesignSystem || '—';
+    document.getElementById('dsTagline').textContent = ds ? ds.tagline : brief.emotionalTone || '';
+    document.getElementById('dsDirection').textContent = brief.creativeDirection || '';
+
+    /* colors */
+    if (brief.colorSystem) {
+      const cs = brief.colorSystem;
+      const palette = document.getElementById('colorPalette');
+      ['primary','secondary','accent','background','surface'].forEach(k => {
+        if (cs[k]) {
+          const sw = document.createElement('div');
+          sw.className = 'palette-swatch';
+          sw.style.background = cs[k];
+          sw.title = `${k}: ${cs[k]}`;
+          sw.innerHTML = `<div class="palette-swatch-label">${cs[k]}</div>`;
+          palette.appendChild(sw);
+        }
+      });
+      document.getElementById('colorMoodDesc').textContent = cs.colorMoodDescription || '';
+    }
+
+    /* typography */
+    if (brief.typographySystem) {
+      const t = brief.typographySystem;
+      const fontUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(t.headingFont)}:wght@700&family=${encodeURIComponent(t.bodyFont)}:wght@400;500&display=swap`;
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = fontUrl;
+      document.head.appendChild(link);
+      document.getElementById('fontHeadingSample').style.fontFamily = `'${t.headingFont}', sans-serif`;
+      document.getElementById('fontBodySample').style.fontFamily = `'${t.bodyFont}', sans-serif`;
+      document.getElementById('fontLabels').textContent = `Heading: ${t.headingFont} · Body: ${t.bodyFont}`;
+    }
+
+    /* wireframe */
+    if (brief.sectionPlan && brief.sectionPlan.length) {
+      const wf = document.getElementById('wireframe');
+      wf.innerHTML = brief.sectionPlan.map((s, i) => `
+        <div class="wireframe-section">
+          <span class="wireframe-num">${String(i+1).padStart(2,'0')}</span>
+          <span class="wireframe-name">${s.sectionName}</span>
+          <span class="wireframe-desc">${s.headlineDirection || ''}</span>
+        </div>`).join('');
+    }
+
+    /* CTA */
+    if (brief.ctaStrategy) {
+      const cta = brief.ctaStrategy;
+      const ctaGrid = document.getElementById('ctaGrid');
+      if (cta.primary)   ctaGrid.innerHTML += `<div class="result-card"><div class="result-card-label">Primary CTA</div><div class="result-card-value">${cta.primary}</div></div>`;
+      if (cta.secondary) ctaGrid.innerHTML += `<div class="result-card"><div class="result-card-label">Secondary CTA</div><div class="result-card-value">${cta.secondary}</div></div>`;
+    }
+  }
+
+  /* retry iframe if built_html was just set for the first time */
+  function loadIframeRetry() {
+    const builtHtml = sessionStorage.getItem('ai4_built_html');
+    if (!builtHtml) return;
+    const placeholder = document.getElementById('iframe-placeholder');
+    try {
+      const blob = new Blob([builtHtml], { type: 'text/html' });
+      iframe.src = URL.createObjectURL(blob);
+      iframe.addEventListener('load', () => {
+        placeholder.style.display = 'none';
+        iframe.style.opacity = '1';
+      });
+    } catch(e) {}
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase Plans — AI4 Website Design</title>
+<meta name="description" content="Choose the AI4 Website Design purchase plan that fits your next website move: Exclusive Founder’s Offer, Premier, or Business Bundle.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Lato:wght@300;400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c10;
+  --bg2:#0f1419;
+  --bg3:#161d25;
+  --panel:#101720;
+  --accent:#4F6EF7;
+  --accent2:#7C3AED;
+  --green:#3fb950;
+  --gold:#f0a500;
+  --text1:#f0f6fc;
+  --text2:#c9d1d9;
+  --text3:#8b949e;
+  --border:rgba(255,255,255,.07);
+  --border-m:rgba(255,255,255,.14);
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Lato',sans-serif;
+  --display:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);
+  background:
+    radial-gradient(circle at 18% 12%,rgba(79,110,247,.18),transparent 26%),
+    radial-gradient(circle at 84% 6%,rgba(124,58,237,.16),transparent 30%),
+    linear-gradient(180deg,var(--bg) 0%,#06090d 100%);
+  color:var(--text2);
+  min-height:100vh;
+}
+a{color:inherit}
+button,input,textarea{font:inherit}
+nav{
+  background:rgba(8,12,16,.95);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.nav-brand{
+  font-family:var(--display);
+  font-size:.95rem;
+  font-weight:700;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  text-decoration:none;
+}
+.nav-links{display:flex;align-items:center;gap:1rem}
+.nav-links a{
+  color:var(--text3);
+  text-decoration:none;
+  font-size:.78rem;
+  font-weight:700;
+}
+.nav-links a:hover{color:var(--text1)}
+.nav-tag{
+  font-family:var(--mono);
+  font-size:.6rem;
+  color:var(--green);
+  letter-spacing:.1em;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  text-transform:uppercase;
+}
+.nav-tag::before{
+  content:'';
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--green);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.page-hero{
+  padding:58px 24px 32px;
+  text-align:center;
+  max-width:920px;
+  margin:0 auto;
+}
+.success-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(63,185,80,.08);
+  border:1px solid rgba(63,185,80,.2);
+  border-radius:999px;
+  padding:7px 18px;
+  margin-bottom:20px;
+  font-family:var(--mono);
+  font-size:.65rem;
+  color:var(--green);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.page-hero h1{
+  font-family:var(--display);
+  font-size:clamp(2.1rem,5vw,4.1rem);
+  font-weight:800;
+  color:var(--text1);
+  line-height:1.05;
+  margin-bottom:14px;
+  letter-spacing:-.035em;
+}
+.page-hero h1 span{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.page-hero p{
+  font-size:1.02rem;
+  color:var(--text3);
+  line-height:1.7;
+  max-width:720px;
+  margin:0 auto;
+}
+.hero-actions{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:22px;
+}
+.btn-outline{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding:12px 22px;
+  border-radius:999px;
+  border:1px solid var(--border-m);
+  color:var(--text1);
+  text-decoration:none;
+  font-weight:800;
+  background:rgba(255,255,255,.035);
+}
+.btn-outline:hover{border-color:rgba(79,110,247,.55)}
+
+.preview-strip{margin:20px auto 34px;max-width:820px;padding:0 24px}
+.preview-strip-inner{border-radius:16px;border:1px solid var(--border-m);overflow:hidden;background:var(--bg2)}
+.strip-bar{padding:8px 14px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.s-dot{width:8px;height:8px;border-radius:50%}
+.strip-url{font-family:var(--mono);font-size:.65rem;color:var(--text3);margin-left:8px}
+.strip-preview{height:180px;overflow:hidden;position:relative}
+.strip-preview iframe{width:100%;height:600%;border:none;transform:scale(.167);transform-origin:top left;pointer-events:none}
+.strip-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 60%,var(--bg2) 100%)}
+
+.section{
+  max-width:1120px;
+  margin:0 auto;
+  padding:0 24px 44px;
+}
+.section-label{
+  font-family:var(--mono);
+  font-size:.62rem;
+  color:var(--text3);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  text-align:center;
+  margin-bottom:20px;
+}
+.pricing-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-bottom:18px;
+}
+.price-card{
+  border-radius:22px;
+  border:2px solid var(--border);
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018)),var(--bg2);
+  padding:28px 24px;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  transition:transform .3s,border-color .3s,box-shadow .3s;
+}
+.price-card:hover{transform:translateY(-4px);box-shadow:0 24px 60px rgba(79,110,247,.10)}
+.price-card.featured{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent),0 20px 46px rgba(79,110,247,.18);
+}
+.price-card.featured::before{
+  content:'MOST PREFERRED';
+  position:absolute;
+  top:-14px;
+  left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;
+  font-family:var(--mono);
+  font-size:.58rem;
+  font-weight:700;
+  letter-spacing:.1em;
+  padding:5px 16px;
+  border-radius:999px;
+  white-space:nowrap;
+}
+.card-label{
+  font-family:var(--mono);
+  font-size:.58rem;
+  color:var(--text3);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.card-name{
+  font-family:var(--display);
+  font-size:1.45rem;
+  font-weight:800;
+  color:var(--text1);
+  margin-bottom:4px;
+}
+.card-tagline{font-size:.82rem;color:var(--text3);line-height:1.55;margin-bottom:14px}
+.card-price{
+  margin-bottom:8px;
+  display:flex;
+  align-items:baseline;
+  gap:2px;
+}
+.price-amt{
+  font-family:var(--display);
+  font-size:2.7rem;
+  font-weight:800;
+  color:var(--text1);
+  line-height:1;
+}
+.price-cents{
+  font-family:var(--display);
+  font-size:1.3rem;
+  font-weight:800;
+  color:var(--text1);
+}
+.price-type{font-size:.8rem;color:var(--text3);margin-left:6px}
+.card-divider{height:1px;background:var(--border);margin:10px 0 16px}
+.card-includes{
+  list-style:none;
+  margin-bottom:24px;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  flex:1;
+}
+.card-includes li{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  font-size:.84rem;
+  color:var(--text2);
+  line-height:1.45;
+}
+.card-includes li::before{
+  content:'✓';
+  font-weight:700;
+  font-size:.82rem;
+  flex-shrink:0;
+  margin-top:1px;
+  color:var(--accent);
+}
+.card-includes li.gold::before{color:var(--gold)}
+.card-includes li.green::before{color:var(--green)}
+.btn-gold,.btn-primary{
+  display:block;
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  font-family:var(--display);
+  font-size:.92rem;
+  font-weight:700;
+  letter-spacing:.02em;
+  text-align:center;
+  text-decoration:none;
+  transition:all .25s;
+}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#e09400);color:#000;box-shadow:0 8px 20px rgba(240,165,0,.2)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 8px 20px rgba(79,110,247,.25)}
+.btn-gold:hover,.btn-primary:hover{transform:translateY(-2px)}
+.btn-note{text-align:center;font-size:.68rem;color:var(--text3);margin-top:8px;font-family:var(--mono);line-height:1.45}
+
+.promo-redemption{
+  margin:16px 0 4px;
+  padding:15px;
+  border:1px solid rgba(240,165,0,.25);
+  border-radius:16px;
+  background:linear-gradient(135deg,rgba(240,165,0,.08),rgba(79,110,247,.045));
+}
+.promo-label{
+  font-family:var(--mono);
+  font-size:.62rem;
+  color:var(--gold);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:9px;
+}
+.promo-copy{
+  font-size:.76rem;
+  color:var(--text3);
+  line-height:1.55;
+  margin-bottom:12px;
+}
+.promo-open-btn{
+  width:100%;
+  border:0;
+  padding:13px 16px;
+}
+.promo-status{
+  display:none;
+  margin-top:10px;
+  font-size:.76rem;
+  line-height:1.55;
+  color:var(--green);
+}
+.promo-status.error{color:var(--gold)}
+.promo-status.success{color:var(--green)}
+.promo-modal{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(3,6,10,.78);
+  backdrop-filter:blur(14px);
+}
+.promo-modal.open{display:flex}
+.promo-modal-card{
+  width:min(520px,100%);
+  border:1px solid rgba(240,165,0,.28);
+  border-radius:24px;
+  background:linear-gradient(145deg,rgba(18,26,35,.98),rgba(8,12,16,.98));
+  box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 55px rgba(240,165,0,.12);
+  padding:24px;
+  position:relative;
+}
+.promo-modal-close{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  border:1px solid var(--border-m);
+  background:rgba(255,255,255,.04);
+  color:var(--text2);
+  cursor:pointer;
+  font-size:1.2rem;
+  line-height:1;
+}
+.promo-modal-close:hover{color:var(--text1);border-color:rgba(240,165,0,.35)}
+.promo-modal-title{
+  font-family:var(--display);
+  font-size:1.55rem;
+  line-height:1.05;
+  margin:4px 42px 10px 0;
+}
+.promo-modal-copy{
+  color:var(--text3);
+  font-size:.92rem;
+  line-height:1.6;
+  margin-bottom:18px;
+}
+.promo-modal-field label{
+  display:block;
+  font-family:var(--mono);
+  font-size:.68rem;
+  color:var(--gold);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.promo-input{
+  width:100%;
+  border-radius:14px;
+  border:1px solid var(--border-m);
+  background:rgba(8,12,16,.7);
+  color:var(--text1);
+  padding:15px 16px;
+  outline:none;
+  font-family:var(--mono);
+  font-size:1rem;
+  text-transform:uppercase;
+}
+.promo-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,165,0,.12)}
+.promo-btn{
+  width:100%;
+  border:0;
+  padding:14px 16px;
+  margin-top:14px;
+  white-space:nowrap;
+}
+.promo-modal-note{
+  margin-top:12px;
+  color:var(--text3);
+  font-size:.72rem;
+  line-height:1.5;
+  font-family:var(--mono);
+}
+
+
+.domain-disclosure{max-width:1120px;margin:0 auto 26px;padding:0 24px}
+.domain-box{
+  border:1px solid rgba(240,165,0,.25);
+  background:linear-gradient(135deg,rgba(240,165,0,.09),rgba(79,110,247,.05));
+  border-radius:16px;
+  padding:18px 20px;
+}
+.domain-title{
+  font-family:var(--mono);
+  font-size:.65rem;
+  color:var(--gold);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.domain-copy{font-size:.84rem;line-height:1.7;color:var(--text2)}
+.accept-box{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  margin-top:14px;
+  padding:14px;
+  border-radius:12px;
+  background:rgba(8,12,16,.5);
+  border:1px solid var(--border-m);
+}
+.accept-box input{width:18px;height:18px;margin-top:2px;accent-color:var(--accent);flex-shrink:0}
+.accept-box label{font-size:.82rem;line-height:1.6;color:var(--text2);cursor:pointer}
+.accept-warning{display:none;margin-top:10px;font-family:var(--mono);font-size:.68rem;color:var(--gold)}
+
+.care-plan-teaser,.msp-banner{
+  max-width:1120px;
+  margin:0 auto 42px;
+  padding:0 24px;
+}
+.care-plan-card,.msp-card{
+  background:linear-gradient(135deg,rgba(79,110,247,.1),rgba(124,58,237,.08));
+  border:1px solid rgba(79,110,247,.25);
+  border-radius:22px;
+  padding:30px 32px;
+}
+.care-plan-card{
+  max-width:640px;
+  margin:0 auto;
+  text-align:center;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(240,165,0,.12),transparent 38%),
+    linear-gradient(135deg,rgba(79,110,247,.1),rgba(240,165,0,.07));
+  border-color:rgba(240,165,0,.24);
+}
+.care-plan-kicker,.msp-tag{
+  font-family:var(--mono);
+  font-size:.6rem;
+  color:var(--gold);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.msp-tag{color:var(--accent)}
+.care-plan-title,.msp-title{
+  font-family:var(--display);
+  font-size:1.35rem;
+  font-weight:800;
+  color:var(--text1);
+  margin-bottom:8px;
+}
+.care-plan-desc,.msp-desc{
+  font-size:.9rem;
+  color:var(--text3);
+  line-height:1.7;
+  max-width:650px;
+}
+.care-plan-desc{margin:0 auto 14px}
+.care-plan-note{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:2px;
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid rgba(240,165,0,.22);
+  background:rgba(8,12,16,.38);
+  color:var(--text2);
+  font-family:var(--mono);
+  font-size:.66rem;
+  line-height:1.45;
+}
+.care-plan-note::before{
+  content:'✓';
+  color:var(--green);
+  font-weight:800;
+}
+
+.care-plan-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+  margin-top:24px;
+  text-align:left;
+}
+.care-plan-option{
+  background:rgba(8,12,16,.55);
+  border:1px solid var(--border-m);
+  border-radius:16px;
+  padding:20px;
+}
+.care-plan-option h3{
+  font-family:var(--display);
+  color:var(--text1);
+  font-size:1rem;
+  margin-bottom:8px;
+}
+.care-plan-price{
+  color:var(--gold);
+  font-family:var(--mono);
+  font-size:.78rem;
+  margin-bottom:10px;
+}
+.care-plan-option p{
+  color:var(--text3);
+  line-height:1.65;
+  font-size:.84rem;
+  margin-bottom:14px;
+}
+.care-plan-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;
+  font-family:var(--display);
+  font-size:.82rem;
+  font-weight:800;
+  text-decoration:none;
+}
+.care-plan-btn.gold{
+  background:linear-gradient(135deg,var(--gold),#d99000);
+  color:#050607;
+}
+.care-plan-guardrail{
+  margin-top:18px;
+  color:var(--text3);
+  font-size:.78rem;
+  line-height:1.65;
+}
+.btn-msp{
+  display:inline-block;
+  padding:12px 28px;
+  border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;
+  font-family:var(--display);
+  font-size:.85rem;
+  font-weight:700;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
+  transition:all .25s;
+  white-space:nowrap;
+}
+.btn-msp:hover{transform:translateY(-2px)}
+.msp-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  flex-wrap:wrap;
+}
+.msp-right{flex-shrink:0;text-align:center}
+.msp-price{
+  font-family:var(--display);
+  font-size:1rem;
+  font-weight:700;
+  color:var(--text1);
+  margin-bottom:12px;
+  line-height:1.4;
+}
+.msp-form-wrap{display:none;width:100%;margin-top:22px;padding-top:22px;border-top:1px solid var(--border)}
+.msp-form-wrap.open{display:block}
+.msp-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.msp-field.full{grid-column:1/-1}
+.msp-field label{
+  display:block;
+  margin-bottom:6px;
+  font-family:var(--mono);
+  font-size:.62rem;
+  color:var(--text3);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.msp-input,.msp-textarea{
+  width:100%;
+  border-radius:10px;
+  border:1px solid var(--border-m);
+  background:rgba(8,12,16,.55);
+  color:var(--text1);
+  padding:12px 13px;
+  outline:none;
+}
+.msp-input:focus,.msp-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,110,247,.12)}
+.msp-textarea{min-height:110px;resize:vertical}
+.msp-submit-row{grid-column:1/-1;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.msp-status{display:none;font-size:.8rem;color:var(--green)}
+.msp-status.error{color:var(--gold)}
+
+.trust-bar{
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+  padding:16px 24px;
+  margin-top:10px;
+}
+.trust-items{
+  max-width:1120px;
+  margin:0 auto;
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px 26px;
+  justify-content:center;
+}
+.trust-item{
+  font-family:var(--mono);
+  font-size:.68rem;
+  color:var(--text3);
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.trust-item span{color:var(--green)}
+
+.page-footer{
+  padding:28px 24px 34px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+  max-width:1120px;
+  margin:0 auto;
+  color:var(--text3);
+  font-size:.8rem;
+}
+.footer-links{display:flex;gap:18px;flex-wrap:wrap}
+.footer-links a{color:var(--text3);text-decoration:none}
+.footer-links a:hover{color:var(--text1)}
+
+@media(max-width:920px){
+  .pricing-grid{grid-template-columns:1fr}
+  .price-card.featured{order:-1}
+  .msp-form{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  nav{padding:0 1rem}
+  .nav-links a:not(.nav-tag){display:none}
+  .page-hero{padding:42px 18px 22px}
+  .preview-strip,.section,.domain-disclosure,.care-plan-teaser,.msp-banner{padding-left:16px;padding-right:16px}
+  .care-plan-card,.msp-card{padding:22px 20px}
+  .btn-msp{width:100%;text-align:center}
+  .page-footer{flex-direction:column;text-align:center}
+}
+@media(max-width:520px){.promo-modal-card{padding:22px 18px}.promo-modal-title{font-size:1.35rem}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="index.html">ai4websitedesign</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="#care-plans">Care Plans</a>
+    <span class="nav-tag">Purchase plans</span>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="success-badge">✓ AI4 Website Design</div>
+  <h1>Choose Your <span>Purchase Plan</span></h1>
+  <p>Select the plan that fits how you want to move forward. Start with the Exclusive Founder’s Offer, choose the Most Preferred Premier plan, or select the Business Bundle for a more complete business-ready launch package.</p>
+  <div class="hero-actions">
+    <a class="btn-outline" href="#plans">View Plans</a>
+    <a class="btn-outline" href="#care-plans">Learn More About Care Plans</a>
+  </div>
+</div>
+
+<div class="preview-strip">
+  <div class="preview-strip-inner">
+    <div class="strip-bar">
+      <div class="s-dot" style="background:#ff5f57"></div>
+      <div class="s-dot" style="background:#febc2e"></div>
+      <div class="s-dot" style="background:#28c840"></div>
+      <div class="strip-url" id="strip-url">yourbusiness.com</div>
+    </div>
+    <div class="strip-preview">
+      <iframe id="site-preview-frame" sandbox="allow-same-origin"></iframe>
+      <div class="strip-overlay"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="plans">
+  <div class="section-label">// Exclusive Founder’s Offer · Premier · Business Bundle</div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="card-label">Offer 1</div>
+      <div class="card-name">Exclusive Founder’s Offer</div>
+      <div class="card-tagline">Affordable entry offer for customers who want a professionally designed website delivered instantly.</div>
+      <div class="card-price"><div class="price-amt">$49</div><div class="price-cents">.99</div><div class="price-type">one-time payment</div></div>
+      <div class="card-divider"></div>
+      <ul class="card-includes">
+        <li class="gold">Custom Designed Site</li>
+        <li class="gold">Delivered Instantly</li>
+        <li class="gold">Ready to Launch</li>
+      </ul>
+      <div class="promo-redemption" id="founder-promo-box">
+        <div class="promo-label">Founder’s Offer Promo Code</div>
+        <div class="promo-copy">Have an approved Founder’s Offer promo code? Open the secure redemption form without entering Stripe checkout.</div>
+        <button class="btn-gold promo-open-btn" id="founder-promo-open" type="button">Redeem Promo Code</button>
+        <div class="promo-status" id="founder-promo-status" aria-live="polite"></div>
+      </div>
+      <button class="btn-gold checkout-btn" data-plan="starter" data-requires-domain="false">Choose Founder’s Offer →</button>
+      <div class="btn-note">One-time payment · Secure Stripe checkout</div>
+    </div>
+
+    <div class="price-card featured">
+      <div class="card-label">Offer 2</div>
+      <div class="card-name">Premier</div>
+      <div class="card-tagline">For customers who want a stronger website package with more complete launch-ready value.</div>
+      <div class="card-price"><div class="price-amt">$119</div><div class="price-cents">.99</div><div class="price-type">one-time payment</div></div>
+      <div class="card-divider"></div>
+      <ul class="card-includes">
+        <li class="gold">Custom website package with a stronger launch-ready setup</li>
+        <li class="gold">Polished customer-facing sections for a professional online presence</li>
+        <li class="green">Mobile-responsive design experience</li>
+        <li class="green">Managed hosting and launch path support</li>
+        <li class="green">Standard domain registration credit acceptance before checkout</li>
+      </ul>
+      <button class="btn-primary checkout-btn" data-plan="premier" data-requires-domain="true">Choose Premier →</button>
+      <div class="btn-note">Most Preferred · Domain-credit acceptance required</div>
+    </div>
+
+    <div class="price-card">
+      <div class="card-label">Offer 3 · Business Ready</div>
+      <div class="card-name">Business Bundle</div>
+      <div class="card-tagline">For customers who want a more complete business-ready launch package.</div>
+      <div class="card-price"><div class="price-amt">$249</div><div class="price-cents">.99</div><div class="price-type">one-time payment</div></div>
+      <div class="card-divider"></div>
+      <ul class="card-includes">
+        <li class="gold">Website launch included</li>
+        <li class="gold">First year hosting included</li>
+        <li class="green">Custom-designed Customer Intake System</li>
+        <li class="green">Payment processing setup assistance</li>
+        <li class="green">Business-ready online delivery system</li>
+        <li class="green">Business operational upon delivery</li>
+      </ul>
+      <button class="btn-gold checkout-btn" data-plan="business" data-requires-domain="false">Choose Business Bundle →</button>
+      <div class="btn-note">One-time payment · Secure Stripe checkout</div>
+    </div>
+  </div>
+</div>
+
+<div class="care-plan-teaser" id="care-plans">
+  <div class="care-plan-card">
+    <div class="care-plan-kicker">// Site Management Services</div>
+    <div class="care-plan-title">Become a Subscriber Member</div>
+    <p class="care-plan-desc">After your website is delivered or launched, you can continue receiving support through Site Management Services. Subscriber members can request updates, small content changes, and continued website support each month based on the selected plan.</p>
+    <div class="care-plan-note">Care Package I is offered at initial package purchase. Care Package II remains available when purchased later.</div>
+
+    <div class="care-plan-grid">
+      <div class="care-plan-option">
+        <h3>Premier Care Package I</h3>
+        <div class="care-plan-price">$19.99/month at initial package purchase</div>
+        <p>Designed for customers who want a practical support path with up to 5 website updates per month.</p>
+        <a class="care-plan-btn" href="https://buy.stripe.com/eVq9AS3Zw8SH7t99j27EQ0O" data-price-id="price_1TTNSIBMRgYNYb8D0wi505W0">Choose Premier Care Package I →</a>
+      </div>
+
+      <div class="care-plan-option">
+        <h3>Premier Care Package II</h3>
+        <div class="care-plan-price">$39.99/month when purchased later</div>
+        <p>Designed for customers who decide later and want continued support with up to 5 website updates per month.</p>
+        <a class="care-plan-btn" href="https://buy.stripe.com/5kQeVc67E9WL3cT2UE7EQ0K" data-price-id="price_1TTNXBBMRgYNYb8DqFwCCc23">Choose Premier Care Package II →</a>
+      </div>
+
+      <div class="care-plan-option">
+        <h3>Business Bundle Care Package I</h3>
+        <div class="care-plan-price">$99.99/month at initial package purchase</div>
+        <p>Designed for Business Bundle customers with 25 total website updates per month across your launched sites.</p>
+        <a class="care-plan-btn gold" href="https://buy.stripe.com/28E4gy9jQd8X7t9fHq7EQ0L" data-price-id="price_1TTNU0BMRgYNYb8DAJ094sBW">Choose Business Bundle Care Package I →</a>
+      </div>
+
+      <div class="care-plan-option">
+        <h3>Business Bundle Care Package II</h3>
+        <div class="care-plan-price">$199.99/month when purchased later</div>
+        <p>Designed for later support with 25 total website updates per month across your launched sites.</p>
+        <a class="care-plan-btn gold" href="https://buy.stripe.com/14A6oGanUd8X14L1QA7EQ0J" data-price-id="price_1TTNYNBMRgYNYb8DGGxicuxF">Choose Business Bundle Care Package II →</a>
+      </div>
+    </div>
+
+    <div class="care-plan-guardrail">Monthly updates may include text changes, image swaps, basic section edits, link updates, small layout adjustments, and content refreshes. Large redesigns, new pages, advanced integrations, custom automation, third-party setup, or major rebuilds may require a separate quote.</div>
+  </div>
+</div>
+</div>
+
+<div class="domain-disclosure">
+  <div class="domain-box">
+    <div class="domain-title">// Domain Credit Acceptance for Premier</div>
+    <div class="domain-copy">Includes one standard domain registration credit up to $20 for the first year. Premium domains, specialty extensions, renewals, and domain upgrades may cost extra.</div>
+    <div class="accept-box">
+      <input id="domain-accept" type="checkbox">
+      <label for="domain-accept">I understand that my purchase includes one standard domain registration credit up to $20 for the first year. Premium domains, specialty extensions, renewals, and domain upgrades may cost extra.</label>
+    </div>
+    <div class="accept-warning" id="accept-warning">Check the domain-credit acceptance box to continue to secure checkout for Premier.</div>
+  </div>
+</div>
+
+
+<div class="msp-banner">
+  <div class="msp-card">
+    <div>
+      <div class="msp-tag">// For Agencies and IT Partners</div>
+      <div class="msp-title">Partner MSP — Consultation Required</div>
+      <div class="msp-desc">For partners who want volume, managed automation, implementation support, and a more advanced operating relationship. This program is handled by consultation to ensure the right fit.</div>
+    </div>
+    <div class="msp-right">
+      <div class="msp-price">Inquiry Only<br><span style="font-size:.78rem;color:var(--text3);font-family:var(--sans);font-weight:400;">No public price</span></div>
+      <button class="btn-msp" id="open-msp-form" type="button" onclick="openMspForm()">Request Consultation →</button>
+    </div>
+    <div class="msp-form-wrap" id="msp-form-wrap">
+      <form class="msp-form" id="msp-form" onsubmit="submitMspInquiry(event)">
+        <div class="msp-field">
+          <label for="msp-name">Name</label>
+          <input class="msp-input" id="msp-name" name="full_name" type="text" autocomplete="name" required>
+        </div>
+        <div class="msp-field">
+          <label for="msp-email">Email</label>
+          <input class="msp-input" id="msp-email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="msp-field">
+          <label for="msp-phone">Phone</label>
+          <input class="msp-input" id="msp-phone" name="phone" type="tel" autocomplete="tel">
+        </div>
+        <div class="msp-field">
+          <label for="msp-company">Company</label>
+          <input class="msp-input" id="msp-company" name="company" type="text" autocomplete="organization">
+        </div>
+        <div class="msp-field full">
+          <label for="msp-message">What are you looking to launch or manage?</label>
+          <textarea class="msp-textarea" id="msp-message" name="message" placeholder="Tell us about volume, client sites, automation, or managed implementation goals."></textarea>
+        </div>
+        <div class="msp-submit-row">
+          <button class="btn-msp" id="msp-submit" type="submit">Send Consultation Request →</button>
+          <div class="msp-status" id="msp-status">Request sent — we’ll follow up by email.</div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="trust-bar">
+  <div class="trust-items">
+    <div class="trust-item"><span>✓</span> Secure Stripe checkout</div>
+    <div class="trust-item"><span>✓</span> Current purchase plans</div>
+    <div class="trust-item"><span>✓</span> Mobile-responsive design</div>
+    <div class="trust-item"><span>✓</span> Domain-credit acceptance where applicable</div>
+  </div>
+</div>
+
+<div class="page-footer">
+  <div class="footer-left">Powered by Apropos Group LLC</div>
+  <div class="footer-links">
+    <a href="https://ai4businesses.org" target="_blank" rel="noopener">AI4Businesses.org</a>
+    <a href="https://aiflowdeskpro.com" target="_blank" rel="noopener">FlowDesk Pro</a>
+    <a href="mailto:jmitchell@ai4websitedesign.com">Contact</a>
+  </div>
+</div>
+
+
+<div class="promo-modal" id="founder-promo-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="founder-promo-modal-title">
+  <div class="promo-modal-card">
+    <button class="promo-modal-close" id="founder-promo-close" type="button" aria-label="Close promo code form">×</button>
+    <div class="promo-label">Founder’s Offer Promo Code</div>
+    <div class="promo-modal-title" id="founder-promo-modal-title">Redeem Founder’s Offer</div>
+    <div class="promo-modal-copy">Enter your approved code below. This redemption path emails your selected website file as an index.html attachment without entering Stripe checkout.</div>
+    <div class="promo-modal-field">
+      <label for="founder-promo-code">Promo code</label>
+      <input class="promo-input" id="founder-promo-code" name="founder_promo_code" type="text" autocomplete="off" placeholder="ENTER CODE" aria-label="Founder’s Offer promo code">
+    </div>
+    <button class="btn-gold promo-btn" id="founder-promo-submit" type="button">Submit Promo Code</button>
+    <div class="promo-modal-note">The promo code is verified securely before fulfillment begins.</div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const STRIPE_LINKS = {
+  starter: 'https://buy.stripe.com/cNi6oG53A6Kz8xdfHq7EQ0w',
+  premier: 'https://buy.stripe.com/dRmbJ067E4Cr9Bhan67EQ0H',
+  business: 'https://buy.stripe.com/aFa6oGgMi4Cr14L52M7EQ0P'
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  let siteData = {};
+  try {
+    siteData = JSON.parse(sessionStorage.getItem('ai4_site_data') || '{}');
+  } catch(e) {
+    siteData = {};
+  }
+
+  const stripUrl = document.getElementById('strip-url');
+  if (stripUrl && siteData.businessName) {
+    stripUrl.textContent = siteData.businessName
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]/g, '')
+      .slice(0, 20) + '.com';
+  }
+
+  const builtHtml = sessionStorage.getItem('ai4_built_html');
+  const frame = document.getElementById('site-preview-frame');
+  if (builtHtml && frame) frame.srcdoc = builtHtml;
+
+  const accept = document.getElementById('domain-accept');
+  const warning = document.getElementById('accept-warning');
+  const buttons = [...document.querySelectorAll('.checkout-btn')];
+
+  if (accept) {
+    accept.addEventListener('change', () => {
+      if (accept.checked && warning) warning.style.display = 'none';
+    });
+  }
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => goPackage(btn.dataset.plan, btn.dataset.requiresDomain === 'true'));
+  });
+
+  const promoOpen = document.getElementById('founder-promo-open');
+  const promoClose = document.getElementById('founder-promo-close');
+  const promoModal = document.getElementById('founder-promo-modal');
+  const promoSubmit = document.getElementById('founder-promo-submit');
+  const promoInput = document.getElementById('founder-promo-code');
+
+  if (promoOpen) promoOpen.addEventListener('click', openFounderPromoModal);
+  if (promoClose) promoClose.addEventListener('click', closeFounderPromoModal);
+  if (promoModal) {
+    promoModal.addEventListener('click', (event) => {
+      if (event.target === promoModal) closeFounderPromoModal();
+    });
+  }
+  if (promoSubmit) promoSubmit.addEventListener('click', redeemFounderPromo);
+  if (promoInput) {
+    promoInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') redeemFounderPromo();
+    });
+  }
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeFounderPromoModal();
+  });
+
+});
+
+function goPackage(type, requiresDomainCredit) {
+  const accept = document.getElementById('domain-accept');
+  const warning = document.getElementById('accept-warning');
+
+  if (requiresDomainCredit && accept && !accept.checked) {
+    if (warning) warning.style.display = 'block';
+    document.querySelector('.domain-disclosure')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  sessionStorage.setItem('ai4_purchase_type', type);
+  if (requiresDomainCredit) {
+    sessionStorage.setItem('ai4_domain_credit_accepted', 'true');
+  } else {
+    sessionStorage.removeItem('ai4_domain_credit_accepted');
+  }
+
+  const link = STRIPE_LINKS[type];
+  if (!link) {
+    window.location.href = '/';
+    return;
+  }
+  window.location.href = link;
+}
+
+function safeStoredValue(key) {
+  try {
+    return sessionStorage.getItem(key) || localStorage.getItem(key) || '';
+  } catch(e) {
+    try { return sessionStorage.getItem(key) || ''; } catch(_) { return ''; }
+  }
+}
+
+function getAi4StoredData() {
+  let siteData = {};
+  try { siteData = JSON.parse(sessionStorage.getItem('ai4_site_data') || '{}'); } catch(e) { siteData = {}; }
+  return {
+    siteData,
+    purchaseType: safeStoredValue('ai4_purchase_type') || '',
+    user_id: safeStoredValue('ai4_user_id') || siteData.user_id || '',
+    site_id: safeStoredValue('ai4_site_id') || siteData.site_id || '',
+    build_id: safeStoredValue('ai4_build_id') || siteData.build_id || safeStoredValue('ai4_site_id') || siteData.site_id || '',
+    build_persisted: safeStoredValue('ai4_build_persisted') || '',
+    built_html: safeStoredValue('ai4_built_html') || '',
+    email: safeStoredValue('ai4_email') || siteData.email || '',
+    phone: safeStoredValue('ai4_phone') || siteData.phone || '',
+    name: safeStoredValue('ai4_full_name') || safeStoredValue('ai4_name') || siteData.full_name || siteData.name || '',
+    company: siteData.businessName || siteData.company || siteData.business_name || ''
+  };
+}
+
+
+function openFounderPromoModal() {
+  const modal = document.getElementById('founder-promo-modal');
+  const input = document.getElementById('founder-promo-code');
+  if (!modal) return;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => { if (input && !input.disabled) input.focus(); }, 50);
+}
+
+function closeFounderPromoModal() {
+  const modal = document.getElementById('founder-promo-modal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+function setPromoStatus(message, type = '') {
+  const status = document.getElementById('founder-promo-status');
+  if (!status) return;
+  status.textContent = message || '';
+  status.classList.remove('error', 'success');
+  if (type) status.classList.add(type);
+  status.style.display = message ? 'block' : 'none';
+}
+
+async function redeemFounderPromo() {
+  const input = document.getElementById('founder-promo-code');
+  const btn = document.getElementById('founder-promo-submit');
+  const stored = getAi4StoredData();
+  const promoCode = input ? input.value.trim() : '';
+
+  if (!promoCode) {
+    setPromoStatus('Enter your Founder’s Offer promo code.', 'error');
+    if (input) input.focus();
+    return;
+  }
+
+  if (!stored.email) {
+    setPromoStatus('Your signup email was not found. Please return to the homepage and complete Sign Up first.', 'error');
+    return;
+  }
+
+  if (!stored.site_id && !stored.built_html) {
+    setPromoStatus('Your selected website build was not found. Please return to the builder and select your website again.', 'error');
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Redeeming...';
+  }
+  setPromoStatus('Redeeming your Founder’s Offer promo code...', '');
+
+  const payload = {
+    promo_code: promoCode,
+    user_id: stored.user_id,
+    site_id: stored.site_id,
+    build_id: stored.build_id,
+    email: stored.email,
+    full_name: stored.name,
+    phone: stored.phone,
+    business_name: stored.company,
+    site_data: stored.siteData,
+    built_html: stored.built_html,
+    language: 'en'
+  };
+
+  try {
+    const res = await fetch('/.netlify/functions/redeem-founder-promo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.error) {
+      throw new Error(data.error || 'Promo redemption failed');
+    }
+
+    sessionStorage.setItem('ai4_founder_promo_redeemed', 'true');
+    if (data.redemption_id) sessionStorage.setItem('ai4_founder_promo_redemption_id', data.redemption_id);
+    if (data.site_id) sessionStorage.setItem('ai4_site_id', data.site_id);
+    if (data.build_id) sessionStorage.setItem('ai4_build_id', data.build_id);
+
+    setPromoStatus('Promo redeemed. Your website file has been emailed as an index.html attachment.', 'success');
+    if (btn) btn.textContent = 'Redeemed ✓';
+    if (input) input.disabled = true;
+    const openBtn = document.getElementById('founder-promo-open');
+    if (openBtn) openBtn.textContent = 'Promo Redeemed ✓';
+  } catch (err) {
+    console.error('Founder promo redemption error:', err);
+    setPromoStatus(err.message || 'Unable to redeem this promo code right now.', 'error');
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Submit Promo Code';
+    }
+  }
+}
+
+
+function openMspForm() {
+  const wrap = document.getElementById('msp-form-wrap');
+  if (!wrap) return;
+  wrap.classList.add('open');
+
+  const stored = getAi4StoredData();
+  const name = document.getElementById('msp-name');
+  const email = document.getElementById('msp-email');
+  const phone = document.getElementById('msp-phone');
+  const company = document.getElementById('msp-company');
+
+  if (name && !name.value) name.value = stored.name;
+  if (email && !email.value) email.value = stored.email;
+  if (phone && !phone.value) phone.value = stored.phone;
+  if (company && !company.value) company.value = stored.company;
+
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => { if (name && !name.value) name.focus(); else if (email && !email.value) email.focus(); }, 350);
+}
+
+async function submitMspInquiry(event) {
+  event.preventDefault();
+
+  const form = document.getElementById('msp-form');
+  const btn = document.getElementById('msp-submit');
+  const status = document.getElementById('msp-status');
+  const stored = getAi4StoredData();
+  const formData = new FormData(form);
+
+  const payload = {
+    full_name: (formData.get('full_name') || '').toString().trim(),
+    email: (formData.get('email') || '').toString().trim().toLowerCase(),
+    phone: (formData.get('phone') || '').toString().trim(),
+    company: (formData.get('company') || '').toString().trim(),
+    message: (formData.get('message') || '').toString().trim(),
+    plan: stored.purchaseType,
+    language: 'en',
+    source: 'offer.html',
+    source_url: window.location.href,
+    domain_credit_accepted: sessionStorage.getItem('ai4_domain_credit_accepted') === 'true',
+    business_name: stored.company,
+    site_data: stored.siteData
+  };
+
+  if (!payload.full_name || !payload.email) {
+    status.textContent = 'Please enter your name and email before sending.';
+    status.classList.add('error');
+    status.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  status.style.display = 'none';
+  status.classList.remove('error');
+
+  try {
+    const res = await fetch('/.netlify/functions/partner-inquiry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.error) throw new Error(data.error || 'Request failed');
+
+    status.textContent = 'Request sent — we’ll follow up by email.';
+    status.style.display = 'block';
+    btn.textContent = 'Sent ✓';
+    form.querySelectorAll('input,textarea').forEach(el => el.disabled = true);
+  } catch(err) {
+    console.error('Partner inquiry error:', err);
+    status.textContent = 'Unable to send right now. Please email jmitchell@ai4websitedesign.com.';
+    status.classList.add('error');
+    status.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Send Consultation Request →';
+  }
+}
+</script>
+</body>
+</html>
