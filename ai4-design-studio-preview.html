@@ -112,7 +112,88 @@ function injectReturnToDesignView(html){const returnUrl=getReturnPreviewUrl();co
 function openLivePreview(){const html=state.builtHtml||storageFirst(['ai4_built_html']);if(!html)return;if(state.previewObjectUrl)URL.revokeObjectURL(state.previewObjectUrl);const htmlWithReturn=injectReturnToDesignView(html);const blob=new Blob([htmlWithReturn],{type:'text/html;charset=utf-8'});state.previewObjectUrl=URL.createObjectURL(blob);window.open(state.previewObjectUrl,'_blank')}
 document.addEventListener('keydown',e=>{const c=$('coachTarget2');if(e.key==='Escape'&&c&&c.classList.contains('is-fullscreen'))returnToDesignView()});window.addEventListener('message',e=>{const data=e.data;if(data==='AI4_RETURN_DESIGN_VIEW'||(data&&data.type==='AI4_RETURN_DESIGN_VIEW'))returnToDesignView()});window.addEventListener('beforeunload',()=>{if(state.previewObjectUrl)URL.revokeObjectURL(state.previewObjectUrl)});
 function goToOffer(){try{sessionStorage.setItem('ai4_built_html',state.builtHtml||'');sessionStorage.setItem('ai4_selected_template',state.currentTemplate.id);sessionStorage.setItem('ai4_selected_palette',state.currentPalette.id);sessionStorage.setItem('ai4_active_template',String(state.activeVariation));sessionStorage.setItem('ai4_checkout_context',JSON.stringify({template:state.currentTemplate,palette:state.currentPalette,variation:state.activeVariation,variationName:VARIATIONS[state.activeVariation].name,brief:state.brief,ts:Date.now()}))}catch(e){}window.location.href='Offer.html'}
-async function redeemPromo(){const input=$('promoInput'),btn=$('promoBtn'),status=$('promoStatus');if(!input||!btn||!status)return;const code=(input.value||'').trim().toUpperCase();status.className='promo-status';status.style.display='block';if(!code){status.classList.add('error');status.textContent='Please enter your promo code.';return}btn.disabled=true;btn.textContent='Redeeming…';try{const res=await fetch('/.netlify/functions/redeem-promo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,email:storageFirst(['ai4_user_email','user_email','customer_email']),template:state.currentTemplate.id,palette:state.currentPalette.id,variation:state.activeVariation,html:state.builtHtml||''})});if(res.ok){const data=await res.json();status.classList.add('success');status.textContent=data.message||'Promo redeemed! Check your email for your website file.';input.value=''}else{let err={};try{err=await res.json()}catch(e){}status.classList.add('error');status.textContent=err.message||'Promo code is invalid or expired.'}}catch(e){status.classList.add('error');status.textContent='Promo service is unavailable in this environment. The preview page itself is still executable.'}btn.disabled=false;btn.textContent='Redeem'}
+async function redeemPromo(){
+  const input=$('promoInput'),btn=$('promoBtn'),status=$('promoStatus');
+  if(!input||!btn||!status)return;
+
+  const code=(input.value||'').trim().toUpperCase().replaceAll(' ','');
+  status.className='promo-status';
+  status.style.display='block';
+
+  if(!code){
+    status.classList.add('error');
+    status.textContent='Please enter your promo code.';
+    return;
+  }
+
+  const email=String(
+    storageFirst(['ai4_user_email','user_email','customer_email','email']) ||
+    getAnswer(['email','userEmail','customerEmail','contactEmail'],'')
+  ).trim().toLowerCase();
+
+  if(!email || !email.includes('@') || !email.includes('.')){
+    status.classList.add('error');
+    status.textContent='Please return to the design form and enter a valid email before redeeming your promo code.';
+    return;
+  }
+
+  const businessName=getAnswer(['businessName','business_name','brandName','name','company','companyName'],'Website Build');
+  const fullName=getAnswer(['fullName','full_name','name','customerName'],'');
+  const phone=getAnswer(['phone','phoneNumber','contactPhone'],'');
+  const siteData=Object.assign({},state.brief||{},state.answers||{},safeJson(storageFirst(['ai4_site_data']),{}));
+  const html=state.builtHtml || storageFirst(['ai4_built_html']) || '';
+
+  const founderPayload={
+    promo_code:code,
+    email:email,
+    full_name:fullName,
+    phone:phone,
+    business_name:businessName,
+    site_data:siteData,
+    built_html:html,
+    template:state.currentTemplate&&state.currentTemplate.id,
+    palette:state.currentPalette&&state.currentPalette.id,
+    variation:state.activeVariation
+  };
+
+  btn.disabled=true;
+  btn.textContent='Redeeming…';
+
+  try{
+    let res=await fetch('/.netlify/functions/redeem-founder-promo',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(founderPayload)
+    });
+
+    if(res.status===404){
+      res=await fetch('/.netlify/functions/redeem-promo',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(Object.assign({},founderPayload,{code:code,html:html}))
+      });
+    }
+
+    let data={};
+    try{data=await res.json()}catch(e){}
+
+    if(res.ok && data.success!==false){
+      status.classList.add('success');
+      status.textContent=data.message || 'Promo redeemed! Check your email for your website file.';
+      input.value='';
+    }else{
+      status.classList.add('error');
+      status.textContent=data.error || data.message || 'Promo could not be redeemed. Please verify the code and try again.';
+    }
+  }catch(e){
+    console.error('Promo error:',e);
+    status.classList.add('error');
+    status.textContent='Promo service is unavailable right now. Please try again after redeploy.';
+  }
+
+  btn.disabled=false;
+  btn.textContent='Redeem';
+}
 function startTour(){try{localStorage.setItem('ai4_preview_tour_seen','true')}catch(e){}coachIndex=0;showCoach()}function endTour(){const o=$('coachOverlay');if(o)o.classList.add('hidden');coachIndex=0}function nextCoach(){coachIndex++;if(coachIndex>=coachSteps.length)endTour();else showCoach()}function showCoach(){const step=coachSteps[coachIndex],overlay=$('coachOverlay'),spotlight=$('coachSpotlight'),card=$('coachCard');if(!overlay||!spotlight||!card)return;overlay.classList.remove('hidden');if($('coachIcon'))$('coachIcon').textContent=step.icon;if($('coachTitle'))$('coachTitle').textContent=step.title;if($('coachBody'))$('coachBody').textContent=step.body;if($('coachStepLabel'))$('coachStepLabel').textContent=(coachIndex+1)+' of '+coachSteps.length;if($('coachStepDots'))$('coachStepDots').innerHTML=coachSteps.map((s,i)=>`<div class="coach-step-dot ${i===coachIndex?'active':i<coachIndex?'done':''}"></div>`).join('');const target=$(step.target);if(!target)return;const rect=target.getBoundingClientRect(),padding=12;spotlight.style.left=(rect.left-padding)+'px';spotlight.style.top=(rect.top-padding)+'px';spotlight.style.width=(rect.width+padding*2)+'px';spotlight.style.height=(rect.height+padding*2)+'px';let x=rect.right+20,y=Math.max(18,rect.top);if(x+340>window.innerWidth)x=Math.max(18,rect.left-340);if(y+270>window.innerHeight)y=Math.max(18,window.innerHeight-290);card.style.left=x+'px';card.style.top=y+'px'}
 function restartStudio(){try{sessionStorage.clear();localStorage.removeItem('ai4_preview_tour_seen')}catch(e){}window.location.href='ai4-design-studio.html'}
 function jumpToPreviewSection(id){const el=document.getElementById(id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'center'})}
