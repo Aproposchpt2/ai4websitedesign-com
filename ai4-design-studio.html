@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI4 Website Design Studio — Build Your Website</title>
-<meta name="description" content="Answer 8 quick questions. Get a fully built, content-complete website ready to launch.">
+<meta name="description" content="Answer 7 simple questions. Get a fully built, content-complete website ready to launch.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -218,7 +218,7 @@ footer{padding:2rem;color:var(--muted2);text-align:center;border-top:1px solid r
       <img class="hero-logo" src="AI4-approved-logo.png" alt="AI4 Design Studio">
       <div class="eyebrow">AI4 Website Builder</div>
       <h1>Your website,<br><span class="gradient-text">fully built in minutes.</span></h1>
-      <p class="hero-sub">Answer 8 quick questions about your business. Our 5-agent AI pipeline writes the copy, designs the layout, and delivers a complete, launch-ready website.</p>
+      <p class="hero-sub">Answer 7 simple questions about your business. AI4 Website Design Studio writes the copy, chooses the design direction, and delivers a complete, launch-ready website.</p>
       <button class="btn-start" onclick="startStudio()">
         Build My Website
         <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -226,7 +226,7 @@ footer{padding:2rem;color:var(--muted2);text-align:center;border-top:1px solid r
       <div class="trust-strip">
         <div class="trust-item"><span>✓</span> No placeholders</div>
         <div class="trust-item"><span>✓</span> Real written content</div>
-        <div class="trust-item"><span>✓</span> 4 design templates</div>
+        <div class="trust-item"><span>✓</span> 4 premium design variations</div>
         <div class="trust-item"><span>✓</span> Ready to launch</div>
       </div>
     </div>
@@ -237,9 +237,9 @@ footer{padding:2rem;color:var(--muted2);text-align:center;border-top:1px solid r
     <div class="studio-wrap">
 
       <div class="progress-wrap">
-        <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:12.5%"></div></div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:14.285%"></div></div>
         <div class="progress-meta">
-          <div class="progress-step-label" id="progressStepLabel">Step 1 of 8</div>
+          <div class="progress-step-label" id="progressStepLabel">Step 1 of 7</div>
           <div class="progress-count" id="progressCount">Question 1</div>
         </div>
       </div>
@@ -355,43 +355,14 @@ footer{padding:2rem;color:var(--muted2);text-align:center;border-top:1px solid r
         <textarea class="studio-input" id="q7_extras" placeholder="Awards, certifications, special offers, hours, service areas, team size, founding year, a story you want to tell..." maxlength="600"></textarea>
         <div class="step-nav">
           <button type="button" class="btn-back" onclick="prevStep()">← Back</button>
-          <button type="button" class="btn-next" onclick="nextStep()">Continue →</button>
-        </div>
-      </div>
-
-      <!-- Q8 — Style -->
-      <div class="form-step" data-step="8">
-        <div class="step-q-label">Step 8 — Visual Style</div>
-        <div class="step-question">Choose your style</div>
-        <div class="step-hint">Pick the look that best fits your brand. You'll get 4 complete design variations.</div>
-        <div class="style-grid" id="styleGrid">
-          <div class="style-card" data-value="dark-premium" onclick="selectStyle(this)">
-            <div class="style-card-swatch" style="background:linear-gradient(135deg,#030816 0%,#0a1628 50%,#1EA7FF 100%)"></div>
-            <div class="style-card-name">Dark &amp; Premium</div>
-            <div class="style-card-desc">Navy/blue — bold, modern, high-end feel like FlowDesk Pro</div>
-          </div>
-          <div class="style-card" data-value="light-professional" onclick="selectStyle(this)">
-            <div class="style-card-swatch" style="background:linear-gradient(135deg,#ffffff 0%,#f1f5f9 50%,#94a3b8 100%)"></div>
-            <div class="style-card-name">Light &amp; Professional</div>
-            <div class="style-card-desc">White/gray — clean, trustworthy, great for service businesses</div>
-          </div>
-          <div class="style-card" data-value="bold-energetic" onclick="selectStyle(this)">
-            <div class="style-card-swatch" style="background:linear-gradient(135deg,#1a0533 0%,#7c3aed 50%,#f59e0b 100%)"></div>
-            <div class="style-card-name">Bold &amp; Energetic</div>
-            <div class="style-card-desc">Vibrant colors, high contrast — stands out, gets attention</div>
-          </div>
-          <div class="style-card" data-value="warm-trustworthy" onclick="selectStyle(this)">
-            <div class="style-card-swatch" style="background:linear-gradient(135deg,#1c1208 0%,#78350f 50%,#d97706 100%)"></div>
-            <div class="style-card-name">Warm &amp; Trustworthy</div>
-            <div class="style-card-desc">Earth tones — approachable, friendly, community-first</div>
-          </div>
-        </div>
-        <div class="step-nav">
-          <button type="button" class="btn-back" onclick="prevStep()">← Back</button>
           <button type="button" class="btn-submit" onclick="submitForm()">
             Build My Website →
           </button>
         </div>
+      </div>
+
+      <!-- Visual style is intentionally inferred by AI4 Website Design Studio.
+           Customers can change templates and colors on the preview page. -->
       </div>
 
     </div>
@@ -401,7 +372,7 @@ footer{padding:2rem;color:var(--muted2);text-align:center;border-top:1px solid r
   <div id="pipelineScreen">
     <img class="pipeline-logo" src="AI4-approved-logo.png" alt="AI4">
     <div class="pipeline-title">Building your <span class="gradient-text">website</span></div>
-    <div class="pipeline-sub" id="pipelineSub">Our 5-agent AI pipeline is writing your copy, designing your layout, and assembling your complete website.</div>
+    <div class="pipeline-sub" id="pipelineSub">AI4 Website Design Studio is writing your copy, designing your layout, and assembling your complete website.</div>
 
     <div class="pipeline-progress-wrap">
       <div class="pipeline-progress-track">
@@ -448,10 +419,10 @@ footer{padding:2rem;color:var(--muted2);text-align:center;border-top:1px solid r
 
 <script>
 // ── State ──────────────────────────────────────────────────────────
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 7;
 let currentStep = 1;
 const answers = {};
-let selectedStyle = null;
+let selectedStyle = 'auto-infer-platinum';
 let selectedCta = null;
 
 // ── Start ──────────────────────────────────────────────────────────
@@ -517,9 +488,6 @@ function validateStep(step) {
     const address = document.getElementById('q6_address').value.trim();
     if (!phone && !email && !address) { showError(step, 'Please enter at least one contact method.'); return false; }
   }
-  if (step === 8) {
-    if (!selectedStyle) { showError(step, 'Please choose a visual style.'); return false; }
-  }
   return true;
 }
 
@@ -556,8 +524,11 @@ function collectStep(step) {
       answers.facebook = document.getElementById('q6_facebook').value.trim();
       answers.instagram = document.getElementById('q6_instagram').value.trim();
     },
-    7: () => { answers.extras = document.getElementById('q7_extras').value.trim(); },
-    8: () => { answers.style = selectedStyle; },
+    7: () => {
+      answers.extras = document.getElementById('q7_extras').value.trim();
+      answers.style = 'auto-infer-platinum';
+      answers.designMode = 'ai4-auto-infer';
+    },
   };
   if (fields[step]) fields[step]();
 }
@@ -573,15 +544,19 @@ document.getElementById('ctaGrid').querySelectorAll('.cta-btn').forEach(btn => {
 
 // ── Style selector ─────────────────────────────────────────────────
 function selectStyle(card) {
-  document.getElementById('styleGrid').querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
+  const grid = document.getElementById('styleGrid');
+  if (!grid || !card) return;
+  grid.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
   selectedStyle = card.dataset.value;
 }
 
 // ── Submit & Pipeline ──────────────────────────────────────────────
 async function submitForm() {
-  if (!validateStep(8)) return;
-  collectStep(8);
+  if (!validateStep(7)) return;
+  collectStep(7);
+  answers.style = 'auto-infer-platinum';
+  answers.designMode = 'ai4-auto-infer';
 
   // Hide studio, show pipeline
   document.getElementById('studioSection').style.display = 'none';
@@ -687,7 +662,7 @@ function persistData(data, rawAnswers) {
       business_name: rawAnswers.businessName,
       websitePurpose: 'Business Website',
       primaryGoal: rawAnswers.primaryCta,
-      designSystem: rawAnswers.style,
+      designSystem: rawAnswers.style || 'auto-infer-platinum',
       creativeDirection: rawAnswers.whatYouDo,
       sectionPlan: data.brief?.sectionPlan || [],
       qualityScore: data.brief?.qualityScore || 88
@@ -698,6 +673,15 @@ function persistData(data, rawAnswers) {
 }
 
 // ── Client-side fallback ───────────────────────────────────────────
+
+function inferClientStyle(a) {
+  const text = `${a.businessName || ''} ${a.whatYouDo || ''} ${a.customers || ''} ${a.differentiators || ''} ${a.extras || ''}`.toLowerCase();
+  if (/(music|studio|gospel|hip-hop|hip hop|rap|soul|recording|artist|producer|beats)/.test(text)) return 'dark-premium';
+  if (/(salon|beauty|spa|lashes|hair|barber|esthetician)/.test(text)) return 'warm-trustworthy';
+  if (/(restaurant|food|cafe|chef|catering|menu)/.test(text)) return 'warm-trustworthy';
+  if (/(fitness|gym|trainer|coach|sports|performance)/.test(text)) return 'bold-energetic';
+  return 'dark-premium';
+}
 function buildClientFallback(a) {
   const name = a.businessName || 'Your Business';
   const phone = a.phone || '';
@@ -711,7 +695,8 @@ function buildClientFallback(a) {
     'bold-energetic':    { bg:'#0d0118', bg2:'#1a0533', text:'#faf5ff', muted:'#c4b5fd', accent:'#7c3aed', accent2:'#f59e0b', panel:'rgba(124,58,237,.15)', heading:'Syne', body:'Inter' },
     'warm-trustworthy':  { bg:'#1c1208', bg2:'#2d1a07', text:'#fef3c7', muted:'#d97706', accent:'#f59e0b', accent2:'#fbbf24', panel:'rgba(120,53,15,.5)',  heading:'Syne', body:'Inter' }
   };
-  const s = styleMap[a.style] || styleMap['dark-premium'];
+  const inferredStyle = (!a.style || a.style === 'auto-infer-platinum') ? inferClientStyle(a) : a.style;
+  const s = styleMap[inferredStyle] || styleMap['dark-premium'];
 
   const templateHtml = buildTemplate(a, s, name, phone, email, address, cta);
 
@@ -720,9 +705,9 @@ function buildClientFallback(a) {
     qualityScore: 88,
     status: 'approved',
     websitePurpose: 'Business Website',
-    recommendedDesignSystem: a.style || 'dark-premium',
+    recommendedDesignSystem: inferredStyle || 'dark-premium',
     creativeDirection: a.whatYouDo,
-    colorSystem: { primary: s.accent, secondary: s.bg2, accent: s.accent2, background: s.bg, surface: s.panel, colorMoodDescription: `${a.style} theme` },
+    colorSystem: { primary: s.accent, secondary: s.bg2, accent: s.accent2, background: s.bg, surface: s.panel, colorMoodDescription: `${inferredStyle} theme` },
     typographySystem: { headingFont: s.heading, bodyFont: s.body, typographyRationale: `${s.heading} + ${s.body} pairing` },
     sectionPlan: [
       { sectionName: 'Hero', headlineDirection: `Bold opening for ${name}` },
