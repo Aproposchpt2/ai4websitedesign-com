@@ -1,44 +1,37 @@
 /**
- * ai4websitedesign — Founder's Offer Promo Redemption
- * netlify/functions/redeem-founder-promo.js
+ * AI4 Website Design — Founder Promo Redemption
+ * File: netlify/functions/redeem-founder-promo.js
  *
- * PATCHED — fixes applied:
- *  FIX 1: Auto-upsert user if no signup record exists (unblocks new pipeline flow)
- *  FIX 2: builtHTML is optional — promo redeems without attachment, flagged pending_html
- *  FIX 3: Idempotency — re-attempt email on pending_email rows instead of 409 hard-reject
- *  FIX 4: Promise.allSettled — customer + internal emails fire in parallel, neither blocks the other
+ * Purpose:
+ * - Redeems approved Founder promo code
+ * - Sends selected generated website HTML to the customer as index.html
+ * - Sends internal fulfillment notification
+ * - Optionally logs redemption to Supabase via REST API
  *
- * Writes only to users / promo_redemptions / sites.
- * Does not create orders or subscriptions and does not call Stripe webhooks.
+ * Important:
+ * - This function intentionally DOES NOT import @supabase/supabase-js.
+ * - It uses plain HTTPS REST calls so it will not trigger the Node 18 WebSocket / Realtime error.
  */
 
 'use strict';
 
-const { createClient } = require('@supabase/supabase-js');
+const https = require('https');
 
-const MAX_HTML_LENGTH = 750000;
-const MAX_JSON_LENGTH = 250000;
-const PROMO_TYPE      = 'founders_offer';
-
-const headers = {
-  'Access-Control-Allow-Origin':  '*',
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Content-Type':                 'application/json',
+  'Content-Type': 'application/json'
 };
 
-const INTERNAL_EMAIL =
-  process.env.AI4_INTERNAL_NOTIFICATION_EMAIL ||
-  process.env.RESEND_TO_EMAIL ||
-  'jmitchell@ai4websitedesign.com';
+const DEFAULT_PROMO_TABLE = 'founder_promo_redemptions';
 
-const RESEND_FROM_EMAIL =
-  process.env.RESEND_FROM_EMAIL ||
-  'AI4 Website Design <jmitchell@ai4websitedesign.com>';
-
-// ── Helpers ────────────────────────────────────────────────────────────────
-function json(statusCode, payload) {
-  return { statusCode, headers, body: JSON.stringify(payload) };
+function json(statusCode, body) {
+  return {
+    statusCode,
+    headers: CORS_HEADERS,
+    body: JSON.stringify(body)
+  };
 }
 
 function safeString(value, fallback = '') {
@@ -46,554 +39,282 @@ function safeString(value, fallback = '') {
   return String(value).trim();
 }
 
-function normalizeEmail(value) {
-  return safeString(value).toLowerCase();
-}
-
-function normalizePromoCode(value) {
+function normalizeCode(value) {
   return safeString(value).toUpperCase().replace(/\s+/g, '');
 }
 
 function isValidEmail(value) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const email = safeString(value).toLowerCase();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function escapeHtml(value = '') {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+function escapeHtml(value) {
+  return safeString(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
-function safeJson(value, fallback = {}) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return fallback;
-  const serialized = JSON.stringify(value);
-  if (serialized.length > MAX_JSON_LENGTH) return fallback;
-  return value;
-}
+function requestJson({ hostname, path, method = 'GET', headers = {}, body = null, timeoutMs = 9000 }) {
+  return new Promise((resolve) => {
+    const payload = body === null ? null : (typeof body === 'string' ? body : JSON.stringify(body));
 
-function hasHtmlDocumentShape(value = '') {
-  const html = safeString(value);
-  return /<!doctype\s+html/i.test(html) || /<html[\s>]/i.test(html);
-}
+    const req = https.request({
+      hostname,
+      path,
+      method,
+      headers: {
+        ...headers,
+        ...(payload ? { 'Content-Length': Buffer.byteLength(payload) } : {})
+      }
+    }, (res) => {
+      let data = '';
+      res.on('data', chunk => { data += chunk; });
+      res.on('end', () => {
+        let parsed = null;
+        try { parsed = data ? JSON.parse(data) : null; } catch (_) { parsed = data; }
 
-function getAllowedPromoCodes() {
-  const raw = [
-    process.env.FOUNDER_PROMO_CODES,
-    process.env.FOUNDER_PROMO_CODE,
-    process.env.AI4_FOUNDER_PROMO_CODES,
-    process.env.AI4_FOUNDER_PROMO_CODE,
-  ].filter(Boolean).join(',');
+        resolve({
+          ok: res.statusCode >= 200 && res.statusCode < 300,
+          statusCode: res.statusCode,
+          headers: res.headers,
+          data: parsed,
+          raw: data
+        });
+      });
+    });
 
-  return raw
-    .split(',')
-    .map((code) => normalizePromoCode(code))
-    .filter(Boolean);
-}
+    req.on('error', (error) => {
+      resolve({ ok: false, statusCode: 0, data: null, raw: error.message, error });
+    });
 
-function getSupabase() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
-  if (!url || !key) throw new Error('Missing Supabase environment variables');
-  return createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
+    req.setTimeout(timeoutMs, () => {
+      req.destroy();
+      resolve({ ok: false, statusCode: 0, data: null, raw: 'Request timeout' });
+    });
+
+    if (payload) req.write(payload);
+    req.end();
   });
 }
 
-// ── Email sender ───────────────────────────────────────────────────────────
-async function sendResendEmail({ to, subject, html, text, attachments = [] }) {
-  if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not configured');
-  if (!to) throw new Error('Email recipient is required');
+async function supabaseRest(path, { method = 'GET', body = null, prefer = '' } = {}) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
 
-  const body = {
-    from: RESEND_FROM_EMAIL,
-    to:   Array.isArray(to) ? to : [to],
-    subject,
-    html,
-    text,
-  };
+  if (!supabaseUrl || !serviceKey) {
+    return { skipped: true, reason: 'Missing Supabase credentials' };
+  }
 
-  if (attachments.length) body.attachments = attachments;
-
-  const res = await fetch('https://api.resend.com/emails', {
-    method:  'POST',
+  const url = new URL(supabaseUrl);
+  return requestJson({
+    hostname: url.hostname,
+    path: `/rest/v1/${path}`,
+    method,
     headers: {
-      Authorization:  `Bearer ${process.env.RESEND_API_KEY}`,
+      'Authorization': `Bearer ${serviceKey}`,
+      'apikey': serviceKey,
       'Content-Type': 'application/json',
+      ...(prefer ? { 'Prefer': prefer } : {})
     },
-    body: JSON.stringify(body),
+    body
   });
-
-  const responseText = await res.text();
-  if (!res.ok) throw new Error(`Resend error: ${responseText}`);
-
-  try {
-    return responseText ? JSON.parse(responseText) : {};
-  } catch {
-    return { raw: responseText };
-  }
 }
 
-// ── FIX 1: Find user OR auto-create if not found ──────────────────────────
-async function findOrCreateUser(supabase, { userId, email, fullName, phone, now }) {
-  // Try by ID first
-  if (userId) {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle();
-    if (error) throw new Error(`User lookup failed: ${error.message}`);
-    if (data) return { user: data, created: false };
-  }
+async function getExistingRedemptionCount(code) {
+  const table = process.env.FOUNDER_PROMO_TABLE || DEFAULT_PROMO_TABLE;
+  const encodedCode = encodeURIComponent(code);
 
-  // Try by email
-  const { data, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('email', email)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) throw new Error(`User lookup failed: ${error.message}`);
-  if (data) return { user: data, created: false };
-
-  // AUTO-CREATE — new pipeline users arrive without a prior signup record
-  console.log(`[PromoRedeem] No user record for ${email} — auto-creating`);
-  const { data: newUser, error: createErr } = await supabase
-    .from('users')
-    .insert({
-      email,
-      full_name:  fullName || email,
-      phone:      phone    || null,
-      source:     'promo_redemption',
-      created_at: now,
-      updated_at: now,
-    })
-    .select('*')
-    .single();
-
-  if (createErr) throw new Error(`User auto-create failed: ${createErr.message}`);
-  console.log(`[PromoRedeem] User created: ${newUser.id}`);
-  return { user: newUser, created: true };
-}
-
-// ── Site lookup ────────────────────────────────────────────────────────────
-async function findSelectedSite(supabase, { siteId, buildId, email }) {
-  const requestedId = safeString(siteId || buildId);
-
-  if (requestedId) {
-    const { data, error } = await supabase
-      .from('sites')
-      .select('*')
-      .eq('id', requestedId)
-      .maybeSingle();
-    if (error) throw new Error(`Build lookup failed: ${error.message}`);
-    if (data) return data;
-  }
-
-  const { data, error } = await supabase
-    .from('sites')
-    .select('*')
-    .eq('email', email)
-    .order('updated_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) throw new Error(`Build lookup failed: ${error.message}`);
-  return data || null;
-}
-
-// ── FIX 3: Idempotency — check for pending_email rows to retry ────────────
-async function findExistingRedemption(supabase, { email, userId }) {
-  let query = supabase
-    .from('promo_redemptions')
-    .select('id,status,created_at,html_delivery_status')
-    .eq('promo_type', PROMO_TYPE)
-    .order('created_at', { ascending: false })
-    .limit(1);
-
-  query = userId ? query.eq('user_id', userId) : query.eq('email', email);
-
-  const { data, error } = await query.maybeSingle();
-  if (error) throw new Error(`Promo lookup failed: ${error.message}`);
-  return data || null;
-}
-
-// ── Build email HTML ───────────────────────────────────────────────────────
-function buildCustomerEmail({ safeFullName, safeBusinessName, hasAttachment }) {
-  const attachmentNote = hasAttachment
-    ? `Your custom website file for <strong style="color:#ffffff;">${safeBusinessName}</strong> is attached to this email as <strong style="color:#ffffff;">index.html</strong>.`
-    : `Your website for <strong style="color:#ffffff;">${safeBusinessName}</strong> is being prepared. You'll receive a follow-up email with your file shortly.`;
-
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#080c10;color:#f0f6fc;font-family:Arial,sans-serif;">
-  <div style="max-width:640px;margin:0 auto;padding:32px 24px;">
-    <div style="border:1px solid #1c2430;background:#0f1419;border-radius:18px;padding:28px;">
-      <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#f0a500;font-weight:700;">AI4 Website Design</div>
-      <h1 style="font-size:24px;line-height:1.25;margin:14px 0 12px;color:#f0f6fc;">Your Founder's Offer website file is ready</h1>
-      <p style="font-size:15px;line-height:1.7;color:#c9d1d9;margin:0 0 14px;">Hi ${safeFullName},</p>
-      <p style="font-size:15px;line-height:1.7;color:#c9d1d9;margin:0 0 14px;">${attachmentNote}</p>
-      ${hasAttachment ? `<p style="font-size:15px;line-height:1.7;color:#c9d1d9;margin:0 0 14px;">Save the attached file to your computer. This is the HTML file generated from your AI4 Website Design build.</p>` : ''}
-      <p style="font-size:14px;line-height:1.7;color:#8b949e;margin:22px 0 0;">Questions? Reply to this email or contact jmitchell@ai4websitedesign.com.</p>
-    </div>
-    <p style="font-size:12px;line-height:1.6;color:#8b949e;margin:18px 0 0;text-align:center;">Powered by Apropos Group LLC</p>
-  </div>
-</body>
-</html>`;
-}
-
-function buildInternalEmail({ safeFullName, safeBusinessName, email, promoCode, redemptionId, siteId, hasAttachment, userCreated }) {
-  return `<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="font-family:Arial,sans-serif;background:#080c10;color:#f0f6fc;margin:0;padding:0;">
-  <div style="max-width:660px;margin:0 auto;padding:32px 24px;">
-    <div style="border:1px solid #1c2430;background:#0f1419;border-radius:18px;padding:24px;">
-      <div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#f0a500;font-weight:700;">Founder's Offer Promo Redeemed</div>
-      <h1 style="font-size:22px;margin:12px 0;color:#f0f6fc;">Promo fulfillment ${hasAttachment ? 'completed' : 'queued — no HTML yet'}</h1>
-      <p style="font-size:15px;line-height:1.7;color:#c9d1d9;">A Founder's Offer promo code was redeemed. Customer ${hasAttachment ? 'was emailed their website file as <strong>index.html</strong>' : 'has been notified — HTML delivery is pending'}.</p>
-      <table style="width:100%;border-collapse:collapse;margin-top:18px;font-size:14px;color:#c9d1d9;">
-        <tr><td style="padding:8px;border-bottom:1px solid #1c2430;color:#8b949e;">Customer</td><td style="padding:8px;border-bottom:1px solid #1c2430;">${safeFullName}</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #1c2430;color:#8b949e;">Email</td><td style="padding:8px;border-bottom:1px solid #1c2430;">${escapeHtml(email)}</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #1c2430;color:#8b949e;">Business</td><td style="padding:8px;border-bottom:1px solid #1c2430;">${safeBusinessName}</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #1c2430;color:#8b949e;">Promo Code</td><td style="padding:8px;border-bottom:1px solid #1c2430;">${escapeHtml(promoCode)}</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #1c2430;color:#8b949e;">Redemption ID</td><td style="padding:8px;border-bottom:1px solid #1c2430;">${escapeHtml(redemptionId)}</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #1c2430;color:#8b949e;">Site ID</td><td style="padding:8px;border-bottom:1px solid #1c2430;">${escapeHtml(siteId || 'Not persisted')}</td></tr>
-        <tr><td style="padding:8px;border-bottom:1px solid #1c2430;color:#8b949e;">HTML Attached</td><td style="padding:8px;border-bottom:1px solid #1c2430;">${hasAttachment ? '✓ Yes' : '✗ No — pending_html'}</td></tr>
-        <tr><td style="padding:8px;color:#8b949e;">User Auto-Created</td><td style="padding:8px;">${userCreated ? '✓ Yes (new pipeline user)' : 'No (existing)'}</td></tr>
-      </table>
-    </div>
-  </div>
-</body>
-</html>`;
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// MAIN HANDLER
-// ══════════════════════════════════════════════════════════════════════════
-exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers, body: '' };
-  if (event.httpMethod !== 'POST')    return json(405, { success: false, error: 'Method not allowed' });
-
-  let body;
-  try {
-    body = JSON.parse(event.body || '{}');
-  } catch {
-    return json(400, { success: false, error: 'Invalid JSON body' });
-  }
-
-  // ── Env check ─────────────────────────────────────────────────────────────
-  const allowedCodes = getAllowedPromoCodes();
-  if (!allowedCodes.length) {
-    return json(500, { success: false, error: 'Founder promo code is not configured' });
-  }
-
-  // ── Parse + validate inputs ───────────────────────────────────────────────
-  const promoCode             = normalizePromoCode(body.promo_code);
-  const email                 = normalizeEmail(body.email);
-  const userIdFromClient      = safeString(body.user_id);
-  const siteIdFromClient      = safeString(body.site_id);
-  const buildIdFromClient     = safeString(body.build_id);
-  const fullNameFromClient    = safeString(body.full_name || body.name);
-  const phoneFromClient       = safeString(body.phone);
-  const siteDataFromClient    = safeJson(body.site_data, {});
-  const businessNameFromClient = safeString(
-    body.business_name ||
-    siteDataFromClient.businessName ||
-    siteDataFromClient.business_name ||
-    'Website Build'
+  const result = await supabaseRest(
+    `${table}?select=id&promo_code=eq.${encodedCode}`,
+    { method: 'GET', prefer: 'count=exact' }
   );
 
-  if (!promoCode)                     return json(400, { success: false, error: 'Promo code is required' });
-  if (!allowedCodes.includes(promoCode)) return json(400, { success: false, error: 'Invalid promo code' });
-  if (!isValidEmail(email))           return json(400, { success: false, error: 'Valid signup email is required' });
-
-  // ── FIX 2: builtHTML is optional ─────────────────────────────────────────
-  let builtHtmlFromClient = safeString(body.built_html);
-  if (builtHtmlFromClient.length > MAX_HTML_LENGTH) {
-    return json(413, { success: false, error: 'Built HTML is too large' });
+  if (result.skipped || !result.ok) {
+    console.warn('Promo count skipped:', result.reason || result.raw || result.statusCode);
+    return null;
   }
 
-  // ── Supabase ──────────────────────────────────────────────────────────────
-  let supabase;
-  try {
-    supabase = getSupabase();
-  } catch (error) {
-    console.error('Promo configuration error:', error.message);
-    return json(500, { success: false, error: 'Promo redemption is not configured' });
+  const range = result.headers && result.headers['content-range'];
+  if (!range) return Array.isArray(result.data) ? result.data.length : null;
+
+  const match = String(range).match(/\/(\d+)$/);
+  return match ? Number(match[1]) : null;
+}
+
+async function logRedemption(record) {
+  const table = process.env.FOUNDER_PROMO_TABLE || DEFAULT_PROMO_TABLE;
+
+  const result = await supabaseRest(table, {
+    method: 'POST',
+    prefer: 'return=minimal',
+    body: record
+  });
+
+  if (result.skipped || !result.ok) {
+    console.warn('Promo redemption log skipped/failed:', result.reason || result.raw || result.statusCode);
+    return false;
   }
 
-  let redemptionId = null;
-  const now        = new Date().toISOString();
+  return true;
+}
+
+async function sendResendEmail({ to, subject, html, attachments = [] }) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM_EMAIL || 'AI4 Website Design <jmitchell@ai4websitedesign.com>';
+
+  if (!apiKey) {
+    return { ok: false, raw: 'Missing RESEND_API_KEY' };
+  }
+
+  const payload = {
+    from,
+    to,
+    subject,
+    html,
+    attachments
+  };
+
+  return requestJson({
+    hostname: 'api.resend.com',
+    path: '/emails',
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: payload,
+    timeoutMs: 12000
+  });
+}
+
+function buildCustomerEmail({ businessName }) {
+  const business = escapeHtml(businessName || 'your website');
+  return `
+    <div style="font-family:Arial,Helvetica,sans-serif;background:#050912;color:#eaf6ff;padding:28px;border-radius:16px;max-width:680px;">
+      <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#5BD3FF;font-weight:700;margin-bottom:12px;">
+        AI4 Website Design Studio
+      </div>
+      <h1 style="margin:0 0 12px;font-size:28px;line-height:1.1;color:#ffffff;">Your Founder’s Offer website file is ready.</h1>
+      <p style="font-size:15px;line-height:1.7;color:#b8c7da;margin:0 0 18px;">
+        Attached is the selected starter website design file for <strong style="color:#ffffff;">${business}</strong>.
+        Save the attachment as <strong>index.html</strong>.
+      </p>
+      <p style="font-size:14px;line-height:1.7;color:#b8c7da;margin:0;">
+        This free promo covers the starter website design file. Launch support, domain setup, hosting, updates, and business add-ons remain available as paid upgrades.
+      </p>
+    </div>
+  `;
+}
+
+function buildInternalEmail(record) {
+  return `
+    <div style="font-family:Arial,Helvetica,sans-serif;background:#071225;color:#eaf6ff;padding:28px;border-radius:16px;max-width:760px;">
+      <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#5BD3FF;font-weight:700;margin-bottom:12px;">
+        AI4 Website Design — Founder Promo Redeemed
+      </div>
+      <h2 style="margin:0 0 16px;color:#ffffff;">${escapeHtml(record.business_name || 'Website Build')}</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <tr><td style="padding:8px 0;color:#89a2bf;">Email</td><td style="padding:8px 0;color:#ffffff;">${escapeHtml(record.email)}</td></tr>
+        <tr><td style="padding:8px 0;color:#89a2bf;">Name</td><td style="padding:8px 0;color:#ffffff;">${escapeHtml(record.full_name || '—')}</td></tr>
+        <tr><td style="padding:8px 0;color:#89a2bf;">Phone</td><td style="padding:8px 0;color:#ffffff;">${escapeHtml(record.phone || '—')}</td></tr>
+        <tr><td style="padding:8px 0;color:#89a2bf;">Promo</td><td style="padding:8px 0;color:#ffffff;">${escapeHtml(record.promo_code)}</td></tr>
+        <tr><td style="padding:8px 0;color:#89a2bf;">Template</td><td style="padding:8px 0;color:#ffffff;">${escapeHtml(record.template || '—')}</td></tr>
+        <tr><td style="padding:8px 0;color:#89a2bf;">Palette</td><td style="padding:8px 0;color:#ffffff;">${escapeHtml(record.palette || '—')}</td></tr>
+        <tr><td style="padding:8px 0;color:#89a2bf;">Variation</td><td style="padding:8px 0;color:#ffffff;">${escapeHtml(String(record.variation ?? '—'))}</td></tr>
+      </table>
+    </div>
+  `;
+}
+
+exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: CORS_HEADERS, body: '' };
+  if (event.httpMethod !== 'POST') return json(405, { success: false, error: 'Method not allowed' });
 
   try {
-    // ── FIX 1: Find or auto-create user ──────────────────────────────────────
-    const { user, created: userCreated } = await findOrCreateUser(supabase, {
-      userId:   userIdFromClient,
+    const body = JSON.parse(event.body || '{}');
+
+    const submittedCode = normalizeCode(body.promo_code || body.code);
+    const configuredCode = normalizeCode(process.env.FOUNDER_PROMO_CODE || 'LAUNCHFREE');
+
+    if (!configuredCode) {
+      return json(500, { success: false, error: 'Promo code is not configured.' });
+    }
+
+    if (!submittedCode || submittedCode !== configuredCode) {
+      return json(400, { success: false, error: 'Invalid promo code.' });
+    }
+
+    const email = safeString(body.email).toLowerCase();
+    if (!isValidEmail(email)) {
+      return json(400, { success: false, error: 'A valid customer email is required before redeeming the promo code.' });
+    }
+
+    const builtHtml = safeString(body.built_html || body.html);
+    if (!builtHtml || !builtHtml.includes('<html')) {
+      return json(400, { success: false, error: 'Selected website HTML was not found. Please return to the preview and choose the website again.' });
+    }
+
+    const promoLimit = Number(process.env.FOUNDER_PROMO_LIMIT || 0);
+    if (promoLimit > 0) {
+      const currentCount = await getExistingRedemptionCount(configuredCode);
+      if (typeof currentCount === 'number' && currentCount >= promoLimit) {
+        return json(403, { success: false, error: 'This promo code has reached its redemption limit.' });
+      }
+    }
+
+    const record = {
+      promo_code: configuredCode,
       email,
-      fullName: fullNameFromClient,
-      phone:    phoneFromClient,
-      now,
-    });
-
-    // Block if already redeemed on user flag
-    if (user.founders_offer_promo_used) {
-      return json(409, { success: false, error: "Founder's Offer promo has already been redeemed for this account" });
-    }
-
-    // ── FIX 3: Idempotency — check for existing redemption row ───────────────
-    const existing = await findExistingRedemption(supabase, { email, userId: user.id });
-
-    if (existing) {
-      // Already fully redeemed — hard stop
-      if (existing.status === 'redeemed') {
-        return json(409, { success: false, error: "Founder's Offer promo has already been redeemed for this account" });
-      }
-      // pending_email = created but email never fired — fall through and retry with this ID
-      if (existing.status === 'pending_email') {
-        console.log(`[PromoRedeem] Retrying email for pending redemption ${existing.id}`);
-        redemptionId = existing.id;
-      }
-    }
-
-    // ── Site lookup ──────────────────────────────────────────────────────────
-    const site = await findSelectedSite(supabase, {
-      siteId:   siteIdFromClient,
-      buildId:  buildIdFromClient,
-      email,
-    });
-
-    const siteBuiltHtml = site && site.built_html ? safeString(site.built_html) : '';
-    const builtHtml     = siteBuiltHtml || builtHtmlFromClient;
-
-    // FIX 2: Don't hard-fail on missing HTML — flag it and continue
-    const hasAttachment = Boolean(builtHtml) && hasHtmlDocumentShape(builtHtml) && builtHtml.length <= MAX_HTML_LENGTH;
-    if (builtHtml && !hasAttachment) {
-      console.warn(`[PromoRedeem] HTML present but invalid/oversized — proceeding without attachment`);
-    }
-
-    const businessName = safeString(
-      (site && (site.business_name || site.site_name)) ||
-      businessNameFromClient ||
-      'Website Build'
-    );
-
-    const fullName = safeString(
-      (user && (user.full_name || user.name)) ||
-      fullNameFromClient ||
-      email
-    );
-
-    const phone = safeString((user && user.phone) || phoneFromClient);
-
-    const siteData =
-      site && site.site_data && typeof site.site_data === 'object'
-        ? site.site_data
-        : siteDataFromClient;
-
-    // ── Insert redemption row (only if not retrying) ──────────────────────────
-    if (!redemptionId) {
-      const { data: redemption, error: insertError } = await supabase
-        .from('promo_redemptions')
-        .insert({
-          user_id:               user.id,
-          email,
-          full_name:             fullName,
-          phone:                 phone || null,
-          promo_code:            promoCode,
-          promo_type:            PROMO_TYPE,
-          status:                'pending_email',
-          // NOTE: site_id and build_id both reference sites.id for now.
-          // If a separate builds table is added in future, build_id should reference that.
-          site_id:               site && site.id ? site.id : null,
-          build_id:              site && site.id ? site.id : null,
-          business_name:         businessName,
-          html_delivery_status:  hasAttachment ? 'pending' : 'pending_html',
-          created_at:            now,
-          redeemed_at:           now,
-          metadata: {
-            source:            'offer.html',
-            delivery_file:     'index.html',
-            client_site_id:    siteIdFromClient  || null,
-            client_build_id:   buildIdFromClient || null,
-            build_persisted:   Boolean(site && site.id),
-            has_attachment:    hasAttachment,
-            user_auto_created: userCreated,
-            site_data:         siteData,
-          },
-        })
-        .select('id')
-        .single();
-
-      if (insertError) {
-        const msg = String(insertError.message || '').toLowerCase();
-        if (msg.includes('duplicate') || msg.includes('unique')) {
-          return json(409, { success: false, error: "Founder's Offer promo has already been redeemed for this account" });
-        }
-        throw new Error(`Promo insert failed: ${insertError.message}`);
-      }
-
-      redemptionId = redemption.id;
-    }
-
-    // ── Backfill built_html on site if needed ────────────────────────────────
-    if (site && site.id && !siteBuiltHtml && builtHtmlFromClient && hasAttachment) {
-      const { error: siteUpdateError } = await supabase
-        .from('sites')
-        .update({
-          built_html: builtHtmlFromClient,
-          site_data:  siteData,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', site.id);
-
-      if (siteUpdateError) {
-        console.error('Unable to backfill built_html on site:', siteUpdateError.message);
-      }
-    }
-
-    // ── Build email payloads ─────────────────────────────────────────────────
-    const safeFullName     = escapeHtml(fullName);
-    const safeBusinessName = escapeHtml(businessName);
-
-    const customerEmailPayload = {
-      to:      email,
-      subject: 'Your AI4 Website Design file is ready',
-      html:    buildCustomerEmail({ safeFullName, safeBusinessName, hasAttachment }),
-      text:    [
-        "Your Founder's Offer website file is ready.",
-        '',
-        `Hi ${fullName},`,
-        hasAttachment
-          ? `Your custom website file for ${businessName} is attached as index.html.`
-          : `Your website for ${businessName} is being prepared. You will receive a follow-up email with your file shortly.`,
-        '',
-        'Questions? Reply to this email or contact jmitchell@ai4websitedesign.com.',
-      ].join('\n'),
-      attachments: hasAttachment
-        ? [{ filename: 'index.html', content: Buffer.from(builtHtml, 'utf8').toString('base64') }]
-        : [],
+      full_name: safeString(body.full_name || body.name),
+      phone: safeString(body.phone),
+      business_name: safeString(body.business_name || body.businessName || 'Website Build'),
+      site_data: body.site_data || body.siteData || {},
+      template: safeString(body.template),
+      palette: safeString(body.palette),
+      variation: body.variation ?? null,
+      source: 'ai4-design-studio-preview',
+      created_at: new Date().toISOString()
     };
 
-    const internalEmailPayload = {
-      to:      INTERNAL_EMAIL,
-      subject: "AI4 Founder's Offer Promo Redeemed",
-      html:    buildInternalEmail({
-        safeFullName, safeBusinessName, email, promoCode,
-        redemptionId, siteId: site && site.id ? site.id : null,
-        hasAttachment, userCreated,
-      }),
-      text: `Founder's Offer promo redeemed for ${fullName} <${email}>. Redemption ID: ${redemptionId}. HTML attached: ${hasAttachment}`,
+    await logRedemption(record);
+
+    const attachment = {
+      filename: 'index.html',
+      content: Buffer.from(builtHtml, 'utf8').toString('base64')
     };
 
-    // ── FIX 4: Fire both emails in parallel — neither blocks the other ────────
-    const [customerResult, internalResult] = await Promise.allSettled([
-      sendResendEmail(customerEmailPayload),
-      sendResendEmail(internalEmailPayload),
-    ]);
+    const customerEmail = await sendResendEmail({
+      to: email,
+      subject: 'Your AI4 Website Design Studio file is ready',
+      html: buildCustomerEmail({ businessName: record.business_name }),
+      attachments: [attachment]
+    });
 
-    // Customer email must succeed
-    if (customerResult.status === 'rejected') {
-      throw new Error(`Customer email failed: ${customerResult.reason?.message}`);
+    if (!customerEmail.ok) {
+      console.error('Customer promo email failed:', customerEmail.raw || customerEmail.statusCode);
+      return json(502, { success: false, error: 'Promo was verified, but the delivery email could not be sent. Please contact support.' });
     }
 
-    const internalWarning = internalResult.status === 'rejected'
-      ? internalResult.reason?.message
-      : null;
-
-    if (internalWarning) {
-      console.error('Internal promo notification failed:', internalWarning);
-    }
-
-    const sentAt = new Date().toISOString();
-
-    // ── Update redemption to redeemed ────────────────────────────────────────
-    const { error: redemptionUpdateError } = await supabase
-      .from('promo_redemptions')
-      .update({
-        status:                   'redeemed',
-        html_delivery_status:     hasAttachment ? 'sent' : 'pending_html',
-        customer_email_sent_at:   sentAt,
-        internal_email_sent_at:   internalResult.status === 'fulfilled' ? sentAt : null,
-        metadata: {
-          source:                           'offer.html',
-          delivery_file:                    'index.html',
-          client_site_id:                   siteIdFromClient  || null,
-          client_build_id:                  buildIdFromClient || null,
-          build_persisted:                  Boolean(site && site.id),
-          has_attachment:                   hasAttachment,
-          user_auto_created:                userCreated,
-          site_data:                        siteData,
-          internal_notification_warning:    internalWarning,
-        },
-      })
-      .eq('id', redemptionId);
-
-    if (redemptionUpdateError) {
-      throw new Error(`Promo update failed: ${redemptionUpdateError.message}`);
-    }
-
-    // ── Flag user as redeemed ─────────────────────────────────────────────────
-    const { error: userUpdateError } = await supabase
-      .from('users')
-      .update({
-        founders_offer_promo_used:            true,
-        founders_offer_promo_used_at:         sentAt,
-        founders_offer_promo_code:            promoCode,
-        founders_offer_promo_redemption_id:   redemptionId,
-        updated_at:                           sentAt,
-      })
-      .eq('id', user.id);
-
-    if (userUpdateError) {
-      throw new Error(`User promo flag update failed: ${userUpdateError.message}`);
-    }
+    const ownerTo = process.env.RESEND_TO_EMAIL || 'jmitchell@ai4websitedesign.com';
+    await sendResendEmail({
+      to: ownerTo,
+      subject: `Founder Promo Redeemed — ${record.business_name}`,
+      html: buildInternalEmail(record),
+      attachments: [attachment]
+    });
 
     return json(200, {
-      success:               true,
-      redeemed:              true,
-      redemption_id:         redemptionId,
-      user_id:               user.id,
-      user_created:          userCreated,
-      site_id:               site && site.id ? site.id : null,
-      build_id:              site && site.id ? site.id : null,
-      customer_email_sent:   true,
-      html_attached:         hasAttachment,
-      internal_email_sent:   internalResult.status === 'fulfilled',
-      warning:               internalWarning || null,
+      success: true,
+      message: 'Promo redeemed! Check your email for your website file.'
     });
-
   } catch (error) {
-    console.error('Founder promo redemption error:', error.message);
-
-    // ── Rollback: mark row as failed so it can be retried ────────────────────
-    if (redemptionId) {
-      try {
-        await supabase
-          .from('promo_redemptions')
-          .update({
-            status:               'failed_email',
-            html_delivery_status: 'failed',
-            metadata: {
-              failure_message: error.message,
-              failed_at:       new Date().toISOString(),
-            },
-          })
-          .eq('id', redemptionId);
-      } catch (updateError) {
-        console.error('Unable to record failed promo redemption:', updateError.message);
-      }
-    }
-
+    console.error('Promo redemption failed:', error);
     return json(500, {
       success: false,
-      error:   "Unable to complete Founder's Offer promo redemption right now",
+      error: 'Promo service is unavailable right now. Please try again after redeploy.'
     });
   }
 };
