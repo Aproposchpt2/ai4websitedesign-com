@@ -11,6 +11,7 @@
 // ============================================================
 
 const { createClient } = require('@supabase/supabase-js');
+const WebSocket = require('ws');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const INTERNAL_EMAIL =
@@ -24,12 +25,24 @@ const RESEND_FROM_EMAIL =
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.SUPABASE_SERVICE_KEY;
+  process.env.SUPABASE_SERVICE_KEY ||
+  process.env.SERVICE_ROLE_SECRET_KEY ||
+  process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+const supabaseOptions = {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+    detectSessionInUrl: false
+  },
+  realtime: {
+    transport: WebSocket
+  }
+};
 
 const supabase =
   supabaseUrl && supabaseServiceKey
-    ? createClient(supabaseUrl, supabaseServiceKey)
+    ? createClient(supabaseUrl, supabaseServiceKey, supabaseOptions)
     : null;
 
 const CARE_PLANS_BY_PRICE_ID = {
@@ -794,6 +807,13 @@ async function handleInvoiceEvent(eventId, invoice, eventType) {
 }
 
 exports.handler = async (event) => {
+  console.log('AI4 subscription webhook invoked:', {
+    httpMethod: event.httpMethod,
+    node_version: process.versions.node,
+    has_supabase: Boolean(supabase),
+    has_ws_transport: Boolean(WebSocket)
+  });
+
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
