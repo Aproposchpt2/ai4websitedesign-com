@@ -1,13 +1,14 @@
 'use strict';
 
 /**
- * AI4 Website Design Studio — Platinum Creative Foundry V4.5
+ * AI4 Website Design Studio — Platinum Creative Foundry V4.5 + Claude Enrichment
  * Path: netlify/functions/generate-website.js
  *
- * This function intentionally does NOT depend on prompts alone for visual quality.
- * It receives the simple customer intake, infers a premium direction, then renders
- * full handcrafted HTML variations for the preview theater.
+ * Claude enriches the 5 intake answers into premium promotional copy before
+ * the HTML builder assembles the final site. Empty cards and generic copy eliminated.
  */
+
+const Anthropic = require('@anthropic-ai/sdk');
 
 const HEADERS = {
   'Content-Type': 'application/json',
@@ -208,6 +209,8 @@ function inferDirection(a) {
 }
 
 function inferServices(a, direction) {
+  const enrichedServices = applyEnrichedServices(a);
+  if (enrichedServices && enrichedServices.length === 3) return enrichedServices;
   if (direction.serviceSet) return direction.serviceSet;
   const ideas = [
     ...splitIdeas(a.whatYouDo),
@@ -227,6 +230,8 @@ function inferServices(a, direction) {
 }
 
 function inferProof(a, direction) {
+  const enrichedProof = applyEnrichedProof(a);
+  if (enrichedProof && enrichedProof.length === 3) return enrichedProof;
   if (direction.proof) return direction.proof;
   return [
     ['Clarity', 'Visitors immediately understand who you are, what you offer, and why it matters.'],
@@ -273,6 +278,12 @@ function buildBrief(a, direction) {
 
 function buildHtml(a, options = {}) {
   const direction = options.direction || inferDirection(a);
+  const e = a._enriched || {};
+  // Use Claude-enriched hero copy when available
+  if (e.heroHeadline) direction.heroHeadline = e.heroHeadline;
+  if (e.heroDescription) direction.heroDescription = e.heroDescription;
+  if (e.featureTitle) direction.featureTitle = e.featureTitle;
+  if (e.featureCopy) direction.featureCopy = e.featureCopy;
   const t = { ...direction.tokens, ...(options.tokens || {}) };
   const services = inferServices(a, direction);
   const proof = inferProof(a, direction);
@@ -345,12 +356,102 @@ function buildTemplates(a, direction) {
   return variants.map((v) => buildHtml(a, { direction, ...v }));
 }
 
+async function enrichAnswers(a) {
+  if (!process.env.ANTHROPIC_API_KEY) return a;
+
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+  const prompt = `You are a premium website copywriter for AI4 Website Design Studio.
+A business owner answered 5 intake questions. Transform their raw answers into polished, promotional website copy.
+
+BUSINESS INTAKE:
+- Business Name: ${a.businessName}
+- What they do: ${a.whatYouDo || 'Not provided'}
+- Their customers: ${a.customers || 'Not provided'}
+- What makes them different: ${a.differentiators || 'Not provided'}
+- Additional notes: ${a.extras || 'Not provided'}
+- Primary CTA: ${a.primaryCta || 'Contact Us'}
+
+Return ONLY a valid JSON object with these exact keys:
+{
+  "heroHeadline": "A powerful 6-10 word headline that captures the business essence",
+  "heroDescription": "2-3 sentences (50-70 words) that speak directly to their customers, highlight the differentiator, and drive toward the CTA. Promotional and specific — never generic.",
+  "service1Title": "First service or offering title (4-6 words)",
+  "service1Desc": "2-3 sentence description (40-60 words) of this service — specific, benefit-driven, written for their customer",
+  "service2Title": "Second service or offering title (4-6 words)",
+  "service2Desc": "2-3 sentence description (40-60 words) — specific and compelling",
+  "service3Title": "Third service or offering title (4-6 words)",
+  "service3Desc": "2-3 sentence description (40-60 words) — specific and compelling",
+  "proof1Label": "First trust/proof point label (1-3 words)",
+  "proof1Desc": "One sentence — specific proof point about this business",
+  "proof2Label": "Second trust/proof point label (1-3 words)",
+  "proof2Desc": "One sentence — specific proof point",
+  "proof3Label": "Third trust/proof point label (1-3 words)",
+  "proof3Desc": "One sentence — specific proof point",
+  "featureTitle": "Signature section headline (6-10 words) — bold and specific to this business",
+  "featureCopy": "3-4 sentences (60-80 words) about what makes this business the premium choice. Specific, emotional, promotional.",
+  "ctaTagline": "Closing CTA section — one punchy sentence (10-15 words) to drive action"
+}
+
+Rules:
+- Use the business name throughout — never say 'your business' or 'we'
+- Every description must be specific to THIS business — no generic filler
+- Write like a premium marketing copywriter
+- The customer should feel this site was built specifically for them`;
+
+  try {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }]
+    });
+
+    const text = response.content[0].text.trim();
+    const clean = text.replace(/```json|```/g, '').trim();
+    const enriched = JSON.parse(clean);
+
+    return {
+      ...a,
+      // Replace whatYouDo + differentiators with enriched copy
+      whatYouDo: enriched.heroDescription || a.whatYouDo,
+      differentiators: enriched.featureCopy || a.differentiators,
+      extras: enriched.ctaTagline || a.extras,
+      // Attach enriched fields for HTML builder
+      _enriched: enriched
+    };
+  } catch (err) {
+    console.error('enrichAnswers error:', err.message);
+    return a; // fallback to raw answers
+  }
+}
+
+function applyEnrichedServices(a) {
+  const e = a._enriched;
+  if (!e) return null;
+  return [
+    [e.service1Title, e.service1Desc],
+    [e.service2Title, e.service2Desc],
+    [e.service3Title, e.service3Desc]
+  ].filter(([t, d]) => t && d);
+}
+
+function applyEnrichedProof(a) {
+  const e = a._enriched;
+  if (!e) return null;
+  return [
+    [e.proof1Label, e.proof1Desc],
+    [e.proof2Label, e.proof2Desc],
+    [e.proof3Label, e.proof3Desc]
+  ].filter(([l, d]) => l && d);
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: HEADERS, body: '' };
   if (event.httpMethod !== 'POST') return { statusCode: 405, headers: HEADERS, body: JSON.stringify({ success: false, error: 'Method not allowed' }) };
   try {
     const payload = JSON.parse(event.body || '{}');
-    const answers = normalizeAnswers(payload);
+    const rawAnswers = normalizeAnswers(payload);
+    const answers = await enrichAnswers(rawAnswers);
     const direction = inferDirection(answers);
     const templates = buildTemplates(answers, direction);
     const brief = buildBrief(answers, direction);
