@@ -406,15 +406,26 @@ Authority — "They are clearly the best at this"
 Exclusivity — "Not everyone gets access to this"
 Momentum — "I need to act now"
 
-BANNED FOREVER — if you write any of these, rewrite immediately:
-❌ "We help businesses..."
-❌ "Welcome to..."
-❌ "Your trusted partner in..."
-❌ "Innovative solutions..."
-❌ "Transforming your..."
-❌ "Years of experience..."
-❌ "Dedicated to excellence..."
+BANNED FOREVER — instant failure if any of these appear anywhere in your output:
+❌ "We're here when you need us"
+❌ "Here when you need us most"
+❌ "We help businesses"
+❌ "Welcome to"
+❌ "Your trusted partner"
+❌ "Innovative solutions"
+❌ "Transforming your"
+❌ "Years of experience"
+❌ "Dedicated to excellence"
+❌ "We are committed to"
+❌ "We provide"
+❌ "Our mission is"
+❌ DO NOT copy or paraphrase ANY phrase from the intake answers — TRANSFORM them
+❌ DO NOT use adjectives like "reliable", "professional", "trusted" without earning them with specifics
 ❌ Any phrase another business could use by swapping the name
+
+CRITICAL RULE: The intake answers are RAW MATERIAL. You are the refinery.
+A customer's words are the ore. Your output is the gold.
+If the customer wrote "We're here when you need us most" — your job is to find what that MEANS about their business and make it powerful. What are they really saying? Why do customers need them? What does "being there" mean in this context? Build THAT.
 
 THE BUSINESS NAME IS THE STAR.
 Everything else is supporting cast.
@@ -456,6 +467,25 @@ Return ONLY valid JSON — no markdown, no explanation:
     const jsonStr = text.replace(/```json|```/g, '').trim();
     const enriched = JSON.parse(jsonStr);
 
+    // Quality gate — reject any enriched field that echoes banned phrases
+    const BANNED = [
+      "we're here when", "here when you need", "we help businesses",
+      "welcome to", "trusted partner", "innovative solution", "transforming your",
+      "dedicated to excellence", "years of experience", "your trusted",
+      "we are committed", "we provide", "our mission is",
+    ];
+    const isBanned = (str) => str && BANNED.some(b => str.toLowerCase().includes(b));
+
+    // Replace any banned output with null so fallback triggers
+    Object.keys(enriched).forEach(k => {
+      if (isBanned(enriched[k])) {
+        console.error(`[5-Karat REJECT] Field "${k}" failed quality gate: "${enriched[k].slice(0,60)}"`);
+        enriched[k] = null;
+      }
+    });
+
+    console.log('[generate-website] Enrichment complete for:', a.businessName);
+
     return {
       ...a,
       whatYouDo: enriched.heroDescription || a.whatYouDo,
@@ -464,7 +494,7 @@ Return ONLY valid JSON — no markdown, no explanation:
       _enriched: enriched
     };
   } catch (err) {
-    console.error('[generate-website] enrichAnswers error:', err.message);
+    console.error('[generate-website] enrichAnswers FAILED:', err.message, '— using raw intake');
     return a;
   }
 }
