@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -236,10 +236,12 @@ async function handleSignup(){
     sessionStorage.setItem('ai4_phone',phone);
     if(data.user_id) sessionStorage.setItem('ai4_user_id',data.user_id);
 
-    setStatus('✓ Account created! Taking you to the design studio…','success');
+    setStatus('✓ Account created! Taking you to the site builder…','success');
 
     setTimeout(()=>{
-      window.location.href='ai4-design-studio.html';
+      const uid = data.user_id || '';
+      window.location.href = 'https://sitedesigner.ai4websitedesign.com/?' +
+        new URLSearchParams({m:uid, e:email, n:name}).toString();
     },1000);
 
   } catch(err){
@@ -260,10 +262,16 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Enter') handleSignup();
 });
 
-// If already signed up this session, skip straight to studio
+// If already signed up this session, skip straight to builder
 if(sessionStorage.getItem('ai4_email')&&sessionStorage.getItem('ai4_user_id')){
-  window.location.href='ai4-design-studio.html';
+  window.location.href = 'https://sitedesigner.ai4websitedesign.com/?' +
+    new URLSearchParams({
+      m: sessionStorage.getItem('ai4_user_id')||'',
+      e: sessionStorage.getItem('ai4_email')||'',
+      n: sessionStorage.getItem('ai4_full_name')||''
+    }).toString();
 }
 </script>
 </body>
 </html>
+
