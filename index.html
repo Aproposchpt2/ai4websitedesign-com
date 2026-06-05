@@ -5,14 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI4 Website Design Studio — Custom AI-Built Websites</title>
 <meta name="description" content="AI4 Website Design Studio builds premium, purpose-first websites using an AI design engine. Not templates. Real design direction.">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;0,6..96,700;0,6..96,800;1,6..96,400;1,6..96,500&family=Cormorant:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Jost:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#030816;--bg2:#061225;--bg3:#07152a;
   --line:rgba(184,196,217,.12);--line-s:rgba(45,184,255,.28);
   --blue:#1EA7FF;--blue2:#2DB8FF;--blue4:#5BD3FF;
   --silver:#D5DEEA;--white:#F5F8FF;--muted:#AEBED3;--muted2:#90A3BC;
-  --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;--display:'Syne',sans-serif;
+  --mono:'Jost',sans-serif;--sans:'Jost',sans-serif;--display:'Bodoni Moda',Georgia,serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -38,7 +40,7 @@ nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-co
 .hero-logo-img{position:absolute;left:50%;top:10%;width:min(720px,76%);transform:translateX(-50%);height:auto;max-height:380px;object-fit:contain;display:block;filter:drop-shadow(0 24px 60px rgba(0,0,0,.52)) drop-shadow(0 0 30px rgba(30,167,255,.22))}
 .arc-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
 .hero-h1{font-family:var(--display);font-size:clamp(2.4rem,4.8vw,4rem);font-weight:800;line-height:1.06;letter-spacing:-.05em;color:var(--white);max-width:1000px;margin:0 auto .9rem}
-.grad{background:linear-gradient(135deg,var(--white) 0%,var(--silver) 28%,var(--blue4) 64%,var(--blue2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grad{font-family:'Cormorant',serif;font-style:italic;font-weight:500;background:linear-gradient(135deg,var(--white) 0%,var(--silver) 28%,var(--blue4) 64%,var(--blue2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero-sub{font-size:clamp(.98rem,1.4vw,1.12rem);color:var(--silver);line-height:1.7;max-width:680px;margin:0 auto 1.8rem}
 .hero-actions{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.85rem}
 .btn-primary{display:inline-flex;align-items:center;gap:.65rem;background:linear-gradient(135deg,var(--white),var(--blue4) 44%,var(--blue));border:1px solid rgba(245,248,255,.55);border-radius:999px;padding:.95rem 2.1rem;font-weight:900;font-size:.96rem;color:#03101f;text-decoration:none;cursor:pointer;box-shadow:0 0 38px rgba(30,167,255,.32),inset 0 1px 0 rgba(255,255,255,.7);transition:all .22s;font-family:var(--sans)}
@@ -120,9 +122,9 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:2.2r
         <filter id="softGlow"><feGaussianBlur stdDeviation="3.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         <path id="arc" d="M 118,374 Q 188,44 550,42 Q 912,44 982,374"/>
       </defs>
-      <text font-family="Georgia,'Times New Roman',serif" font-size="43" font-weight="700" letter-spacing="8" fill="#000810" filter="url(#engrave)"><textPath href="#arc" startOffset="50%" text-anchor="middle">AI4 WEBSITE DESIGN STUDIO</textPath></text>
-      <text font-family="Georgia,'Times New Roman',serif" font-size="43" font-weight="700" letter-spacing="8" fill="url(#silver)"><textPath href="#arc" startOffset="50%" text-anchor="middle">AI4 WEBSITE DESIGN STUDIO</textPath></text>
-      <text font-family="Georgia,'Times New Roman',serif" font-size="43" font-weight="700" letter-spacing="8" fill="rgba(255,255,255,0.38)"><textPath href="#arc" startOffset="50%" text-anchor="middle">AI4 WEBSITE DESIGN STUDIO</textPath></text>
+      <text font-family="'Bodoni Moda',Georgia,serif" font-size="43" font-weight="700" letter-spacing="8" fill="#000810" filter="url(#engrave)"><textPath href="#arc" startOffset="50%" text-anchor="middle">AI4 WEBSITE DESIGN STUDIO</textPath></text>
+      <text font-family="'Bodoni Moda',Georgia,serif" font-size="43" font-weight="700" letter-spacing="8" fill="url(#silver)"><textPath href="#arc" startOffset="50%" text-anchor="middle">AI4 WEBSITE DESIGN STUDIO</textPath></text>
+      <text font-family="'Bodoni Moda',Georgia,serif" font-size="43" font-weight="700" letter-spacing="8" fill="rgba(255,255,255,0.38)"><textPath href="#arc" startOffset="50%" text-anchor="middle">AI4 WEBSITE DESIGN STUDIO</textPath></text>
       <line x1="170" y1="466" x2="398" y2="466" stroke="url(#blueGlow)" stroke-width="1" filter="url(#softGlow)" opacity="0.55"/>
       <line x1="702" y1="466" x2="930" y2="466" stroke="url(#blueGlow)" stroke-width="1" filter="url(#softGlow)" opacity="0.55"/>
     </svg>
