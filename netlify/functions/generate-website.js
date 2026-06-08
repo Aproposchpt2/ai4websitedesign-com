@@ -499,32 +499,6 @@ Return ONLY valid JSON — no markdown, no explanation:
   }
 }
 
-  try {
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 1500,
-      messages: [{ role: 'user', content: prompt }]
-    });
-
-    const text = response.content[0].text.trim();
-    const clean = text.replace(/```json|```/g, '').trim();
-    const enriched = JSON.parse(clean);
-
-    return {
-      ...a,
-      // Replace whatYouDo + differentiators with enriched copy
-      whatYouDo: enriched.heroDescription || a.whatYouDo,
-      differentiators: enriched.featureCopy || a.differentiators,
-      extras: enriched.ctaTagline || a.extras,
-      // Attach enriched fields for HTML builder
-      _enriched: enriched
-    };
-  } catch (err) {
-    console.error('enrichAnswers error:', err.message);
-    return a; // fallback to raw answers
-  }
-}
-
 function applyEnrichedServices(a) {
   const e = a._enriched;
   if (!e) return null;

@@ -1,10 +1,10 @@
 [build]
-  publish = "."
+  publish   = "."
   functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "18"
-  SECRETS_SCAN_OMIT_KEYS = "RESEND_TO_EMAIL,RESEND_FROM_EMAIL,OWNER_NOTIFICATION_EMAIL,CLIENT_NOTIFICATION_EMAIL"
+  SECRETS_SCAN_OMIT_KEYS = "RESEND_TO_EMAIL,RESEND_FROM_EMAIL,OWNER_NOTIFICATION_EMAIL,CLIENT_NOTIFICATION_EMAIL,SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,SUPABASE_SERVICE_KEY"
 
 [functions]
   node_bundler = "esbuild"
@@ -28,16 +28,16 @@
 # Friendly short routes
 [[redirects]]
   from = "/studio"
-  to = "/ai4-design-studio.html"
+  to   = "/ai4-design-studio.html"
   status = 200
 
 [[redirects]]
   from = "/preview"
-  to = "/ai4-design-studio-preview.html"
+  to   = "/ai4-design-studio-preview.html"
   status = 200
 
 # Spanish site
 [[redirects]]
   from = "/es"
-  to = "https://espanol.ai4websitedesign.com"
+  to   = "https://espanol.ai4websitedesign.com"
   status = 301
