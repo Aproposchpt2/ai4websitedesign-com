@@ -281,6 +281,12 @@ exports.handler = async (event) => {
 
     await logRedemption(record);
 
+    // Mark promo code as used so it cannot be redeemed again
+    await supabaseRest(
+      `promo_leads?promo_code=eq.\`,
+      { method: 'PATCH', body: { used: true }, prefer: 'return=minimal' }
+    );
+
     const attachment = {
       filename: 'index.html',
       content: Buffer.from(builtHtml, 'utf8').toString('base64')
