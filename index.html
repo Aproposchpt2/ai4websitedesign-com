@@ -101,6 +101,69 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:2rem
 @media(max-width:640px){.sites-row{grid-template-columns:1fr}.agents-grid{grid-template-columns:1fr}.capture-box{padding:1.75rem 1.25rem}}
 
 /* ── LOGO HERO UPGRADE ── */
+
+/* ── HERO UPGRADE OVERRIDES ── */
+.hero-eyebrow{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:.65rem !important;
+  font-family:'Jost',sans-serif !important;
+  font-size:.62rem !important;
+  font-weight:500 !important;
+  letter-spacing:.22em !important;
+  color:rgba(255,255,255,.55) !important;
+  text-transform:uppercase !important;
+  margin-bottom:1.4rem !important;
+  background:none !important;
+  border:none !important;
+  border-radius:0 !important;
+  padding:0 !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+}
+.eyebrow-line{
+  display:inline-block !important;
+  width:36px !important;
+  height:1px !important;
+  background:rgba(255,255,255,.4) !important;
+  border-radius:0 !important;
+  flex-shrink:0 !important;
+}
+.hero-h1{
+  font-family:'Bodoni Moda',Georgia,serif !important;
+  font-size:clamp(2.4rem,5vw,4.5rem) !important;
+  font-weight:400 !important;
+  line-height:1.08 !important;
+  letter-spacing:-.02em !important;
+  color:#FFFFFF !important;
+  background:none !important;
+  -webkit-text-fill-color:#FFFFFF !important;
+  -webkit-background-clip:unset !important;
+  background-clip:unset !important;
+  margin-bottom:1rem !important;
+  text-align:center !important;
+}
+.hero-h1 em, .hero-h1 .gold{
+  font-style:italic !important;
+  font-family:'Cormorant',Georgia,serif !important;
+  font-weight:400 !important;
+  color:rgba(255,255,255,.6) !important;
+  background:none !important;
+  -webkit-text-fill-color:rgba(255,255,255,.6) !important;
+  -webkit-background-clip:unset !important;
+  background-clip:unset !important;
+}
+.hero-h1 .gold{
+  font-style:italic !important;
+  font-family:'Cormorant',Georgia,serif !important;
+  font-weight:400 !important;
+  color:rgba(255,255,255,.6) !important;
+  background:none !important;
+  -webkit-text-fill-color:rgba(255,255,255,.6) !important;
+  -webkit-background-clip:unset !important;
+}
+
 .hero-eyebrow{display:flex;align-items:center;justify-content:center;gap:.65rem;font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;color:var(--blue4);text-transform:uppercase;margin-bottom:1.4rem}
 .eyebrow-line{display:inline-block;width:28px;height:1px;background:linear-gradient(90deg,transparent,var(--blue4))}
 .eyebrow-line.r{background:linear-gradient(270deg,transparent,var(--blue4))}
@@ -109,6 +172,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:2rem
 .hero-logo-img{position:absolute;left:50%;top:10%;width:min(720px,76%);transform:translateX(-50%);height:auto;max-height:380px;object-fit:contain;display:block;filter:drop-shadow(0 24px 60px rgba(0,0,0,.52)) drop-shadow(0 0 30px rgba(30,167,255,.22))}
 .arc-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400;1,6..96,500&family=Cormorant:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -126,7 +190,7 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:2rem
 </nav>
 
 <section class="hero">
-  <div class="hero-eyebrow"><span class="eyebrow-line"></span>AI4 Website Design Studio — Purpose-First Engine<span class="eyebrow-line r"></span></div>
+  <div class="hero-eyebrow"><span class="eyebrow-line"></span>AI4 Website Design Studio &nbsp;·&nbsp; Purpose-First Engine<span class="eyebrow-line r"></span></div>
   <div class="hero-logo-wrap">
     <img class="hero-logo-img" src="AI4-approved-logo.png" alt="AI4 Website Design">
     <svg class="arc-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 540" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
@@ -144,13 +208,8 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:2rem
       <line x1="702" y1="466" x2="930" y2="466" stroke="url(#blueGlow)" stroke-width="1" filter="url(#softGlow)" opacity="0.55"/>
     </svg>
   </div>
-  <h1 class="hero-h1">
-    Get Your Business or Personal<br>Promotional Website Built for a<br><span class="gold">Platinum Presence Online.</span>
-  </h1>
-  <p class="hero-sub">
-    Answer <strong>6 questions</strong>. Our AI Design Engine builds your custom website —
-    professionally designed, ready to launch. <strong>Same-day launch option available. No templates. No guesswork. No cost.</strong>
-  </p>
+  <h1 class="hero-h1">Get Your Business or Personal<br>Promotional Website Built for a<br><em>Platinum Presence Online.</em></h1>
+  <p class="hero-sub">Answer <strong>6 questions</strong>. Our AI Design Engine builds your custom website — professionally designed, ready to launch. <strong>Same-day launch option available. No templates. No guesswork. No cost.</strong></p>
   <div class="proof-bar">
     <div class="proof-item"><span>✦</span> 6 AI Agents</div>
     <div class="proof-item"><span>✦</span> 12 Design Systems</div>
