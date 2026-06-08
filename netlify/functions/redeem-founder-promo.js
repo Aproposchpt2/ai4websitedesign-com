@@ -237,36 +237,39 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body || '{}');
 
     const submittedCode = normalizeCode(body.promo_code || body.code);
-    const configuredCode = normalizeCode(process.env.FOUNDER_PROMO_CODE || 'LAUNCHFREE');
 
-    if (!configuredCode) {
-      return json(500, { success: false, error: 'Promo code is not configured.' });
+    if (!submittedCode) {
+      return json(400, { success: false, error: 'A promo code is required.' });
     }
 
-    if (!submittedCode || submittedCode !== configuredCode) {
+    // Look up the code in promo_leads table (generated per user on the landing page)
+    const promoLookup = await supabaseRest(
+      `promo_leads?promo_code=eq.${encodeURIComponent(submittedCode)}&select=id,email,promo_code,used&limit=1`,
+      { method: 'GET' }
+    );
+
+    if (!promoLookup.ok || !Array.isArray(promoLookup.data) || promoLookup.data.length === 0) {
       return json(400, { success: false, error: 'Invalid promo code.' });
+    }
+
+    const promoLead = promoLookup.data[0];
+
+    if (promoLead.used) {
+      return json(400, { success: false, error: 'This promo code has already been used.' });
     }
 
     const email = safeString(body.email).toLowerCase();
     if (!isValidEmail(email)) {
-      return json(400, { success: false, error: 'A valid customer email is required before redeeming the promo code.' });
+      return json(400, { success: false, error: 'A valid email address is required to receive your website.' });
     }
 
     const builtHtml = safeString(body.built_html || body.html);
     if (!builtHtml || !builtHtml.includes('<html')) {
-      return json(400, { success: false, error: 'Selected website HTML was not found. Please return to the preview and choose the website again.' });
-    }
-
-    const promoLimit = Number(process.env.FOUNDER_PROMO_LIMIT || 0);
-    if (promoLimit > 0) {
-      const currentCount = await getExistingRedemptionCount(configuredCode);
-      if (typeof currentCount === 'number' && currentCount >= promoLimit) {
-        return json(403, { success: false, error: 'This promo code has reached its redemption limit.' });
-      }
+      return json(400, { success: false, error: 'Selected website HTML not found. Please return to the preview and choose your website again.' });
     }
 
     const record = {
-      promo_code: configuredCode,
+      promo_code: submittedCode,
       email,
       full_name: safeString(body.full_name || body.name),
       phone: safeString(body.phone),
@@ -283,7 +286,7 @@ exports.handler = async (event) => {
 
     // Mark promo code as used so it cannot be redeemed again
     await supabaseRest(
-      `promo_leads?promo_code=eq.\`,
+      `promo_leads?promo_code=eq.${encodeURIComponent(submittedCode)}`,
       { method: 'PATCH', body: { used: true }, prefer: 'return=minimal' }
     );
 
@@ -301,13 +304,13 @@ exports.handler = async (event) => {
 
     if (!customerEmail.ok) {
       console.error('Customer promo email failed:', customerEmail.raw || customerEmail.statusCode);
-      return json(502, { success: false, error: 'Promo was verified, but the delivery email could not be sent. Please contact support.' });
+      return json(502, { success: false, error: 'Promo verified but delivery email failed. Please contact support.' });
     }
 
-    const ownerTo = process.env.RESEND_TO_EMAIL || 'jmitchell@ai4websitedesign.com';
+    const ownerTo = process.env.RESEND_TO_EMAIL;
     await sendResendEmail({
       to: ownerTo,
-      subject: `Founder Promo Redeemed — ${record.business_name}`,
+      subject: `Founder Offer Redeemed — ${record.business_name}`,
       html: buildInternalEmail(record),
       attachments: [attachment]
     });
@@ -320,7 +323,7 @@ exports.handler = async (event) => {
     console.error('Promo redemption failed:', error);
     return json(500, {
       success: false,
-      error: 'Promo service is unavailable right now. Please try again after redeploy.'
+      error: 'The promo service is unavailable right now. Please try again after the next deploy.'
     });
   }
 };
