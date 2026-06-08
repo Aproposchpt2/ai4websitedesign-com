@@ -1,20 +1,8 @@
-// verify-otp.js
-// AI4 Website Design — Returning Member Sign In
-// Verifies the emailed access code and clears it after successful verification.
+﻿'use strict';
+// verify-otp.js -- uses direct REST fetch (no Supabase JS client, no WebSocket dependency)
 
-'use strict';
-
-const { createClient } = require('@supabase/supabase-js');
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.SUPABASE_SERVICE_KEY;
-
-const supabase =
-  supabaseUrl && supabaseServiceKey
-    ? createClient(supabaseUrl, supabaseServiceKey)
-    : null;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
 
 const headers = {
   'Access-Control-Allow-Origin': '*',
@@ -23,93 +11,52 @@ const headers = {
   'Content-Type': 'application/json'
 };
 
-function normalizeEmail(value = '') {
-  return String(value || '').trim().toLowerCase();
-}
-
-function normalizeCode(value = '') {
-  return String(value || '').trim().replace(/\D/g, '').slice(0, 6);
+function sbHeaders() {
+  return { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY, 'Content-Type': 'application/json' };
 }
 
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers, body: '' };
+  if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
-  }
-
-  if (!supabase) {
-    console.error('Supabase is not configured for verify-otp.');
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Sign In is not configured yet.' }) };
+  if (!SUPABASE_URL || !SERVICE_KEY) {
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Sign in is not configured.' }) };
   }
 
   let body;
-  try {
-    body = JSON.parse(event.body || '{}');
-  } catch (err) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid request.' }) };
-  }
+  try { body = JSON.parse(event.body || '{}'); }
+  catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid request.' }) }; }
 
-  const email = normalizeEmail(body.email);
-  const code = normalizeCode(body.code);
+  const email = (body.email || '').trim().toLowerCase();
+  const code  = (body.code  || '').trim().replace(/\D/g, '').slice(0, 6);
 
-  if (!email || !code) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Email and code are required.' }) };
-  }
+  if (!email || !code) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Email and code are required.' }) };
+  if (code.length !== 6) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Please enter the 6-digit access code.' }) };
 
-  if (code.length !== 6) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Please enter the 6-digit access code.' }) };
-  }
+  const res = await fetch(
+    SUPABASE_URL + '/rest/v1/users?email=ilike.' + encodeURIComponent(email) + '&select=email,full_name,otp_code,otp_expires&limit=1',
+    { headers: sbHeaders() }
+  );
+  const rows = await res.json();
+  const user = Array.isArray(rows) && rows.length ? rows[0] : null;
 
-  const { data: user, error } = await supabase
-    .from('users')
-    .select('email, full_name, otp_code, otp_expires')
-    .ilike('email', email)
-    .maybeSingle();
+  if (!user) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Account not found. Please check your email.' }) };
+  if (!user.otp_code) return { statusCode: 400, headers, body: JSON.stringify({ error: 'No active code found. Please request a new one.' }) };
+  if (user.otp_expires && new Date() > new Date(user.otp_expires)) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Code has expired. Please request a new one.' }) };
+  if (String(user.otp_code).trim() !== code) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Incorrect code. Please try again.' }) };
 
-  if (error) {
-    console.error('OTP user lookup error:', error.message);
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Could not verify the code. Please try again.' }) };
-  }
-
-  if (!user) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Account not found. Please check your email address.' }) };
-  }
-
-  if (!user.otp_code) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'No active code was found. Please request a new one.' }) };
-  }
-
-  if (user.otp_expires && new Date() > new Date(user.otp_expires)) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Code has expired. Please request a new one.' }) };
-  }
-
-  if (String(user.otp_code).trim() !== code) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Incorrect code. Please try again.' }) };
-  }
-
-  const { error: clearError } = await supabase
-    .from('users')
-    .update({
-      otp_code: null,
-      otp_expires: null,
-      updated_at: new Date().toISOString()
-    })
-    .ilike('email', email);
-
-  if (clearError) {
-    console.error('OTP clear error:', clearError.message);
-  }
+  await fetch(
+    SUPABASE_URL + '/rest/v1/users?email=ilike.' + encodeURIComponent(email),
+    {
+      method: 'PATCH',
+      headers: Object.assign({}, sbHeaders(), { Prefer: 'return=minimal' }),
+      body: JSON.stringify({ otp_code: null, otp_expires: null, updated_at: new Date().toISOString() })
+    }
+  );
 
   return {
     statusCode: 200,
     headers,
-    body: JSON.stringify({
-      success: true,
-      user: {
-        email: user.email,
-        name: user.full_name || ''
-      }
-    })
+    body: JSON.stringify({ success: true, user: { email: user.email, name: user.full_name || '' } })
   };
 };
