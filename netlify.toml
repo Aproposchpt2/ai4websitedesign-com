@@ -9,6 +9,9 @@
 [functions]
   node_bundler = "esbuild"
 
+[functions."generate-agency"]
+  timeout = 26
+
 # Prevent stale HTML while testing and deploying
 [[headers]]
   for = "/*.html"
