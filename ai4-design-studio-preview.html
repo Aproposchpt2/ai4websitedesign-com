@@ -140,6 +140,29 @@ function load() {
     renderPreview(currentHtml);
     document.getElementById('btnSelect').style.display = '';
     setStatus('Dossier ready — click New Design for a completely different look');
+  } else if (currentAnswers && (currentAnswers.name || currentAnswers.what)) {
+    // Answers exist but HTML missing (function timed out) — auto-generate here
+    setLoading(true, 'Building your dossier…', 'Claude is crafting your agency-quality promotional site. This takes about 15 seconds.');
+    callGenerate('full').then(function(data) {
+      if (data && data.html) {
+        currentHtml    = data.html;
+        currentContent = data.content || currentContent;
+        try {
+          sessionStorage.setItem('ai4_generated_html', currentHtml);
+          sessionStorage.setItem('ai4_gen_content', JSON.stringify(currentContent));
+        } catch(e) {}
+        renderPreview(currentHtml);
+        document.getElementById('btnSelect').style.display = '';
+        setStatus('Dossier ready — click New Design for a completely different look');
+      } else {
+        document.getElementById('emptyState').classList.add('show');
+      }
+      setLoading(false);
+    }).catch(function(err) {
+      console.warn('Auto-generate failed:', err);
+      document.getElementById('emptyState').classList.add('show');
+      setLoading(false);
+    });
   } else {
     document.getElementById('emptyState').classList.add('show');
     document.getElementById('btnSelect').style.display = 'none';
