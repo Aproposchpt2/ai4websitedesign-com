@@ -236,6 +236,15 @@ h1{
 }
 .studio-input::placeholder{color:rgba(255,255,255,.25)}
 textarea.studio-input{min-height:130px;resize:vertical}
+.studio-input:-webkit-autofill,
+.studio-input:-webkit-autofill:hover,
+.studio-input:-webkit-autofill:focus{
+  -webkit-text-fill-color:#ffffff;
+  -webkit-box-shadow:0 0 0px 1000px rgba(6,18,37,.9) inset;
+  box-shadow:0 0 0px 1000px rgba(6,18,37,.9) inset;
+  transition:background-color 5000s ease-in-out 0s;
+  caret-color:#ffffff;
+}
 
 /* Contact grid */
 .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:2rem}
