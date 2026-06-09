@@ -44,3 +44,6 @@
   from = "/es"
   to   = "https://espanol.ai4websitedesign.com"
   status = 301
+[[edge_functions]]
+  path = "/api/generate-agency"
+  function = "generate-agency"
