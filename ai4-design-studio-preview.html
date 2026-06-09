@@ -110,9 +110,10 @@ body{font-family:'Inter',sans-serif;background:#030816;color:#f5f8ff;display:fle
   </div>
 
   <div class="empty" id="emptyState">
-    <div class="empty-title">No dossier yet</div>
-    <div class="empty-sub">Return to the questionnaire and answer the questions — Claude will build your site from scratch.</div>
-    <a href="ai4-design-studio.html" class="btn btn-ghost" style="margin-top:.5rem">&#8592; Back to Questionnaire</a>
+    <div class="empty-title" id="emptyTitle">Building your dossier&hellip;</div>
+    <div class="empty-sub" id="emptySub">Claude is crafting your agency-quality promotional site. This takes 15&ndash;20 seconds.</div>
+    <button class="btn btn-new" id="btnManualBuild" onclick="manualBuild()" style="margin-top:1rem;display:none">&#127760; Build My Site Now</button>
+    <a href="ai4-design-studio.html" class="btn btn-ghost" id="btnBackLink" style="margin-top:.5rem;display:none">&#8592; Back to Questionnaire</a>
   </div>
 </div>
 
@@ -140,7 +141,7 @@ function load() {
     renderPreview(currentHtml);
     document.getElementById('btnSelect').style.display = '';
     setStatus('Dossier ready — click New Design for a completely different look');
-  } else if (currentAnswers && (currentAnswers.name || currentAnswers.what)) {
+  } else if (currentAnswers) {
     // Answers exist but HTML missing (function timed out) — auto-generate here
     setLoading(true, 'Building your dossier…', 'Claude is crafting your agency-quality promotional site. This takes about 15 seconds.');
     callGenerate('full').then(function(data) {
@@ -159,11 +160,18 @@ function load() {
       }
       setLoading(false);
     }).catch(function(err) {
-      console.warn('Auto-generate failed:', err);
+      console.warn('Auto-generate failed:', err.message);
+      document.getElementById('emptyTitle').textContent = 'Generation timed out';
+      document.getElementById('emptySub').textContent = 'Click the button below to try again.';
+      document.getElementById('btnManualBuild').style.display = '';
+      document.getElementById('btnBackLink').style.display = '';
       document.getElementById('emptyState').classList.add('show');
       setLoading(false);
     });
   } else {
+    document.getElementById('emptyTitle').textContent = 'No answers found';
+    document.getElementById('emptySub').textContent = 'Please return to the questionnaire and answer all 7 questions.';
+    document.getElementById('btnBackLink').style.display = '';
     document.getElementById('emptyState').classList.add('show');
     document.getElementById('btnSelect').style.display = 'none';
   }
