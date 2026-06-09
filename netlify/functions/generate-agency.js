@@ -3,7 +3,7 @@
 // Claude acts as Creative Director building a client's digital flagship.
 // Every call produces a completely different, genuinely original promotional site.
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514';
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 
 const HEADERS = {
   'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ exports.handler = async (event) => {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 4000,
+        max_tokens: 3000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
