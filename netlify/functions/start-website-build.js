@@ -3,48 +3,55 @@
 const { randomUUID } = require('crypto');
 const { getStore } = require('@netlify/blobs');
 
-const HEADERS = {
-  'Content-Type': 'application/json',
+const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Content-Type': 'application/json'
 };
 
 function json(statusCode, payload) {
-  return { statusCode, headers: HEADERS, body: JSON.stringify(payload) };
+  return { statusCode, headers: CORS, body: JSON.stringify(payload) };
 }
-function parse(body) { try { return JSON.parse(body || '{}'); } catch { return {}; } }
-function safe(v, f = '') { if (v === null || v === undefined) return f; const s = String(v).trim(); return s || f; }
-function jobStore() { return getStore({ name: 'ai4-website-builds', consistency: 'strong' }); }
+function safeJson(body) { try { return JSON.parse(body || '{}'); } catch { return {}; } }
+function safe(value, fallback) {
+  if (value === null || value === undefined) return fallback || '';
+  const out = String(value).trim();
+  return out || fallback || '';
+}
+function getStoreRef() { return getStore('ai4-platinum-build-jobs'); }
 function originFromEvent(event) {
   const host = event.headers.host || event.headers.Host;
   const proto = event.headers['x-forwarded-proto'] || 'https';
-  return host ? `${proto}://${host}` : '';
+  return host ? proto + '://' + host : '';
 }
 
-exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: HEADERS, body: '' };
+exports.handler = async function(event) {
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (event.httpMethod !== 'POST') return json(405, { success: false, error: 'Method not allowed' });
 
-  const body = parse(event.body);
-  const buildId = 'ai4_' + randomUUID();
+  const body = safeJson(event.body);
+  const jobId = 'ai4-' + randomUUID();
   const now = new Date().toISOString();
+  const mode = safe(body.mode, 'full');
   const payload = {
-    buildId,
     answers: body.answers || {},
-    mode: safe(body.mode, 'full'),
+    mode,
     existingContent: body.existingContent || null,
     variationSeed: body.variationSeed || Date.now().toString(36),
-    createdAt: now,
-    updatedAt: now
+    styleSystem: body.styleSystem || null,
+    requestId: jobId
   };
 
-  const store = jobStore();
-  await store.setJSON(buildId, {
-    buildId,
+  const store = getStoreRef();
+  await store.setJSON(jobId, {
+    success: true,
+    jobId,
+    buildId: jobId,
     status: 'queued',
+    stage: 'queued',
     progress: 5,
-    message: 'Build queued',
+    message: mode === 'design' ? 'New creative direction queued.' : 'Platinum website build queued.',
     payload,
     createdAt: now,
     updatedAt: now
@@ -52,59 +59,67 @@ exports.handler = async (event) => {
 
   const origin = originFromEvent(event);
   if (!origin) {
-    await store.setJSON(buildId, {
-      buildId,
-      status: 'error',
+    await store.setJSON(jobId, {
+      success: false,
+      jobId,
+      buildId: jobId,
+      status: 'failed',
+      stage: 'dispatch-failed',
       progress: 100,
-      message: 'Unable to determine site origin for background dispatch',
+      message: 'Unable to determine site origin for background dispatch.',
       createdAt: now,
       updatedAt: new Date().toISOString()
     });
-    return json(500, { success: false, error: 'Unable to create background build job', buildId });
+    return json(500, { success: false, error: 'Unable to create background build job', jobId, buildId: jobId });
   }
 
   try {
     const dispatch = await fetch(origin + '/.netlify/functions/generate-website-background', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ jobId, payload })
     });
 
     if (!dispatch.ok && dispatch.status !== 202) {
-      const text = await dispatch.text().catch(() => '');
-      await store.setJSON(buildId, {
-        buildId,
-        status: 'error',
+      const text = await dispatch.text().catch(function(){ return ''; });
+      await store.setJSON(jobId, {
+        success: false,
+        jobId,
+        buildId: jobId,
+        status: 'failed',
+        stage: 'dispatch-failed',
         progress: 100,
-        message: 'Unable to create background build job',
+        message: 'Unable to create background build job.',
         error: text || ('HTTP ' + dispatch.status),
+        payload,
         createdAt: now,
         updatedAt: new Date().toISOString()
       });
-      return json(500, { success: false, error: 'Unable to create background build job', buildId });
+      return json(500, { success: false, error: 'Unable to create background build job', jobId, buildId: jobId });
     }
-  } catch (e) {
-    await store.setJSON(buildId, {
-      buildId,
-      status: 'error',
+  } catch (err) {
+    await store.setJSON(jobId, {
+      success: false,
+      jobId,
+      buildId: jobId,
+      status: 'failed',
+      stage: 'dispatch-failed',
       progress: 100,
-      message: 'Unable to create background build job',
-      error: safe(e.message || e),
+      message: 'Unable to create background build job.',
+      error: safe(err && err.message ? err.message : err),
+      payload,
       createdAt: now,
       updatedAt: new Date().toISOString()
     });
-    return json(500, { success: false, error: 'Unable to create background build job', buildId });
+    return json(500, { success: false, error: 'Unable to create background build job', jobId, buildId: jobId });
   }
 
-  await store.setJSON(buildId, {
-    buildId,
-    status: 'running',
-    progress: 12,
-    message: 'Platinum Agent started',
-    payload,
-    createdAt: now,
-    updatedAt: new Date().toISOString()
+  return json(202, {
+    success: true,
+    jobId,
+    buildId: jobId,
+    status: 'queued',
+    message: 'Background Platinum build started.',
+    pollUrl: '/.netlify/functions/get-build-status?jobId=' + encodeURIComponent(jobId)
   });
-
-  return json(202, { success: true, buildId, status: 'running', pollUrl: '/.netlify/functions/get-build-status?buildId=' + encodeURIComponent(buildId) });
 };
