@@ -12,25 +12,20 @@ const CORS = {
 function json(statusCode, payload) {
   return { statusCode, headers: CORS, body: JSON.stringify(payload) };
 }
-
-function safeJson(body) {
-  try { return JSON.parse(body || '{}'); }
-  catch { return {}; }
-}
-
+function safeJson(body) { try { return JSON.parse(body || '{}'); } catch { return {}; } }
 function cleanJobId(value) {
-  return String(value || '').trim().replace(/[^a-zA-Z0-9-]/g, '').slice(0, 80);
+  return String(value || '').trim().replace(/[^a-zA-Z0-9-]/g, '').slice(0, 100);
 }
 
 exports.handler = async function(event) {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
   if (!['GET', 'POST'].includes(event.httpMethod)) return json(405, { success: false, error: 'Method not allowed' });
 
-  const queryJobId = event.queryStringParameters && event.queryStringParameters.jobId;
+  const qs = event.queryStringParameters || {};
   const body = event.httpMethod === 'POST' ? safeJson(event.body) : {};
-  const jobId = cleanJobId(queryJobId || body.jobId);
+  const jobId = cleanJobId(qs.jobId || qs.buildId || qs.id || body.jobId || body.buildId || body.id);
 
-  if (!jobId) return json(400, { success: false, error: 'Missing jobId' });
+  if (!jobId) return json(400, { success: false, error: 'Missing jobId or buildId' });
 
   const store = getStore('ai4-platinum-build-jobs');
   const record = await store.get(jobId, { type: 'json' }).catch(function(){ return null; });
@@ -39,6 +34,7 @@ exports.handler = async function(event) {
     return json(404, {
       success: false,
       jobId,
+      buildId: jobId,
       status: 'missing',
       stage: 'missing',
       progress: 0,
@@ -46,5 +42,7 @@ exports.handler = async function(event) {
     });
   }
 
-  return json(200, Object.assign({ success: true, jobId }, record));
+  const response = Object.assign({ success: true, jobId, buildId: jobId }, record);
+  delete response.payload;
+  return json(200, response);
 };
