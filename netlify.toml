@@ -9,6 +9,9 @@
 [functions]
   node_bundler = "esbuild"
 
+[functions."generate-website"]
+  timeout = 26
+
 [functions."generate-agency"]
   timeout = 26
 
