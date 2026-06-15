@@ -37,16 +37,25 @@
   to   = "/ai4-design-studio.html"
   status = 200
 
+# Route all design preview traffic to the local Platinum preview page.
+# This avoids the retired external generate-agency endpoint that was returning 502.
 [[redirects]]
   from = "/preview"
-  to   = "/ai4-design-studio-preview.html"
+  to   = "/preview.html"
   status = 200
+
+[[redirects]]
+  from = "/ai4-design-studio-preview.html"
+  to   = "/preview.html"
+  status = 200
+  force = true
 
 # Spanish site
 [[redirects]]
   from = "/es"
   to   = "https://espanol.ai4websitedesign.com"
   status = 301
+
 [[edge_functions]]
   path = "/api/generate-agency"
   function = "generate-agency"
