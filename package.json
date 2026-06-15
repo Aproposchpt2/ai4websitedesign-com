@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.20.0",
+    "@netlify/blobs": "^8.2.0",
     "@supabase/supabase-js": "^2.105.4",
     "stripe": "^14.0.0",
     "ws": "^8.18.0"
