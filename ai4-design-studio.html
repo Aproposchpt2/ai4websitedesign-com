@@ -569,48 +569,18 @@ footer{
         </div>
       </div>
 
-      <!-- Q6 — Contact info -->
+      <!-- Q6 — Brand Tone -->
       <div class="form-step" data-step="6">
-        <div class="step-q-label">Step 6 — Contact Information</div>
-        <div class="step-question">How can customers reach you?</div>
-        <div class="step-hint">Fill in what applies — at least one field. This appears in your contact section and footer.</div>
-        <div class="contact-grid">
-          <div class="contact-field">
-            <label>Business Phone</label>
-            <input type="tel" class="studio-input" id="q6_phone" placeholder="(702) 555-0100" autocomplete="off">
-          </div>
-          <div class="contact-field">
-            <label>Business Email</label>
-            <input type="email" class="studio-input" id="q6_email" placeholder="hello@yourbusiness.com" autocomplete="off">
-          </div>
-          <div class="contact-field">
-            <label>Business Address</label>
-            <input type="text" class="studio-input" id="q6_address" placeholder="123 Main St, Las Vegas, NV" autocomplete="off">
-          </div>
-          <div class="contact-field">
-            <label>Website (optional)</label>
-            <input type="url" class="studio-input" id="q6_website" placeholder="https://yourbusiness.com">
-          </div>
-          <div class="contact-field">
-            <label>Facebook (optional)</label>
-            <input type="url" class="studio-input" id="q6_facebook" placeholder="https://facebook.com/yourbusiness">
-          </div>
-          <div class="contact-field">
-            <label>Instagram (optional)</label>
-            <input type="url" class="studio-input" id="q6_instagram" placeholder="https://instagram.com/yourbusiness">
-          </div>
-          <div class="contact-field">
-            <label>TikTok (optional)</label>
-            <input type="url" class="studio-input" id="q6_tiktok" placeholder="https://tiktok.com/@yourbusiness">
-          </div>
-          <div class="contact-field">
-            <label>YouTube (optional)</label>
-            <input type="url" class="studio-input" id="q6_youtube" placeholder="https://youtube.com/@yourbusiness">
-          </div>
-          <div class="contact-field">
-            <label>LinkedIn (optional)</label>
-            <input type="url" class="studio-input" id="q6_linkedin" placeholder="https://linkedin.com/in/yourname">
-          </div>
+        <div class="step-q-label">Step 6 — Brand Voice</div>
+        <div class="step-question">What tone should your website strike?</div>
+        <div class="step-hint">This shapes how the AI writes every line of your copy.</div>
+        <div class="cta-grid" id="toneGrid">
+          <button type="button" class="cta-btn" data-value="professional and polished">💼 Professional &amp; Polished</button>
+          <button type="button" class="cta-btn" data-value="warm and friendly">😊 Warm &amp; Friendly</button>
+          <button type="button" class="cta-btn" data-value="bold and confident">🔥 Bold &amp; Confident</button>
+          <button type="button" class="cta-btn" data-value="luxury and elegant">✨ Luxury &amp; Elegant</button>
+          <button type="button" class="cta-btn" data-value="trustworthy and local">🤝 Trustworthy &amp; Local</button>
+          <button type="button" class="cta-btn" data-value="energetic and modern">⚡ Energetic &amp; Modern</button>
         </div>
         <div class="step-nav">
           <button type="button" class="btn-back" onclick="prevStep()">← Back</button>
@@ -618,12 +588,24 @@ footer{
         </div>
       </div>
 
-      <!-- Q7 — Extra info -->
+      <!-- Q7 — Proof & Offers -->
       <div class="form-step" data-step="7">
-        <div class="step-q-label">Step 7 — Anything Else</div>
-        <div class="step-question">Anything else you want visitors to know?</div>
-        <div class="step-hint">Optional — but the more you share, the richer your website copy will be.</div>
-        <textarea class="studio-input" id="q7_extras" placeholder="Awards, certifications, special offers, hours, service areas, team size, founding year, a story you want to tell..." maxlength="600"></textarea>
+        <div class="step-q-label">Step 7 — Proof &amp; Offers</div>
+        <div class="step-question">What proof can you show — and any current offer?</div>
+        <div class="step-hint">Real credibility sells. Share what's true: years in business, licenses, certifications, guarantees, awards, numbers, service area, hours, and any promotion or special offer.</div>
+        <textarea class="studio-input" id="q7_extras" placeholder="Example: Licensed &amp; insured. 15 years in business, 2,000+ jobs completed, 100% satisfaction guarantee. Serving all of Clark County, 7 days a week. Free estimates this month." maxlength="700"></textarea>
+        <div class="step-nav">
+          <button type="button" class="btn-back" onclick="prevStep()">← Back</button>
+          <button type="button" class="btn-next" onclick="nextStep()">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Q8 — Testimonials -->
+      <div class="form-step" data-step="8">
+        <div class="step-q-label">Step 8 — Customer Words</div>
+        <div class="step-question">Share a few words from happy customers <span style="opacity:.55">(optional)</span></div>
+        <div class="step-hint">Paste real quotes if you have them — one per line, with a name if possible. We never invent reviews. Leave blank to skip.</div>
+        <textarea class="studio-input" id="q8_testimonials" placeholder="&ldquo;Best decision we made all year — on time and spotless.&rdquo; — Maria G.&#10;&ldquo;They saved us thousands and the work is flawless.&rdquo; — Dave R." maxlength="700"></textarea>
         <div class="step-nav">
           <button type="button" class="btn-back" onclick="prevStep()">← Back</button>
           <button type="button" class="btn-submit" onclick="submitForm()">
@@ -690,11 +672,12 @@ footer{
 
 <script>
 // ── State ──────────────────────────────────────────────────────────
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 8;
 let currentStep = 1;
 const answers = {};
 let selectedStyle = 'auto-infer-platinum';
 let selectedCta = null;
+let selectedTone = '';
 
 // ── Start ──────────────────────────────────────────────────────────
 function startStudio() {
@@ -762,12 +745,6 @@ function validateStep(step) {
   if (step === 5) {
     if (!selectedCta) { showError(step, 'Please choose what you want visitors to do.'); return false; }
   }
-  if (step === 6) {
-    const phone = document.getElementById('q6_phone').value.trim();
-    const email = document.getElementById('q6_email').value.trim();
-    const address = document.getElementById('q6_address').value.trim();
-    if (!phone && !email && !address) { showError(step, 'Please enter at least one contact method.'); return false; }
-  }
   return true;
 }
 
@@ -796,19 +773,10 @@ function collectStep(step) {
     3: () => { answers.customers = document.getElementById('q3_customers').value.trim(); },
     4: () => { answers.differentiators = document.getElementById('q4_differentiators').value.trim(); },
     5: () => { answers.primaryCta = selectedCta; },
-    6: () => {
-      answers.phone     = document.getElementById('q6_phone').value.trim();
-      answers.email     = document.getElementById('q6_email').value.trim();
-      answers.address   = document.getElementById('q6_address').value.trim();
-      answers.website   = document.getElementById('q6_website').value.trim();
-      answers.facebook  = document.getElementById('q6_facebook').value.trim();
-      answers.instagram = document.getElementById('q6_instagram').value.trim();
-      answers.tiktok    = document.getElementById('q6_tiktok').value.trim();
-      answers.youtube   = document.getElementById('q6_youtube').value.trim();
-      answers.linkedin  = document.getElementById('q6_linkedin').value.trim();
-    },
-    7: () => {
-      answers.extras = document.getElementById('q7_extras').value.trim();
+    6: () => { answers.tone = selectedTone || ''; },
+    7: () => { answers.extras = document.getElementById('q7_extras').value.trim(); },
+    8: () => {
+      answers.testimonials = document.getElementById('q8_testimonials').value.trim();
       answers.style = 'auto-infer-platinum';
       answers.designMode = 'ai4-auto-infer';
     },
@@ -825,6 +793,9 @@ document.getElementById('ctaGrid').querySelectorAll('.cta-btn').forEach(btn => {
   });
 });
 
+// ── Tone selector ──────────────────────────────────────────────────
+(function(){var g=document.getElementById('toneGrid');if(!g)return;g.querySelectorAll('.cta-btn').forEach(function(btn){btn.addEventListener('click',function(){g.querySelectorAll('.cta-btn').forEach(function(b){b.classList.remove('selected')});btn.classList.add('selected');selectedTone=btn.dataset.value;});});})();
+
 // ── Style selector ─────────────────────────────────────────────────
 function selectStyle(card) {
   const grid = document.getElementById('styleGrid');
@@ -836,8 +807,8 @@ function selectStyle(card) {
 
 // ── Submit & Pipeline ──────────────────────────────────────────────
 async function submitForm() {
-  if (!validateStep(7)) return;
-  collectStep(7);
+  if (!validateStep(8)) return;
+  collectStep(8);
   answers.style = 'auto-infer-platinum';
   answers.designMode = 'ai4-auto-infer';
   // Mark that a fresh build is actively in progress
@@ -859,10 +830,11 @@ async function submitForm() {
     what:  answers.whatYouDo       || '',
     who:   answers.customers       || '',
     diff:  answers.differentiators || '',
-    else:  answers.extras || answers.primaryCta || '',
-    email: answers.email   || '',
-    phone: answers.phone   || '',
-    site:  answers.website || ''
+    primaryCta:   answers.primaryCta   || '',
+    extras:       answers.extras       || '',
+    tone:         answers.tone         || '',
+    testimonials: answers.testimonials || '',
+    else:  answers.extras || answers.primaryCta || ''
   };
   try { sessionStorage.setItem('ai4_answers', JSON.stringify(agencyAnswers)); } catch(e) {}
   completePipeline({});
