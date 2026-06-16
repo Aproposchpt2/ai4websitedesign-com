@@ -24,7 +24,7 @@ function readJson(k,f){try{return JSON.parse(sessionStorage.getItem(k)||localSto
 function hasAnswers(){return answers&&typeof answers==='object'&&Object.keys(answers).length>0}
 function sections(s){return (text(s).match(/<section\b/gi)||[]).length}
 function invalidStored(s){const l=text(s).toLowerCase();return l.includes('fallback complete site')||l.includes('premium presence')||l.includes('generator unavailable')||l.includes('unable to create background build job')}
-function isComplete(s){return text(s).length>9000&&sections(s)>=5&&/<form[^>]+data-netlify=["']true["']/i.test(s)&&!invalidStored(s)}
+function isComplete(s){return text(s).length>4500&&sections(s)>=4&&/<form[^>]+data-netlify=["']true["']/i.test(s)&&!invalidStored(s)}
 function setButtons(disabled){['buildBtn','newBtn'].forEach(id=>{if($(id))$(id).disabled=!!disabled})}
 function setProgress(p){$('fill').style.width=Math.max(0,Math.min(100,Number(p)||0))+'%'}
 function setStatus(s){$('status').textContent=s||''}
