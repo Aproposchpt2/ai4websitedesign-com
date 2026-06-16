@@ -1,7 +1,5 @@
 'use strict';
 
-const { getStore } = require('@netlify/blobs');
-
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
@@ -9,54 +7,59 @@ const CORS = {
   'Content-Type': 'application/json'
 };
 
-function json(statusCode, payload) {
-  return { statusCode, headers: CORS, body: JSON.stringify(payload) };
+function out(code, data) { return { statusCode: code, headers: CORS, body: JSON.stringify(data) }; }
+function parse(s) { try { return JSON.parse(s || '{}'); } catch { return {}; } }
+function id(v) { return String(v || '').trim().replace(/[^a-zA-Z0-9-]/g, '').slice(0, 100); }
+function env() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+  if (!url || !key) throw new Error('Supabase is not configured');
+  return { url, key };
 }
-function safeJson(body) { try { return JSON.parse(body || '{}'); } catch { return {}; } }
-function cleanJobId(value) {
-  return String(value || '').trim().replace(/[^a-zA-Z0-9-]/g, '').slice(0, 100);
-}
-function storeRef() {
-  return getStore({ name: 'ai4-platinum-build-jobs', consistency: 'strong' });
-}
+function headers(key) { return { apikey: key, Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' }; }
 
 exports.handler = async function(event) {
   try {
     if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
-    if (!['GET', 'POST'].includes(event.httpMethod)) return json(405, { success: false, error: 'Method not allowed' });
+    if (event.httpMethod !== 'GET' && event.httpMethod !== 'POST') return out(405, { success: false, error: 'Method not allowed' });
 
-    const qs = event.queryStringParameters || {};
-    const body = event.httpMethod === 'POST' ? safeJson(event.body) : {};
-    const jobId = cleanJobId(qs.jobId || qs.buildId || qs.id || body.jobId || body.buildId || body.id);
+    const q = event.queryStringParameters || {};
+    const b = event.httpMethod === 'POST' ? parse(event.body) : {};
+    const jobId = id(q.jobId || q.buildId || q.siteId || q.id || b.jobId || b.buildId || b.siteId || b.id);
+    if (!jobId) return out(400, { success: false, error: 'Missing jobId' });
 
-    if (!jobId) return json(400, { success: false, error: 'Missing jobId or buildId' });
+    const cfg = env();
+    const r = await fetch(cfg.url + '/rest/v1/sites?id=eq.' + encodeURIComponent(jobId) + '&select=*', { headers: headers(cfg.key) });
+    if (!r.ok) throw new Error('Status read failed HTTP ' + r.status + ': ' + (await r.text()).slice(0, 240));
 
-    const record = await storeRef().get(jobId, { type: 'json' }).catch(function(){ return null; });
+    const rows = await r.json();
+    const row = Array.isArray(rows) ? rows[0] : null;
+    if (!row) return out(404, { success: false, jobId, buildId: jobId, status: 'missing', stage: 'missing', progress: 0, message: 'Build job was not found.' });
 
-    if (!record) {
-      return json(404, {
-        success: false,
-        jobId,
-        buildId: jobId,
-        status: 'missing',
-        stage: 'missing',
-        progress: 0,
-        message: 'Build job was not found.'
-      });
-    }
-
-    const response = Object.assign({ success: true, jobId, buildId: jobId }, record);
-    delete response.payload;
-    return json(200, response);
-  } catch (err) {
-    console.error('get-build-status failed:', err && err.stack ? err.stack : err);
-    return json(500, {
-      success: false,
-      status: 'error',
-      stage: 'status-error',
-      progress: 0,
-      error: 'Unable to read build status',
-      detail: String(err && err.message ? err.message : err).slice(0, 500)
+    const d = row.site_data || {};
+    const status = d.status || (row.site_status === 'build_complete' ? 'completed' : row.site_status === 'build_failed' ? 'failed' : row.site_status === 'build_running' ? 'running' : 'queued');
+    const html = row.built_html || d.html || '';
+    return out(200, {
+      success: true,
+      jobId,
+      buildId: jobId,
+      siteId: jobId,
+      status,
+      stage: d.stage || status,
+      progress: d.progress || (status === 'completed' ? 100 : status === 'running' ? 40 : 5),
+      message: d.message || row.site_status || 'Build status loaded.',
+      html,
+      builtHtml: html,
+      websiteHtml: html,
+      templates: html ? [html] : [],
+      brief: d.brief || null,
+      quality: d.quality || null,
+      siteData: d.siteData || d,
+      meta: d.meta || null,
+      source: d.source || row.source || 'ai4-supabase-async-build'
     });
+  } catch (e) {
+    console.error('get-build-status failed:', e && e.stack ? e.stack : e);
+    return out(500, { success: false, status: 'error', stage: 'status-error', progress: 0, error: 'Unable to read build status', detail: String(e && e.message ? e.message : e).slice(0, 700) });
   }
 };
