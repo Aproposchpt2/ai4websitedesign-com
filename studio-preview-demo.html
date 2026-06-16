@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI4 Studio — Live Preview Ribbon (Demo)</title>
+<style>
+  :root{--chrome:#0b0e14;--chrome2:#141925;--line:rgba(255,255,255,.12);--ink:#eef3fb;--muted:#93a1b5;--accent:#5cc8ff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--chrome);color:var(--ink);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  .ribbon{background:var(--chrome2);border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+  .title{font-weight:800;letter-spacing:-.01em;font-size:.95rem;display:flex;align-items:center;gap:10px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#54e6a8;box-shadow:0 0 0 4px rgba(84,230,168,.15)}
+  .group{display:flex;align-items:center;gap:10px}
+  .group>.lab{font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .sw{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;display:grid;place-items:center;transition:transform .15s,border-color .15s;padding:0}
+  .sw:hover{transform:scale(1.12)}
+  .sw i{width:11px;height:11px;border-radius:50%;display:block}
+  .sw.on{border-color:#fff}
+  .swatches{display:flex;gap:8px}
+  .layouts{display:flex;gap:7px;flex-wrap:wrap}
+  .lb{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:8px 15px;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit}
+  .lb:hover{color:var(--ink);border-color:rgba(255,255,255,.4)}
+  .lb.on{background:#fff;color:#0b0e14;border-color:#fff}
+  .spacer{flex:1}
+  .meta{font-size:.72rem;color:var(--muted)}
+  .stage{flex:1;position:relative;background:#06080d;padding:18px}
+  iframe{width:100%;height:100%;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 24px 80px rgba(0,0,0,.5)}
+  .hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);background:rgba(11,14,20,.9);border:1px solid var(--line);border-radius:999px;padding:8px 18px;font-size:.76rem;color:var(--muted);backdrop-filter:blur(8px)}
+</style>
+</head>
+<body>
+  <div class="ribbon">
+    <div class="title"><span class="dot"></span> AI4 Studio · Live Preview</div>
+    <div class="group"><span class="lab">Color</span><div class="swatches" id="themes"></div></div>
+    <div class="group"><span class="lab">Layout</span><div class="layouts" id="layouts"></div></div>
+    <div class="group"><span class="lab">Type</span><div class="layouts" id="fonts"></div></div>
+    <div class="group"><span class="lab">Size</span><div class="layouts" id="sizes"></div></div>
+    <div class="group"><span class="lab">Style</span><div class="layouts" id="styles"></div></div>
+    <div class="spacer"></div>
+    <div class="meta" id="meta"></div>
+  </div>
+  <div class="stage">
+    <iframe id="frame" title="Website preview"></iframe>
+    <div class="hint">The agent wrote the copy once — switch <b>color</b> and <b>layout</b> to art-direct it instantly.</div>
+  </div>
+
+  <script src="ai4-render.js"></script>
+  <script>
+  // Sample elaborated brief (this is the kind of copy the agent produces).
+  var SITE={
+    businessName:'Cedar & Vine', primaryCta:'Request a Tasting',
+    phone:'(555) 880-3311', email:'events@cedarvine.com', address:'Portland, OR',
+    customers:'couples and companies planning unforgettable events',
+    eyebrow:'Event Catering',
+    headline:'Unforgettable food for unforgettable moments.',
+    subhead:'Cedar & Vine designs seasonal, farm-to-table menus and runs flawless service so you can actually enjoy your own event.',
+    valueHead:'Why hosts choose us',
+    trust:['Farm-to-table','Fully staffed','Custom menus','Five-star service'],
+    valueProps:[
+      {title:'Seasonal menus',desc:'Every menu is built around what is fresh, local, and in season — never off a generic catering sheet.'},
+      {title:'One dedicated lead',desc:'A single event coordinator owns your timeline from first tasting to final plate.'},
+      {title:'Flawless service',desc:'A trained service team keeps the night running so you never touch a detail.'}
+    ],
+    services:[
+      {name:'Weddings',desc:'Plated dinners, family-style feasts, and cocktail receptions tailored to your day.'},
+      {name:'Corporate Events',desc:'Polished catering for launches, galas, and client dinners that reflect your brand.'},
+      {name:'Private Chefs',desc:'In-home seasonal tasting menus cooked and served by our culinary team.'},
+      {name:'Full Event Staffing',desc:'Servers, bartenders, and coordinators — fully managed and fully insured.'}
+    ],
+    whyUs:[
+      'Farm-to-table ingredients sourced from growers we know by name.',
+      'A dedicated coordinator who handles every logistical detail.',
+      'A service team obsessed with timing, warmth, and flawless execution.'
+    ],
+    about:'Cedar & Vine is a Portland catering studio built on a simple belief: great events are remembered for how they felt. We pair seasonal, locally sourced food with calm, professional service so hosts can be guests at their own celebration.',
+    ctaHeadline:'Let us design your menu.',
+    ctaSub:'Book a tasting and we will craft something unforgettable.',
+    metaTitle:'Cedar & Vine — Event Catering',
+    metaDescription:'Seasonal farm-to-table catering and flawless event service for weddings and corporate events.'
+  };
+  var theme=AI4Render.THEMES[3].id, layout='showcase', font='', size='m', style='standard';
+  var frame=document.getElementById('frame'), meta=document.getElementById('meta');
+  function paint(){
+    frame.srcdoc=AI4Render.render(SITE,theme,layout,font,size,style);
+    var t=AI4Render.THEMES.filter(function(x){return x.id===theme})[0]||{};
+    var l=AI4Render.LAYOUTS.filter(function(x){return x.id===layout})[0]||{};
+    var f=AI4Render.FONTS.filter(function(x){return x.id===font})[0];
+    meta.textContent=l.name+' · '+t.name+' · '+(f?f.name:'Theme font')+' · '+size.toUpperCase()+' · '+style;
+    [].forEach.call(document.querySelectorAll('[data-theme]'),function(b){b.classList.toggle('on',b.dataset.theme===theme)});
+    [].forEach.call(document.querySelectorAll('[data-layout]'),function(b){b.classList.toggle('on',b.dataset.layout===layout)});
+    [].forEach.call(document.querySelectorAll('[data-font]'),function(b){b.classList.toggle('on',b.dataset.font===font)});
+    [].forEach.call(document.querySelectorAll('[data-size]'),function(b){b.classList.toggle('on',b.dataset.size===size)});
+    [].forEach.call(document.querySelectorAll('[data-style]'),function(b){b.classList.toggle('on',b.dataset.style===style)});
+  }
+  var ts=document.getElementById('themes');
+  AI4Render.THEMES.forEach(function(t){var b=document.createElement('button');b.dataset.theme=t.id;b.title=t.name;b.className='sw';b.style.background=t.bg;b.innerHTML='<i style="background:'+t.accent+'"></i>';b.onclick=function(){theme=t.id;paint()};ts.appendChild(b)});
+  var ls=document.getElementById('layouts');
+  AI4Render.LAYOUTS.forEach(function(l){var b=document.createElement('button');b.dataset.layout=l.id;b.className='lb';b.textContent=l.name;b.onclick=function(){layout=l.id;paint()};ls.appendChild(b)});
+  var fs=document.getElementById('fonts');
+  var themeFontBtn=document.createElement('button');themeFontBtn.dataset.font='';themeFontBtn.className='lb';themeFontBtn.textContent='Theme';themeFontBtn.onclick=function(){font='';paint()};fs.appendChild(themeFontBtn);
+  AI4Render.FONTS.forEach(function(f){var b=document.createElement('button');b.dataset.font=f.id;b.className='lb';b.textContent=f.name;b.onclick=function(){font=f.id;paint()};fs.appendChild(b)});
+  var zs=document.getElementById('sizes');
+  AI4Render.SIZES.forEach(function(z){var b=document.createElement('button');b.dataset.size=z.id;b.className='lb';b.textContent=z.name;b.onclick=function(){size=z.id;paint()};zs.appendChild(b)});
+  var ss=document.getElementById('styles');
+  AI4Render.STYLES.forEach(function(z){var b=document.createElement('button');b.dataset.style=z.id;b.className='lb';b.textContent=z.name;b.onclick=function(){style=z.id;paint()};ss.appendChild(b)});
+  paint();
+  </script>
+</body>
+</html>
