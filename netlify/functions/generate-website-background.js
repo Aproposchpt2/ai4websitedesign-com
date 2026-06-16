@@ -1,7 +1,7 @@
 'use strict';
 
-process.env.AI4_AI_TIMEOUT_MS = process.env.AI4_BACKGROUND_AI_TIMEOUT_MS || process.env.AI4_AI_TIMEOUT_MS || '90000';
-process.env.AI4_PLATINUM_MAX_TOKENS = process.env.AI4_BACKGROUND_MAX_TOKENS || process.env.AI4_PLATINUM_MAX_TOKENS || '7600';
+process.env.AI4_AI_TIMEOUT_MS = process.env.AI4_BACKGROUND_AI_TIMEOUT_MS || process.env.AI4_AI_TIMEOUT_MS || '210000';
+process.env.AI4_PLATINUM_MAX_TOKENS = process.env.AI4_BACKGROUND_MAX_TOKENS || process.env.AI4_PLATINUM_MAX_TOKENS || '12000';
 
 const generator = require('./generate-website');
 
