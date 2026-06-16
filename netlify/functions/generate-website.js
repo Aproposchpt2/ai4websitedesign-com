@@ -1,80 +1,237 @@
 'use strict';
 
-/** AI4 Website Design Studio — Creative Systems Generator V7.2 */
+/**
+ * AI4 Website Design Studio — Industry Marketing Engine V8
+ * Direction: the AI is the COPYWRITER/ART-DIRECTOR (returns a small, fast JSON
+ * marketing brief), and this renderer is the BUILDER (assembles a premium,
+ * industry-themed, promotional page from that brief). The AI never writes raw
+ * HTML, so generation can't truncate, time out, or emit invalid markup.
+ */
 const Anthropic = require('@anthropic-ai/sdk');
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
-const AI_TIMEOUT_MS = Number(process.env.AI4_AI_TIMEOUT_MS || 12000);
-const MAX_TOKENS = Number(process.env.AI4_PLATINUM_MAX_TOKENS || 8000);
+const COPY_MODEL = process.env.AI4_COPY_MODEL || process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5';
+const AI_TIMEOUT_MS = Number(process.env.AI4_AI_TIMEOUT_MS || 60000);
+const COPY_MAX_TOKENS = Number(process.env.AI4_COPY_MAX_TOKENS || 2200);
 const HEADERS = {'Content-Type':'application/json','Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'POST, OPTIONS'};
-const SYSTEMS = [
-  {id:'command',name:'Command Center',bg:'#030816',bg2:'#0b2038',accent:'#4de1ff',accent2:'#d6ff6b',light:false},
-  {id:'editorial',name:'Editorial Authority',bg:'#f7f2e8',bg2:'#e6dac8',accent:'#123a5a',accent2:'#b7791f',light:true},
-  {id:'cinematic',name:'Cinematic Split',bg:'#100614',bg2:'#27113a',accent:'#ff5c8a',accent2:'#ffc857',light:false},
-  {id:'bento',name:'Precision Bento',bg:'#07111f',bg2:'#101e32',accent:'#68a7ff',accent2:'#9df7ca',light:false}
-];
+
+/* ---------- helpers ---------- */
 function clean(v,f=''){if(Array.isArray(v))return v.map(x=>clean(x)).filter(Boolean).join(', ')||f;if(v===null||v===undefined)return f;const s=String(v).trim();return s||f}
 function esc(v){return clean(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function parse(b){try{return JSON.parse(b||'{}')}catch{return {}}}
 function pick(o,ks,f=''){for(const k of ks){const v=k.split('.').reduce((a,p)=>a&&a[p]!==undefined?a[p]:undefined,o);const s=clean(v);if(s)return s}return f}
 function slug(v){return clean(v,'your-business').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,42)||'your-business'}
-function normalize(p){const r=(p&&(p.answers||p.rawAnswers||p.siteData||p.brief||p))||{},c=r.contact||r.contactInfo||{},s=r.social||r.socialLinks||{};return{businessName:pick(r,['businessName','business_name','brandName','companyName','name'],'Your Business'),whatYouDo:pick(r,['whatYouDo','businessDescription','description','q2_whatYouDo','what','services'],'A premium business serving customers with professional solutions.'),customers:pick(r,['customers','idealCustomers','targetAudience','q3_customers','who','audience'],'customers who value trust, clarity, and a professional experience'),differentiators:pick(r,['differentiators','whatMakesDifferent','uniqueValue','q4_differentiators','diff','whyDifferent'],'clear communication, dependable service, and a polished customer experience'),extras:pick(r,['extras','optionalNotes','anythingElse','q7_extras','else','notes'],''),primaryCta:pick(r,['primaryCta','ctaText','cta','callToAction'],'Contact Us'),phone:clean(r.phone||r.phoneNumber||c.phone),email:clean(r.email||r.contactEmail||c.email),address:clean(r.address||r.location||r.serviceArea||c.address),website:clean(r.website||r.url||c.website),facebook:clean(r.facebook||s.facebook),instagram:clean(r.instagram||s.instagram),linkedin:clean(r.linkedin||s.linkedin),websiteType:pick(r,['websiteType','type','siteType'],'business')}}
-function industry(a){const t=`${a.businessName} ${a.whatYouDo} ${a.customers} ${a.differentiators} ${a.extras}`.toLowerCase();if(/ai|software|automation|technology|app|saas|cyber|cloud|data|crm|voice agent|contracting intelligence|workflow/.test(t))return'Technology / AI Services';if(/consult|accounting|tax|legal|law|insurance|real estate|broker/.test(t))return'Professional Services';if(/restaurant|food|broiler|grill|catering|chef|bbq|menu|kitchen/.test(t))return'Restaurant / Food Service';if(/construction|contractor|hvac|plumb|electric|roof|repair|remodel/.test(t))return'Construction / Skilled Trades';if(/nonprofit|ministry|church|community|foundation|outreach/.test(t))return'Community / Nonprofit';return'Premium Local Business'}
-function brief(a){const ind=industry(a);return{businessName:a.businessName,industry:ind,marketPosition:ind==='Technology / AI Services'?'modern technical operator turning complexity into business advantage':'premium brand that looks established, credible, and easy to choose',sectionPlan:['nav','hero','solutions','advantage','process','cta','contact','footer']}}
 function hash(s){let h=0;for(let i=0;i<s.length;i++)h=Math.imul(31,h)+s.charCodeAt(i)|0;return Math.abs(h)}
-function chooseSystem(a,b){const req=clean(b.styleSystem);if(req){const f=SYSTEMS.find(s=>s.id===req||s.name.toLowerCase()===req.toLowerCase());if(f)return f}const mode=clean(b.mode,'full');const seed=clean(b.seed||b.variationSeed||b.requestId,'');const basis=`${a.businessName}|${a.whatYouDo}|${mode}|${seed}|${Date.now()}|${Math.random()}`;return mode==='design'||mode==='new-design'?SYSTEMS[hash(basis)%SYSTEMS.length]:SYSTEMS[hash(`${a.businessName}|${a.whatYouDo}`)%SYSTEMS.length]}
-function products(a){const raw=`${a.whatYouDo}|${a.extras}`.split(/\||\n|;|•/).map(clean).filter(x=>x.length>12),d=['Workflow Automation','Lead Management','Conversational AI','Opportunity Intelligence','Digital Operations'];const out=raw.slice(0,5);while(out.length<5)out.push(d[out.length]);return out}
+function normalize(p){const r=(p&&(p.answers||p.rawAnswers||p.siteData||p.brief||p))||{},c=r.contact||r.contactInfo||{},s=r.social||r.socialLinks||{};return{businessName:pick(r,['businessName','business_name','brandName','companyName','name'],'Your Business'),whatYouDo:pick(r,['whatYouDo','businessDescription','description','q2_whatYouDo','what','services'],'A premium business serving customers with professional solutions.'),customers:pick(r,['customers','idealCustomers','targetAudience','q3_customers','who','audience'],'customers who value trust, clarity, and a professional experience'),differentiators:pick(r,['differentiators','whatMakesDifferent','uniqueValue','q4_differentiators','diff','whyDifferent'],'clear communication, dependable service, and a polished customer experience'),extras:pick(r,['extras','optionalNotes','anythingElse','q7_extras','else','notes'],''),primaryCta:pick(r,['primaryCta','ctaText','cta','callToAction'],'Contact Us'),phone:clean(r.phone||r.phoneNumber||c.phone),email:clean(r.email||r.contactEmail||c.email),address:clean(r.address||r.location||r.serviceArea||c.address),website:clean(r.website||r.url||c.website),facebook:clean(r.facebook||s.facebook),instagram:clean(r.instagram||s.instagram),linkedin:clean(r.linkedin||s.linkedin),websiteType:pick(r,['websiteType','type','siteType'],'business')}}
+function industry(a){
+  const t=` ${`${a.businessName} ${a.whatYouDo} ${a.customers} ${a.differentiators} ${a.extras}`.toLowerCase()} `;
+  const has=re=>re.test(t);
+  if(has(/\b(restaurant|food|catering|cater\w*|chef|chefs|bbq|menu|menus|kitchen|bakery|baker|cafe|coffee|grill|dining|culinary)\b/))return'Restaurant / Food Service';
+  if(has(/\b(construction|contractor|contracting|hvac|plumb\w*|electric\w*|roof\w*|repair|remodel\w*|renovat\w*|landscap\w*|cleaning|painting|paint|carpentry|trades?|handyman|flooring)\b/))return'Construction / Skilled Trades';
+  if(has(/\b(nonprofit|non-profit|ministry|church|community|foundation|outreach|charity|charitable|volunteer\w*)\b/))return'Community / Nonprofit';
+  if(has(/\b(ai|software|automation|saas|cyber|cloud|crm|workflow|technology|tech|app|apps|data|analytics|digital|platform)\b/))return'Technology / AI Services';
+  if(has(/\b(consult\w*|account\w*|accounting|tax|taxes|legal|law|attorney|insurance|real estate|realtor|broker\w*|finance|financial|advisor\w*|bookkeep\w*|agency)\b/))return'Professional Services';
+  return'Premium Local Business';
+}
 function countSections(h){return(clean(h).match(/<section\b/gi)||[]).length}
-function isComplete(h){const s=clean(h),l=s.toLowerCase();return l.startsWith('<!doctype html')&&l.includes('</html>')&&s.length>4500&&countSections(s)>=4}
 function validate(h){const flags=[];let score=100;if(clean(h).length<6000){score-=10;flags.push('Generated HTML is short')}if(countSections(h)<5){score-=10;flags.push('Fewer than 5 sections')}if(!/<form[^>]+data-netlify=["']true["']/i.test(h)){score-=8;flags.push('Netlify form missing')}if(!/@media/i.test(h)){score-=6;flags.push('Responsive media query missing')}score=Math.max(0,Math.min(100,score));return{score,status:score>=90?'Platinum Ready':score>=75?'Complete Website Preview':'Needs Review',flags,sectionCount:countSections(h),generatedLength:clean(h).length}}
-const ARCHETYPES=[
-  'Asymmetric editorial — an oversized off-center display headline, magazine-style column shifts, large negative space, hairline rules, imagery/text blocks that break the grid on purpose',
-  'Cinematic full-bleed — a layered atmospheric hero with depth, floating cards/panels, dramatic scale contrast, a moving marquee ribbon, bold gradient stage',
-  'Precision bento grid — modular tiles of varying span, dense rhythmic composition, monospace accents, a dashboard-like feel that still sells',
-  'Refined brutalist — heavy confident type, hard borders, high-contrast blocks, exposed grid lines, unconventional but premium',
-  'Boutique luxury — serif display type, soft paper/stone tones, fine dividers, slow elegant spacing, a high-end retail or hospitality feel',
-  'Kinetic tech console — dark command-center aesthetic, neon accent glow, terminal/data motifs, sharp panels and counters'
+
+/* ---------- themes (industry-aware look & feel) ---------- */
+const THEMES = [
+  {id:'tech',name:'Signal',disp:"'Space Grotesk',sans-serif",body:"'Inter',system-ui,sans-serif",fonts:'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap',bg:'#05080f',bg2:'#0c1626',accent:'#5cc8ff',accent2:'#c6ff5e',light:false},
+  {id:'modern',name:'Vanguard',disp:"'Syne',sans-serif",body:"'Inter',system-ui,sans-serif",fonts:'https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap',bg:'#0a0a12',bg2:'#17142b',accent:'#8b9bff',accent2:'#58e6c9',light:false},
+  {id:'editorial',name:'Broadsheet',disp:"'Fraunces',Georgia,serif",body:"'Inter',system-ui,sans-serif",fonts:'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap',bg:'#f6f1e7',bg2:'#ece3d2',accent:'#1d3b5a',accent2:'#b5722a',light:true},
+  {id:'luxury',name:'Maison',disp:"'Cormorant',Georgia,serif",body:"'Jost',sans-serif",fonts:'https://fonts.googleapis.com/css2?family=Cormorant:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap',bg:'#0e0a10',bg2:'#1d1320',accent:'#d9b25a',accent2:'#c98b6a',light:false},
+  {id:'trades',name:'Ironclad',disp:"'Archivo',sans-serif",body:"'Manrope',sans-serif",fonts:'https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap',bg:'#11161c',bg2:'#1b2530',accent:'#ff9e3d',accent2:'#e8eef5',light:false},
+  {id:'fresh',name:'Meadow',disp:"'Sora',sans-serif",body:"'IBM Plex Sans',sans-serif",fonts:'https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap',bg:'#f4f7f3',bg2:'#e4ede2',accent:'#1f6b4f',accent2:'#b9743b',light:true}
 ];
-const TYPE_SYSTEMS=['Syne + Inter','Space Grotesk + Inter','Sora + IBM Plex Sans','Archivo + Manrope','Fraunces + Inter','Cormorant Garamond + DM Sans','Bricolage Grotesque + Inter'];
-const PALETTES=['deep ink navy with electric cyan and acid-lime accents','warm bone/cream paper with deep teal and burnt amber','near-black plum with hot magenta and gold','charcoal and white with a single saturated accent and lots of air','midnight blue with iced blue and mint','off-white gallery with black type and one bold accent','forest green with cream and copper'];
-const MOODS=['confident and authoritative','bold and unconventional','elegant and premium','energetic and modern','calm, editorial, and trustworthy'];
-const MOTIONS=['subtle scroll reveals and hover lifts','a moving marquee and gentle gradient drift','sticky section transitions and animated counters','restraint over animation — let the layout carry it'];
-function directives(a,b,body){const mode=clean(body.mode,'full');const fresh=mode==='design'||mode==='new-design'||clean(body.regenerate)==='true'||clean(body.seed)||clean(body.variationSeed);const base=`${a.businessName}|${a.whatYouDo}`;const seed=fresh?`${base}|${clean(body.seed||body.variationSeed||body.requestId,'')}|${Date.now()}|${Math.random()}`:base;const h=hash(seed);return{archetype:ARCHETYPES[h%ARCHETYPES.length],type:TYPE_SYSTEMS[(h>>3)%TYPE_SYSTEMS.length],palette:PALETTES[(h>>6)%PALETTES.length],mood:MOODS[(h>>9)%MOODS.length],motion:MOTIONS[(h>>11)%MOTIONS.length]}}
-function prompt(a,b,d){return `You are an award-winning art director and senior front-end designer. Design ONE complete, original, standalone promotional website for a real business. It must look bespoke and hand-crafted — NOT a generic template, NOT a typical SaaS landing page. Someone should look at it and think a human designer made it specifically for this company.
+const INDUSTRY_THEMES = {
+  'Technology / AI Services':['tech','modern'],
+  'Professional Services':['editorial','modern','luxury'],
+  'Restaurant / Food Service':['luxury','fresh','editorial'],
+  'Construction / Skilled Trades':['trades','modern'],
+  'Community / Nonprofit':['fresh','editorial'],
+  'Premium Local Business':['modern','editorial','luxury','fresh']
+};
+function isFresh(body){const m=clean(body.mode,'full');return m==='design'||m==='new-design'||clean(body.regenerate)==='true'||!!clean(body.seed)||!!clean(body.variationSeed)}
+function seedOf(a,body){const base=`${a.businessName}|${a.whatYouDo}`;return isFresh(body)?`${base}|${clean(body.seed||body.variationSeed||body.requestId,'')}|${Date.now()}|${Math.random()}`:base}
+function chooseTheme(a,ind,body){const req=clean(body.styleSystem||body.theme);if(req){const f=THEMES.find(t=>t.id===req||t.name.toLowerCase()===req.toLowerCase());if(f)return f}const ids=INDUSTRY_THEMES[ind]||THEMES.map(t=>t.id);const id=ids[hash(seedOf(a,body))%ids.length];return THEMES.find(t=>t.id===id)||THEMES[0]}
 
-BUSINESS
-- Name: ${a.businessName}
-- Industry: ${b.industry}
-- What they do: ${a.whatYouDo}
-- Ideal customer: ${a.customers}
-- Differentiator: ${a.differentiators}
-- Primary call to action: ${a.primaryCta}${a.phone?`\n- Phone: ${a.phone}`:''}${a.email?`\n- Email: ${a.email}`:''}${a.address?`\n- Location: ${a.address}`:''}
+/* ---------- copy: AI brief + deterministic fallback ---------- */
+function listFrom(s){return clean(s).split(/[•\n;|]|,(?=\s*[A-Z])| - /).map(clean).filter(x=>x.length>3).slice(0,6)}
+function deriveBrief(a,ind){
+  const sv=listFrom(`${a.whatYouDo}|${a.extras}`).filter(x=>x.length>6);
+  let services=(sv.length?sv:[a.whatYouDo]).slice(0,4).map(x=>({name:(x.length>52?x.slice(0,52):x),desc:`Professional ${x.toLowerCase().slice(0,60)} delivered with care and attention to detail.`}));
+  while(services.length<3)services.push({name:'Dependable Service',desc:'Consistent, professional work you can count on, start to finish.'});
+  const diffs=listFrom(a.differentiators);
+  const whyUs=(diffs.length?diffs:['Clear, responsive communication','Dependable, on-time service','A polished customer experience']).slice(0,3);
+  return {
+    eyebrow:ind,
+    headline:a.businessName,
+    subhead:a.whatYouDo,
+    valueHead:'Built to deliver',
+    trust:['Trusted service','Customer-first','Quality work'],
+    valueProps:[{title:'Built around you',desc:`Made for ${clean(a.customers).slice(0,80)}.`},{title:'Quality you can see',desc:clean(a.differentiators).slice(0,90)},{title:'Easy to start',desc:'Reach out and we’ll take it from there.'}],
+    services,
+    whyUs,
+    about:`${a.businessName} serves ${clean(a.customers).slice(0,90)}. ${clean(a.whatYouDo).slice(0,140)}`,
+    ctaHeadline:'Ready to get started?',
+    ctaSub:'Get in touch and let’s talk about what you need.',
+    metaTitle:clean(a.businessName).slice(0,60),
+    metaDescription:clean(a.whatYouDo).slice(0,155)
+  };
+}
+function coerceBrief(obj,a,ind){
+  const d=deriveBrief(a,ind);obj=obj&&typeof obj==='object'?obj:{};
+  const str=(v,f)=>clean(v)||f;
+  const arrStr=(v,f)=>{const x=Array.isArray(v)?v.map(clean).filter(Boolean):[];return x.length?x:f};
+  const arrObj=(v,f)=>{const x=Array.isArray(v)?v.map(o=>o&&typeof o==='object'?{name:str(o.name||o.title,''),desc:str(o.desc||o.description,'')}:{name:clean(o),desc:''}).filter(o=>o.name):[];return x.length?x:f};
+  return {
+    eyebrow:str(obj.eyebrow,d.eyebrow),
+    headline:str(obj.headline,d.headline),
+    subhead:str(obj.subhead,d.subhead),
+    valueHead:str(obj.valueHead,d.valueHead),
+    trust:arrStr(obj.trust,d.trust).slice(0,4),
+    valueProps:arrObj(obj.valueProps,d.valueProps).map(o=>({title:o.name,desc:o.desc})).slice(0,3),
+    services:arrObj(obj.services,d.services).slice(0,5),
+    whyUs:arrStr(obj.whyUs,d.whyUs).slice(0,4),
+    about:str(obj.about,d.about),
+    ctaHeadline:str(obj.ctaHeadline,d.ctaHeadline),
+    ctaSub:str(obj.ctaSub,d.ctaSub),
+    metaTitle:str(obj.metaTitle,d.metaTitle),
+    metaDescription:str(obj.metaDescription,d.metaDescription)
+  };
+}
+async function expandBrief(a,ind){
+  if(!process.env.ANTHROPIC_API_KEY)throw new Error('ANTHROPIC_API_KEY not set');
+  const client=new Anthropic({apiKey:process.env.ANTHROPIC_API_KEY}),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),AI_TIMEOUT_MS);
+  const system='You are a senior conversion copywriter and brand strategist who writes high-converting, promotional small-business website copy. Write specific, benefit-driven copy tailored to the business, its industry, and its ideal customer. Sell the business. Never invent statistics, awards, client names, years in business, or testimonials. Output STRICT JSON only — no markdown, no commentary.';
+  const user=`Write promotional website copy for this business.
 
-CREATIVE DIRECTION (commit to this fully and make it unmistakable)
-- Layout archetype: ${d.archetype}
-- Typography: ${d.type}, loaded via Google Fonts
-- Color story: ${d.palette}
-- Mood: ${d.mood}
-- Motion / interaction: ${d.motion}
+INDUSTRY: ${ind}
+BUSINESS NAME: ${a.businessName}
+WHAT THEY DO: ${a.whatYouDo}
+IDEAL CUSTOMERS: ${a.customers}
+WHAT MAKES THEM DIFFERENT: ${a.differentiators}
+EXTRA NOTES: ${a.extras||'(none)'}
+PRIMARY CALL TO ACTION: ${a.primaryCta}
 
-DESIGN RULES
-- Invent a distinctive visual identity for this exact business. Write a custom hero headline for THEM (never "Welcome to..."). Make every section visually different from the last — vary layout, rhythm, and emphasis.
-- Write specific, persuasive copy tailored to the business and its customer. No lorem ipsum, no placeholders, no fake testimonials, no invented awards or statistics.
-- At least 6 distinct sections (e.g. hero, what they do / services, the differentiator, how it works / process, a value or proof-style section, contact). Intentional asymmetry and real visual hierarchy.
-- Modern CSS only: CSS variables, a clamp() type scale, grid/flex, gradients, smooth scroll, tasteful hover states, and a responsive @media layout for mobile. All CSS in a single <style> in the head. No external JS frameworks, no build tools.
-- Include a working contact form EXACTLY in this form so it submits on Netlify: <form name="contact" method="POST" data-netlify="true"><input type="hidden" name="form-name" value="contact"> ...your fields... </form>
+Return ONLY this JSON object:
+{
+  "eyebrow": "2-4 word category/industry tag",
+  "headline": "punchy promotional hero headline written specifically for this business, max ~10 words, never start with 'Welcome to'",
+  "subhead": "1-2 sentence hero paragraph selling the value to the ideal customer",
+  "valueHead": "short section heading introducing the benefits",
+  "trust": ["3 short proof/benefit phrases, 2-4 words each"],
+  "valueProps": [{"title":"benefit title (2-4 words)","desc":"one persuasive sentence"}],
+  "services": [{"name":"service or offering name","desc":"one persuasive sentence"}],
+  "whyUs": ["3 specific reasons to choose this business, one sentence each, grounded in their real differentiator"],
+  "about": "2-3 sentence credibility-building 'about' paragraph, no invented facts",
+  "ctaHeadline": "short final call-to-action headline",
+  "ctaSub": "one sentence nudging the visitor to act",
+  "metaTitle": "SEO title, max 60 chars",
+  "metaDescription": "SEO description, max 155 chars"
+}
+Provide 3 valueProps and 3-5 services based on what they actually do. Be concrete and industry-appropriate.`;
+  try{
+    const r=await client.messages.create({model:COPY_MODEL,max_tokens:COPY_MAX_TOKENS,system,messages:[{role:'user',content:user}]},{signal:controller.signal});
+    const txt=(r.content||[]).filter(x=>!x.type||x.type==='text').map(x=>x.text||'').join('').trim();
+    const js=txt.replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```$/,'').trim();
+    const s=js.indexOf('{'),e=js.lastIndexOf('}');
+    return JSON.parse(s>=0&&e>=0?js.slice(s,e+1):js);
+  }finally{clearTimeout(timer)}
+}
 
-OUTPUT
-- Return ONLY the HTML document, starting with <!DOCTYPE html> and ending with </html>.
-- No markdown, no code fences, no commentary before or after the HTML.`}
-async function callClaudeFast(p){if(!process.env.ANTHROPIC_API_KEY)throw new Error('ANTHROPIC_API_KEY not set');const client=new Anthropic({apiKey:process.env.ANTHROPIC_API_KEY}),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),AI_TIMEOUT_MS);try{const r=await client.messages.create({model:MODEL,max_tokens:MAX_TOKENS,messages:[{role:'user',content:p}]},{signal:controller.signal});let h=(r.content||[]).filter(x=>!x.type||x.type==='text').map(x=>x.text||'').join('\n').trim();h=h.replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/\s*```$/i,'').trim();const st=h.toLowerCase().indexOf('<!doctype html');if(st>0)h=h.slice(st);const en=h.toLowerCase().lastIndexOf('</html>');if(en>=0)h=h.slice(0,en+7);return h}finally{clearTimeout(timer)}}
-function css(sys){const text=sys.light?'#101827':'#f8fbff',muted=sys.light?'#536173':'#a7b5c8',panel=sys.light?'rgba(255,255,255,.72)':'rgba(255,255,255,.075)',line=sys.light?'rgba(15,23,42,.13)':'rgba(255,255,255,.14)';return`<style>:root{--bg:${sys.bg};--bg2:${sys.bg2};--text:${text};--muted:${muted};--panel:${panel};--line:${line};--accent:${sys.accent};--accent2:${sys.accent2}}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at 18% 4%,var(--accent),transparent 34%),linear-gradient(135deg,var(--bg),var(--bg2));color:var(--text);line-height:1.65}a{color:inherit;text-decoration:none}.wrap{max-width:1180px;margin:auto;padding:0 24px}.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:linear-gradient(135deg,#fff,var(--accent));color:#06101a;padding:14px 22px;font-weight:900;border:0}.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}nav{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}.nav{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-family:Syne,sans-serif;font-size:25px;font-weight:800}.navlinks{display:flex;align-items:center;gap:18px;color:var(--muted);font-weight:800;font-size:14px}section{padding:82px 0}.eyebrow{letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-size:12px;font-weight:900}.lead{font-size:clamp(18px,2vw,23px);color:var(--muted);max-width:820px}.kicker{font-family:Syne,sans-serif;font-size:clamp(34px,4vw,54px);line-height:1;letter-spacing:-.045em;margin:0}.cards{display:grid;gap:18px}.card{border:1px solid var(--line);border-radius:26px;padding:28px;background:var(--panel)}.card span{color:var(--accent);font-weight:900}.card h3{font-family:Syne,sans-serif;font-size:25px;line-height:1.05;margin:16px 0}.split{display:grid;grid-template-columns:.86fr 1.14fr;gap:42px;align-items:start}.list{display:grid;gap:14px}.item{border-left:3px solid var(--accent);padding:12px 0 12px 18px;color:var(--muted);font-size:18px}.contact{display:grid;grid-template-columns:.85fr 1.15fr;gap:28px}.contact-box,form{border:1px solid var(--line);border-radius:30px;background:var(--panel);padding:30px}form{display:grid;gap:14px}input,textarea{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:16px;padding:15px;font:inherit}textarea{min-height:130px}.footer{padding:32px 0;border-top:1px solid var(--line);color:var(--muted);font-size:14px}@media(max-width:980px){.split,.contact{grid-template-columns:1fr}.nav{align-items:flex-start;flex-direction:column;padding:18px 0}.navlinks{flex-wrap:wrap}}</style>`}
-function contact(a,n,cta){return`<section id="contact"><div class="wrap contact"><div class="contact-box"><h2 class="kicker">Contact ${n}</h2>${a.phone?`<p><b>Phone:</b> ${esc(a.phone)}</p>`:''}${a.email?`<p><b>Email:</b> ${esc(a.email)}</p>`:''}${a.address?`<p><b>Location:</b> ${esc(a.address)}</p>`:''}<p>Tell us what you want to streamline, automate, or organize next.</p></div><form name="contact" method="POST" data-netlify="true"><input type="hidden" name="form-name" value="contact"><input name="name" placeholder="Your name" required><input name="email" type="email" placeholder="Email address" required><input name="phone" placeholder="Phone number"><textarea name="message" placeholder="Tell us what you need"></textarea><button class="btn" type="submit">${cta}</button></form></div></section>`}
-function shell(a,sys,body){const n=esc(a.businessName),cta=esc(a.primaryCta),y=new Date().getFullYear();return`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${n}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">${css(sys)}</head><body><nav><div class="wrap nav"><div class="brand">${n}</div><div class="navlinks"><a href="#solutions">Solutions</a><a href="#advantage">Advantage</a><a href="#contact" class="btn">${cta}</a></div></div></nav><main>${body}${contact(a,n,cta)}</main><footer class="footer"><div class="wrap">© ${y} ${n}. Built with AI4 Website Design.</div></footer></body></html>`}
-function command(a,b,sys,it){const n=esc(a.businessName),w=esc(a.whatYouDo),who=esc(a.customers),d=esc(a.differentiators),cta=esc(a.primaryCta);return`<style>.hero{min-height:calc(100vh - 78px);display:grid;align-items:center}.command{display:grid;grid-template-columns:1fr 360px;gap:36px}.hero h1{font-family:Syne,sans-serif;font-size:clamp(58px,8vw,118px);line-height:.86;letter-spacing:-.08em;margin:18px 0}.console{border:1px solid var(--line);border-radius:28px;background:rgba(0,0,0,.22);padding:22px;display:grid;gap:14px}.console div{border-bottom:1px solid var(--line);padding:12px 0}.solutions{grid-template-columns:repeat(2,1fr)}.ops{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}@media(max-width:980px){.command,.solutions,.ops{grid-template-columns:1fr}}</style><section class="hero"><div class="wrap command"><div><div class="eyebrow">${esc(b.industry)} · ${esc(sys.name)}</div><h1>${n}</h1><p class="lead">${w}</p><p class="lead">Built for ${who}, this system brings automation, intelligence, and workflow clarity into one operating view.</p><p><a class="btn" href="#contact">${cta}</a> <a class="btn ghost" href="#solutions">View Systems</a></p></div><aside class="console"><div><b>Focus</b><p>${who}</p></div><div><b>Advantage</b><p>${d}</p></div><div><b>Action</b><p>${cta}</p></div></aside></div></section><section id="solutions"><div class="wrap split"><h2 class="kicker">A command layer for business movement.</h2><div class="cards solutions">${it.slice(0,4).map((x,i)=>`<article class="card"><span>0${i+1}</span><h3>${esc(x)}</h3><p>Organize the workflow, reduce manual follow-up, and move the customer toward the next action.</p></article>`).join('')}</div></div></section><section id="advantage"><div class="wrap ops">${['Capture business interest','Sort the need clearly','Surface the next action','Keep the workflow moving'].map((x,i)=>`<article class="card"><span>0${i+1}</span><h3>${x}</h3></article>`).join('')}</div></section><section><div class="wrap split"><h2 class="kicker">Why ${n} stands out.</h2><div class="list"><div class="item">${d}</div><div class="item">Built around practical business outcomes, not generic website language.</div><div class="item">Structured to show intelligence, operational value, and next-step clarity.</div></div></div></section><section><div class="wrap"><div class="card"><h2 class="kicker">Ready to put the system to work?</h2><p class="lead">Start with a direct conversation about the workflow you want to streamline.</p><a class="btn" href="#contact">${cta}</a></div></div></section>`}
-function editorial(a,b,sys,it){const n=esc(a.businessName),w=esc(a.whatYouDo),who=esc(a.customers),d=esc(a.differentiators),cta=esc(a.primaryCta);return`<style>.ed{padding:110px 0 70px}.ed h1{font-family:Syne,sans-serif;font-size:clamp(62px,10vw,146px);line-height:.82;letter-spacing:-.09em;max-width:1120px;margin:18px 0}.edcopy{display:grid;grid-template-columns:.7fr 1.3fr;gap:34px;border-top:1px solid var(--line);padding-top:28px}.feature{display:grid;grid-template-columns:120px 1fr;gap:28px;border-bottom:1px solid var(--line);padding:24px 0}.feature b{font-size:42px;font-family:Syne,sans-serif;color:var(--accent2)}.quote{border-radius:34px;background:var(--panel);border:1px solid var(--line);padding:48px}.quote p{font-family:Syne,sans-serif;font-size:clamp(30px,4vw,54px);line-height:1}@media(max-width:980px){.edcopy,.feature{grid-template-columns:1fr}}</style><section class="ed"><div class="wrap"><div class="eyebrow">${esc(b.industry)} · ${esc(sys.name)}</div><h1>${n} turns business complexity into a cleaner operating path.</h1><div class="edcopy"><p>${esc(b.marketPosition)}</p><div><p class="lead">${w}</p><p class="lead">Designed for ${who}, the page explains the offer with confidence and moves buyers toward a direct conversation.</p><p><a class="btn" href="#contact">${cta}</a></p></div></div></div></section><section id="solutions"><div class="wrap">${it.slice(0,4).map((x,i)=>`<article class="feature"><b>0${i+1}</b><div><h2>${esc(x)}</h2><p>${i===0?w:i===1?`Built for ${who}.`:i===2?`The difference is ${d}.`:'A clean path from interest to action.'}</p></div></article>`).join('')}</div></section><section id="advantage"><div class="wrap quote"><p>${n} gives visitors a sharper reason to trust, understand, and act.</p><div class="list"><div class="item">${d}</div><div class="item">Clear sections replace generic filler with specific business value.</div><div class="item">The CTA is visible, direct, and repeated at the right moments.</div></div></div></section><section><div class="wrap split"><h2 class="kicker">From first impression to action.</h2><div class="cards">${['Understand','Compare','Trust','Contact'].map((x,i)=>`<article class="card"><span>0${i+1}</span><h3>${x}</h3><p>The visitor gets the right message at the right point in the page.</p></article>`).join('')}</div></div></section>`}
-function cinematic(a,b,sys,it){const n=esc(a.businessName),w=esc(a.whatYouDo),who=esc(a.customers),d=esc(a.differentiators),cta=esc(a.primaryCta);return`<style>.cine{min-height:calc(100vh - 78px);display:grid;grid-template-columns:1.2fr .8fr}.copy{padding:90px clamp(24px,6vw,84px);display:flex;flex-direction:column;justify-content:center}.copy h1{font-family:Syne,sans-serif;font-size:clamp(58px,9vw,132px);line-height:.84;letter-spacing:-.085em;margin:18px 0}.stage{position:relative;min-height:560px;background:radial-gradient(circle at 50% 45%,var(--accent),transparent 28%),linear-gradient(145deg,var(--bg2),var(--bg));overflow:hidden}.stage:before{content:'';position:absolute;inset:10%;border:1px solid var(--line);border-radius:48px;transform:rotate(-7deg)}.ribbon{display:flex;gap:14px;overflow:hidden;border-block:1px solid var(--line);padding:18px 0;color:var(--accent2);font-weight:900;text-transform:uppercase;letter-spacing:.12em}.ribbon span{white-space:nowrap}.story{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.story .card:first-child{grid-column:span 2}@media(max-width:980px){.cine,.story{grid-template-columns:1fr}.story .card:first-child{grid-column:auto}.stage{min-height:300px}}</style><section class="cine"><div class="copy"><div class="eyebrow">${esc(sys.name)}</div><h1>${n}</h1><p class="lead">${w}</p><p class="lead">For ${who}, better business movement starts with clarity, intelligence, and action.</p><p><a class="btn" href="#contact">${cta}</a></p></div><div class="stage"></div></section><div class="ribbon">${it.concat(it).map(x=>`<span>${esc(x)}</span>`).join('')}</div><section id="solutions"><div class="wrap story"><article class="card"><span>01</span><h2 class="kicker">The offer is built around movement.</h2><p class="lead">${d}</p></article>${it.slice(0,4).map((x,i)=>`<article class="card"><span>0${i+2}</span><h3>${esc(x)}</h3><p>Give the customer a reason to keep moving forward.</p></article>`).join('')}</div></section><section id="advantage"><div class="wrap split"><h2 class="kicker">Why the story lands.</h2><div class="list"><div class="item">The visual direction is bold and memorable instead of template-safe.</div><div class="item">The message is centered on ${who}.</div><div class="item">${d}</div></div></div></section><section><div class="wrap"><div class="card"><h2 class="kicker">Start the conversation.</h2><p class="lead">See where ${n} can make your workflow more intelligent and easier to act on.</p><a class="btn" href="#contact">${cta}</a></div></div></section>`}
-function bento(a,b,sys,it){const n=esc(a.businessName),w=esc(a.whatYouDo),who=esc(a.customers),d=esc(a.differentiators),cta=esc(a.primaryCta);return`<style>.gridhero{padding:96px 0}.gridhero h1{font-family:Syne,sans-serif;font-size:clamp(56px,8vw,120px);line-height:.88;letter-spacing:-.08em;margin:18px 0}.bento{display:grid;grid-template-columns:1.1fr .9fr .9fr;grid-auto-rows:minmax(180px,auto);gap:16px}.bento .big{grid-row:span 2}.matrix{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:34px;overflow:hidden}.matrix div{padding:28px;border-right:1px solid var(--line);background:var(--panel)}.matrix div:last-child{border-right:0}@media(max-width:980px){.bento,.matrix{grid-template-columns:1fr}.bento .big{grid-row:auto}.matrix div{border-right:0;border-bottom:1px solid var(--line)}}</style><section class="gridhero"><div class="wrap"><div class="eyebrow">${esc(b.industry)} · ${esc(sys.name)}</div><h1>${n}</h1><p class="lead">${w}</p><p><a class="btn" href="#contact">${cta}</a> <a class="btn ghost" href="#solutions">See the Platform</a></p></div></section><section id="solutions"><div class="wrap bento"><article class="card big"><span>Core</span><h2 class="kicker">Built for ${who}.</h2><p class="lead">${d}</p></article>${it.slice(0,5).map((x,i)=>`<article class="card"><span>0${i+1}</span><h3>${esc(x)}</h3><p>Purpose-built messaging that connects the offer to a practical business outcome.</p></article>`).join('')}</div></section><section id="advantage"><div class="wrap matrix">${['Capture','Organize','Analyze','Recommend','Convert'].map(x=>`<div><h3>${x}</h3><p>Move the visitor from interest to action with clear business context.</p></div>`).join('')}</div></section><section><div class="wrap split"><h2 class="kicker">Designed to avoid sameness.</h2><div class="list"><div class="item">Different page architecture, different visual rhythm, different section treatment.</div><div class="item">${d}</div><div class="item">Built to feel like a business-specific promotional presence.</div></div></div></section>`}
-function fallback(a,sys){const b=brief(a),it=products(a);let body=sys.id==='editorial'?editorial(a,b,sys,it):sys.id==='cinematic'?cinematic(a,b,sys,it):sys.id==='bento'?bento(a,b,sys,it):command(a,b,sys,it);return shell(a,sys,body)}
-function ensureNetlifyForm(h,cta){if(/<form[^>]+data-netlify=["']true["']/i.test(h))return h;const block=`<section id="contact" style="padding:72px 24px;max-width:720px;margin:0 auto"><h2 style="font-size:clamp(28px,4vw,44px);margin:0 0 20px">Get in touch</h2><form name="contact" method="POST" data-netlify="true"><input type="hidden" name="form-name" value="contact"><input name="name" placeholder="Your name" required style="display:block;width:100%;margin:0 0 12px;padding:14px;border-radius:12px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font:inherit"><input name="email" type="email" placeholder="Email address" required style="display:block;width:100%;margin:0 0 12px;padding:14px;border-radius:12px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font:inherit"><textarea name="message" placeholder="Tell us what you need" style="display:block;width:100%;min-height:120px;margin:0 0 12px;padding:14px;border-radius:12px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;font:inherit"></textarea><button type="submit" style="padding:14px 28px;border-radius:999px;border:0;font-weight:800;cursor:pointer">${cta}</button></form></section>`;const i=h.toLowerCase().lastIndexOf('</body>');return i>=0?h.slice(0,i)+block+h.slice(i):h+block}
-async function build(a,body){const b=brief(a),sys=chooseSystem(a,body),d=directives(a,b,body),started=Date.now();try{let h=await callClaudeFast(prompt(a,b,d));h=ensureNetlifyForm(h,esc(a.primaryCta));if(isComplete(h))return{html:h,brief:{...b,creativeSystem:sys,direction:d},quality:validate(h),source:'ai4-platinum-agent-fast'};const fb=fallback(a,sys);return{html:fb,brief:{...b,creativeSystem:sys,direction:d},quality:{...validate(fb),score:87,status:'Complete Website Preview',flags:['AI returned incomplete HTML','Creative system fallback rendered',sys.name]},source:'ai4-creative-system-fallback'}}catch(e){const fb=fallback(a,sys);return{html:fb,brief:{...b,creativeSystem:sys,direction:d},quality:{...validate(fb),score:87,status:'Complete Website Preview',flags:['AI call did not finish inside the Netlify-safe window','Creative system fallback rendered',sys.name]},source:'ai4-creative-system-fallback',error:clean(e.message||e),elapsedMs:Date.now()-started}}}
-exports.handler=async(event)=>{if(event.httpMethod==='OPTIONS')return{statusCode:200,headers:HEADERS,body:''};if(event.httpMethod!=='POST')return{statusCode:405,headers:HEADERS,body:JSON.stringify({error:'Method not allowed'})};const body=parse(event.body),a=normalize(body),r=await build(a,body);return{statusCode:200,headers:HEADERS,body:JSON.stringify({success:true,source:r.source,html:r.html,builtHtml:r.html,websiteHtml:r.html,templates:[r.html],brief:{brandName:a.businessName,status:r.quality.status,qualityScore:r.quality.score,platinumCreativeBrief:r.brief},quality:r.quality,siteData:{businessName:a.businessName,business_name:a.businessName,designSystem:'AI4 Creative Systems Engine V7.2',industry:r.brief.industry,creativeSystem:r.brief.creativeSystem},meta:{generatedAt:new Date().toISOString(),slug:slug(a.businessName),model:MODEL,aiTimeoutMs:AI_TIMEOUT_MS,elapsedMs:r.elapsedMs||null,error:r.error||null}})}};
+/* ---------- renderer (the builder) ---------- */
+function themeCss(t){
+  const text=t.light?'#15202b':'#eef3fb',muted=t.light?'#51606f':'#9fb0c4',panel=t.light?'#ffffff':'rgba(255,255,255,.045)',line=t.light?'rgba(20,30,45,.12)':'rgba(255,255,255,.12)',navbg=t.light?'rgba(255,255,255,.82)':'rgba(5,8,15,.55)',field=t.light?'#fff':'rgba(0,0,0,.22)';
+  return `<style>
+:root{--bg:${t.bg};--bg2:${t.bg2};--text:${text};--muted:${muted};--panel:${panel};--line:${line};--accent:${t.accent};--accent2:${t.accent2};--disp:${t.disp};--body:${t.body}}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--text);background:var(--bg);line-height:1.7;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1180px,92vw);margin:0 auto}
+.btn{display:inline-flex;align-items:center;gap:.5em;border-radius:999px;padding:15px 26px;font-family:var(--body);font-weight:700;font-size:.92rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0e14;border:0;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(0,0,0,.25)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.eyebrow{font-family:var(--body);font-size:.72rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);display:inline-block;margin-bottom:1rem}
+h1,h2,h3{font-family:var(--disp);font-weight:700;line-height:1.06;letter-spacing:-.02em}
+section{padding:clamp(3.4rem,7vw,6rem) 0;border-top:1px solid var(--line)}
+.lead{color:var(--muted);font-size:clamp(1rem,1.4vw,1.18rem);max-width:62ch}
+.nav{position:sticky;top:0;z-index:50;background:${navbg};backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;min-height:72px;gap:18px}
+.brand{font-family:var(--disp);font-weight:700;font-size:1.32rem}
+.navlinks{display:flex;align-items:center;gap:22px;font-size:.92rem;color:var(--muted)}
+.navlinks a:hover{color:var(--text)}
+.hero{padding:clamp(3.4rem,8vw,7rem) 0;border-top:none}
+.hero h1{font-size:clamp(2.6rem,6vw,5rem);margin:0 0 1.1rem}
+.hero .sub{margin:0 0 2rem;font-size:clamp(1.05rem,1.7vw,1.35rem);color:var(--muted);max-width:60ch}
+.hero-split{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:1.6rem}
+.pills{display:flex;flex-wrap:wrap;gap:10px}
+.pill{padding:8px 14px;border:1px solid var(--line);border-radius:999px;font-size:.8rem;color:var(--muted)}
+.hero-art{aspect-ratio:4/5;border:1px solid var(--line);border-radius:24px;background:radial-gradient(120% 90% at 28% 8%,var(--accent),transparent 55%),radial-gradient(120% 90% at 92% 96%,var(--accent2),transparent 52%),var(--bg2);box-shadow:0 30px 90px rgba(0,0,0,.32);position:relative;overflow:hidden}
+.hero-art::after{content:'';position:absolute;inset:16% 16% auto 16%;height:1px;background:var(--line);box-shadow:0 38px 0 var(--line),0 76px 0 var(--line),0 114px 0 var(--line)}
+.hero-center{text-align:center}.hero-center .sub{margin-left:auto;margin-right:auto}.hero-center .hero-actions,.hero-center .pills{justify-content:center}
+.head{max-width:720px;margin-bottom:2.4rem}.head.center{margin:0 auto 2.6rem;text-align:center}
+.head h2{font-size:clamp(2rem,3.6vw,3.1rem);margin-bottom:.7rem}
+.grid{display:grid;gap:18px}.g3{grid-template-columns:repeat(3,1fr)}
+.card{border:1px solid var(--line);border-radius:20px;padding:28px;background:var(--panel);transition:transform .25s,border-color .25s}
+.card:hover{transform:translateY(-4px);border-color:var(--accent)}
+.card .ix{font-family:var(--disp);color:var(--accent);font-size:1.05rem;font-weight:700}
+.card h3{font-size:1.25rem;margin:.7rem 0 .5rem}.card p{color:var(--muted);font-size:.96rem}
+.why{display:grid;grid-template-columns:.8fr 1.2fr;gap:42px;align-items:start}
+.why ul{list-style:none;display:grid;gap:14px}
+.why li{border-left:3px solid var(--accent);padding:10px 0 10px 18px;color:var(--muted);font-size:1.05rem}
+.about{border:1px solid var(--line);border-radius:26px;padding:clamp(2rem,4vw,3.4rem);background:var(--panel);display:grid;gap:1.2rem}
+.about p{color:var(--muted);font-size:clamp(1.05rem,1.7vw,1.4rem);max-width:72ch}
+.cta{border:1px solid var(--line);border-radius:26px;padding:clamp(2rem,4vw,3.4rem);background:linear-gradient(135deg,var(--bg2),var(--bg));display:flex;justify-content:space-between;align-items:center;gap:28px;flex-wrap:wrap}
+.cta h2{font-size:clamp(1.8rem,3vw,2.6rem);margin-bottom:.4rem}.cta p{color:var(--muted)}
+.contact{display:grid;grid-template-columns:.9fr 1.1fr;gap:32px;align-items:start}
+.cinfo h2{font-size:clamp(1.8rem,3vw,2.6rem);margin:.4rem 0 1rem}.cinfo p{color:var(--muted);margin-bottom:.5rem}
+form{display:grid;gap:14px;border:1px solid var(--line);border-radius:24px;padding:28px;background:var(--panel)}
+input,textarea{width:100%;border:1px solid var(--line);background:${field};color:var(--text);border-radius:12px;padding:14px;font:inherit}
+input:focus,textarea:focus{outline:none;border-color:var(--accent)}textarea{min-height:130px;resize:vertical}
+footer{border-top:1px solid var(--line);padding:2.2rem 0;color:var(--muted);font-size:.85rem}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+@media(max-width:900px){.hero-split,.why,.contact{grid-template-columns:1fr}.g3{grid-template-columns:1fr}.navlinks a:not(.btn){display:none}.cta{flex-direction:column;align-items:flex-start}}
+</style>`;
+}
+function renderSite(a,t,c,variant){
+  const n=esc(a.businessName),cta=esc(a.primaryCta||'Contact Us'),y=new Date().getFullYear();
+  const pills=(c.trust||[]).slice(0,4).map(x=>`<span class="pill">${esc(x)}</span>`).join('');
+  const heroInner=`<span class="eyebrow">${esc(c.eyebrow||t.name)}</span><h1>${esc(c.headline)}</h1><p class="sub">${esc(c.subhead)}</p><div class="hero-actions"><a class="btn" href="#contact">${cta}</a><a class="btn ghost" href="#services">Explore ${n}</a></div><div class="pills">${pills}</div>`;
+  const hero=variant===1
+    ?`<section class="hero"><div class="wrap hero-center">${heroInner}</div></section>`
+    :variant===2
+    ?`<section class="hero"><div class="wrap hero-split"><div class="hero-art"></div><div>${heroInner}</div></div></section>`
+    :`<section class="hero"><div class="wrap hero-split"><div>${heroInner}</div><div class="hero-art"></div></div></section>`;
+  const vp=(c.valueProps||[]).slice(0,3);
+  const valueSec=vp.length?`<section id="why"><div class="wrap"><div class="head center"><span class="eyebrow">Why ${n}</span><h2>${esc(c.valueHead||'Built to deliver')}</h2></div><div class="grid g3">${vp.map((v,i)=>`<article class="card"><span class="ix">0${i+1}</span><h3>${esc(v.title)}</h3><p>${esc(v.desc)}</p></article>`).join('')}</div></div></section>`:'';
+  const sv=(c.services||[]).slice(0,5);
+  const firstCustomer=esc(clean(a.customers).split(',')[0]||'you');
+  const servSec=sv.length?`<section id="services"><div class="wrap"><div class="head"><span class="eyebrow">What we offer</span><h2>Services built for ${firstCustomer}.</h2><p class="lead">${esc(c.subhead)}</p></div><div class="grid g3">${sv.map((s,i)=>`<article class="card"><span class="ix">0${i+1}</span><h3>${esc(s.name)}</h3><p>${esc(s.desc)}</p></article>`).join('')}</div></div></section>`:'';
+  const why=(c.whyUs||[]).slice(0,4);
+  const whySec=why.length?`<section><div class="wrap why"><div class="head"><span class="eyebrow">The difference</span><h2>Why choose ${n}.</h2></div><ul>${why.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></section>`:'';
+  const aboutSec=c.about?`<section><div class="wrap about"><span class="eyebrow">About</span><p>${esc(c.about)}</p><div><a class="btn" href="#contact">${cta}</a></div></div></section>`:'';
+  const ctaSec=`<section><div class="wrap cta"><div><h2>${esc(c.ctaHeadline||'Ready to get started?')}</h2><p>${esc(c.ctaSub||'')}</p></div><a class="btn" href="#contact">${cta}</a></div></section>`;
+  const contactSec=`<section id="contact"><div class="wrap contact"><div class="cinfo"><span class="eyebrow">Contact</span><h2>Let’s talk.</h2>${a.phone?`<p><b>Phone:</b> ${esc(a.phone)}</p>`:''}${a.email?`<p><b>Email:</b> ${esc(a.email)}</p>`:''}${a.address?`<p><b>Location:</b> ${esc(a.address)}</p>`:''}<p class="lead">Send a message and ${n} will get right back to you.</p></div><form name="contact" method="POST" data-netlify="true"><input type="hidden" name="form-name" value="contact"><input name="name" placeholder="Your name" required><input name="email" type="email" placeholder="Email address" required><input name="phone" placeholder="Phone (optional)"><textarea name="message" placeholder="How can we help?"></textarea><button class="btn" type="submit">${cta}</button></form></div></section>`;
+  const navlinks=`<nav class="navlinks"><a href="#services">Services</a><a href="#why">Why Us</a><a href="#contact" class="btn">${cta}</a></nav>`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${esc(c.metaTitle||a.businessName)}</title><meta name="description" content="${esc(c.metaDescription||'')}"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="${t.fonts}" rel="stylesheet">${themeCss(t)}</head><body><header class="nav"><div class="wrap"><a href="#top" class="brand">${n}</a>${navlinks}</div></header><main id="top">${hero}${valueSec}${servSec}${whySec}${aboutSec}${ctaSec}${contactSec}</main><footer><div class="wrap"><span>© ${y} ${n}. All rights reserved.</span><span>Crafted with AI4 Website Design</span></div></footer></body></html>`;
+}
+
+/* ---------- build ---------- */
+async function build(a,body){
+  const ind=industry(a),t=chooseTheme(a,ind,body),started=Date.now();
+  const variant=hash(seedOf(a,body)+'|variant')%3;
+  let raw,source='ai4-marketing-engine',error=null;
+  try{raw=await expandBrief(a,ind)}
+  catch(e){raw=null;source='ai4-marketing-engine-basic';error=clean(e.message||e)}
+  const copy=coerceBrief(raw,a,ind);
+  const html=renderSite(a,t,copy,variant);
+  const quality=validate(html);
+  return {html,brief:{businessName:a.businessName,industry:ind,creativeSystem:{id:t.id,name:t.name},variant,copySource:source},quality,source,error,elapsedMs:Date.now()-started};
+}
+exports.handler=async(event)=>{
+  if(event.httpMethod==='OPTIONS')return{statusCode:200,headers:HEADERS,body:''};
+  if(event.httpMethod!=='POST')return{statusCode:405,headers:HEADERS,body:JSON.stringify({error:'Method not allowed'})};
+  const body=parse(event.body),a=normalize(body),r=await build(a,body);
+  return{statusCode:200,headers:HEADERS,body:JSON.stringify({success:true,source:r.source,html:r.html,builtHtml:r.html,websiteHtml:r.html,templates:[r.html],brief:{brandName:a.businessName,status:r.quality.status,qualityScore:r.quality.score,platinumCreativeBrief:r.brief},quality:r.quality,siteData:{businessName:a.businessName,business_name:a.businessName,designSystem:'AI4 Industry Marketing Engine V8',industry:r.brief.industry,creativeSystem:r.brief.creativeSystem},meta:{generatedAt:new Date().toISOString(),slug:slug(a.businessName),model:COPY_MODEL,aiTimeoutMs:AI_TIMEOUT_MS,elapsedMs:r.elapsedMs||null,error:r.error||null}})}};
