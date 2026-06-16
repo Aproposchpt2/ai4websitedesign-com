@@ -19,12 +19,7 @@ function safe(value, fallback) {
   const out = String(value).trim();
   return out || fallback || '';
 }
-function getStoreRef() { return getStore('ai4-platinum-build-jobs'); }
-function originFromEvent(event) {
-  const host = event.headers.host || event.headers.Host;
-  const proto = event.headers['x-forwarded-proto'] || 'https';
-  return host ? proto + '://' + host : '';
-}
+function storeRef() { return getStore('ai4-platinum-build-jobs'); }
 
 exports.handler = async function(event) {
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: CORS, body: '' };
@@ -43,8 +38,7 @@ exports.handler = async function(event) {
     requestId: jobId
   };
 
-  const store = getStoreRef();
-  await store.setJSON(jobId, {
+  await storeRef().setJSON(jobId, {
     success: true,
     jobId,
     buildId: jobId,
@@ -57,69 +51,14 @@ exports.handler = async function(event) {
     updatedAt: now
   });
 
-  const origin = originFromEvent(event);
-  if (!origin) {
-    await store.setJSON(jobId, {
-      success: false,
-      jobId,
-      buildId: jobId,
-      status: 'failed',
-      stage: 'dispatch-failed',
-      progress: 100,
-      message: 'Unable to determine site origin for background dispatch.',
-      createdAt: now,
-      updatedAt: new Date().toISOString()
-    });
-    return json(500, { success: false, error: 'Unable to create background build job', jobId, buildId: jobId });
-  }
-
-  try {
-    const dispatch = await fetch(origin + '/.netlify/functions/generate-website-background', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jobId, payload })
-    });
-
-    if (!dispatch.ok && dispatch.status !== 202) {
-      const text = await dispatch.text().catch(function(){ return ''; });
-      await store.setJSON(jobId, {
-        success: false,
-        jobId,
-        buildId: jobId,
-        status: 'failed',
-        stage: 'dispatch-failed',
-        progress: 100,
-        message: 'Unable to create background build job.',
-        error: text || ('HTTP ' + dispatch.status),
-        payload,
-        createdAt: now,
-        updatedAt: new Date().toISOString()
-      });
-      return json(500, { success: false, error: 'Unable to create background build job', jobId, buildId: jobId });
-    }
-  } catch (err) {
-    await store.setJSON(jobId, {
-      success: false,
-      jobId,
-      buildId: jobId,
-      status: 'failed',
-      stage: 'dispatch-failed',
-      progress: 100,
-      message: 'Unable to create background build job.',
-      error: safe(err && err.message ? err.message : err),
-      payload,
-      createdAt: now,
-      updatedAt: new Date().toISOString()
-    });
-    return json(500, { success: false, error: 'Unable to create background build job', jobId, buildId: jobId });
-  }
-
+  // Return immediately. The browser will trigger the background worker separately.
+  // This avoids freezing the preview at Step 1 if worker dispatch is slow.
   return json(202, {
     success: true,
     jobId,
     buildId: jobId,
     status: 'queued',
-    message: 'Background Platinum build started.',
+    message: 'Background Platinum build queued.',
     pollUrl: '/.netlify/functions/get-build-status?jobId=' + encodeURIComponent(jobId)
   });
 };
