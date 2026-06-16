@@ -2,8 +2,6 @@
 
 const { getStore } = require('@netlify/blobs');
 
-// Background functions are allowed to run longer than browser-facing requests.
-// Set these before requiring generate-website so its constants are initialized for background use.
 process.env.AI4_AI_TIMEOUT_MS = process.env.AI4_BACKGROUND_AI_TIMEOUT_MS || process.env.AI4_AI_TIMEOUT_MS || '90000';
 process.env.AI4_PLATINUM_MAX_TOKENS = process.env.AI4_BACKGROUND_MAX_TOKENS || process.env.AI4_PLATINUM_MAX_TOKENS || '7600';
 
@@ -23,7 +21,9 @@ function safeJson(body) { try { return JSON.parse(body || '{}'); } catch { retur
 function cleanJobId(value) {
   return String(value || '').trim().replace(/[^a-zA-Z0-9-]/g, '').slice(0, 100);
 }
-function storeRef() { return getStore('ai4-platinum-build-jobs'); }
+function storeRef() {
+  return getStore({ name: 'ai4-platinum-build-jobs', consistency: 'strong' });
+}
 
 async function getJob(jobId) {
   return await storeRef().get(jobId, { type: 'json' });
@@ -63,29 +63,29 @@ exports.handler = async function(event) {
 
   if (!jobId) return json(400, { success: false, error: 'Missing jobId' });
 
-  const existing = await getJob(jobId).catch(function(){ return null; });
-  if (!existing) {
-    await setJob(jobId, {
-      success: true,
-      jobId,
-      buildId: jobId,
-      status: 'queued',
-      stage: 'queued',
-      progress: 5,
-      message: 'Build job recovered and queued.',
-      createdAt: new Date().toISOString(),
-      payload
-    });
-  }
-
-  await setJob(jobId, {
-    status: 'running',
-    stage: 'creative-brief',
-    progress: 18,
-    message: 'Building the Platinum Creative Brief.'
-  });
-
   try {
+    const existing = await getJob(jobId).catch(function(){ return null; });
+    if (!existing) {
+      await setJob(jobId, {
+        success: true,
+        jobId,
+        buildId: jobId,
+        status: 'queued',
+        stage: 'queued',
+        progress: 5,
+        message: 'Build job recovered and queued.',
+        createdAt: new Date().toISOString(),
+        payload
+      });
+    }
+
+    await setJob(jobId, {
+      status: 'running',
+      stage: 'creative-brief',
+      progress: 18,
+      message: 'Building the Platinum Creative Brief.'
+    });
+
     await setJob(jobId, {
       status: 'running',
       stage: 'platinum-agent-call',
@@ -131,7 +131,7 @@ exports.handler = async function(event) {
       message: 'The background Platinum build failed.',
       error: String(err && err.message ? err.message : err).slice(0, 500),
       quality: { score: 0, status: 'Generation Failed', flags: [String(err && err.message ? err.message : err).slice(0, 200)] }
-    });
+    }).catch(function(){});
     return json(202, { success: false, jobId, buildId: jobId, status: 'failed' });
   }
 };
