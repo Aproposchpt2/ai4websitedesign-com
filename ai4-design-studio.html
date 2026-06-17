@@ -495,6 +495,29 @@ footer{
   <section id="studioSection">
     <div class="studio-wrap">
 
+      <style>
+        .studio-wrap.lead-pending .progress-wrap,.studio-wrap.lead-pending .form-step{display:none!important}
+        .studio-wrap:not(.lead-pending) #leadGate{display:none}
+        #leadGate .lead-badge{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#5BD3FF;font-weight:800;margin-bottom:12px}
+        #leadGate .lead-err{color:#ff6b81;font-size:13px;margin-top:10px;min-height:16px}
+      </style>
+      <div id="leadGate">
+        <div class="lead-badge">Free Website · Promo Unlocked</div>
+        <div class="step-question">Let's build your free website.</div>
+        <div class="step-hint">Tell us where to send your promo code — then you'll go straight into the builder. No payment to start.</div>
+        <div class="contact-grid" style="margin-top:18px">
+          <div class="contact-field"><label>First Name</label><input id="lead_first" class="studio-input" type="text" autocomplete="given-name" placeholder="Jordan"></div>
+          <div class="contact-field"><label>Last Name</label><input id="lead_last" class="studio-input" type="text" autocomplete="family-name" placeholder="Rivera"></div>
+          <div class="contact-field"><label>Email</label><input id="lead_email" class="studio-input" type="email" autocomplete="email" placeholder="you@business.com"></div>
+          <div class="contact-field"><label>Phone <span style="opacity:.55">(optional)</span></label><input id="lead_phone" class="studio-input" type="tel" autocomplete="tel" placeholder="(555) 123-4567"></div>
+        </div>
+        <div class="lead-err" id="leadErr"></div>
+        <div class="step-nav">
+          <div></div>
+          <button type="button" class="btn-next" id="leadBtn" onclick="submitLead()">Claim My Free Website →</button>
+        </div>
+      </div>
+
       <div class="progress-wrap">
         <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:14.285%"></div></div>
         <div class="progress-meta">
@@ -692,7 +715,30 @@ function startStudio() {
   } catch(e) {}
   document.getElementById('heroSection').style.display = 'none';
   document.getElementById('studioSection').style.display = 'block';
+  document.querySelector('.studio-wrap').classList.add('lead-pending');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Lead gate (Step 2: capture name/email/phone, issue promo code, then into the builder) ──
+function _v(id){ var e=document.getElementById(id); return e ? e.value.trim() : ''; }
+async function submitLead(){
+  var first=_v('lead_first'), last=_v('lead_last'), email=_v('lead_email'), phone=_v('lead_phone'), err=document.getElementById('leadErr');
+  err.textContent='';
+  if(!first||!last){ err.textContent='Please enter your first and last name.'; return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ err.textContent='Please enter a valid email address.'; return; }
+  var btn=document.getElementById('leadBtn'), orig=btn.textContent; btn.disabled=true; btn.textContent='Securing your code…';
+  var code='AI4-'+Math.random().toString(36).slice(2,8).toUpperCase();
+  try{
+    var res=await fetch('/.netlify/functions/submit-promo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ name:(first+' '+last).trim(), email:email, phone:phone, website_type:'website-design', promo_code:code })});
+    var data=await res.json().catch(function(){return{};});
+    if(data && data.duplicate && data.promo_code) code=data.promo_code; // reuse an already-issued unused code
+  }catch(e){ /* network/email failure shouldn't block the build */ }
+  answers.firstName=first; answers.lastName=last; answers.email=email; answers.phone=phone; answers.promoCode=code;
+  try{ sessionStorage.setItem('ai4_lead', JSON.stringify({ firstName:first, lastName:last, email:email, phone:phone, promoCode:code })); }catch(e){}
+  document.querySelector('.studio-wrap').classList.remove('lead-pending');
+  currentStep=1; updateProgress();
+  btn.disabled=false; btn.textContent=orig;
+  window.scrollTo({ top:0, behavior:'smooth' });
 }
 
 // ── Progress ───────────────────────────────────────────────────────
