@@ -5,66 +5,50 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AI4 Platinum Website Preview</title>
 <style>
-:root{--bg:#030816;--line:rgba(255,255,255,.14);--text:#f6f8ff;--muted:#9cafc8;--accent:#5bd3ff;--ok:#22d87a;--bad:#ff4f6d}*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;overflow:hidden}body{display:flex;flex-direction:column}.bar{flex:0 0 auto;}.bar{height:64px;display:flex;align-items:center;gap:12px;padding:0 18px;background:#050b18;border-bottom:1px solid var(--line)}.brand{font-weight:900}.btn{border:1px solid rgba(91,211,255,.3);background:rgba(91,211,255,.1);color:var(--text);border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}.btn.primary{margin-left:auto;background:linear-gradient(135deg,#fff,var(--accent));color:#04101a}.btn:disabled{opacity:.55;cursor:wait}.meter{width:170px;height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,#f6c768,var(--accent));transition:width .35s}.status{font-size:12px;color:var(--muted);max-width:520px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.stage{flex:1;min-height:0;position:relative}iframe{width:100%;height:100%;border:0;background:#fff}.overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:14px;padding:28px;background:rgba(3,8,22,.94);z-index:3}.overlay.show{display:flex}.spin{width:46px;height:46px;border-radius:50%;border:4px solid rgba(91,211,255,.18);border-top-color:var(--accent);animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.note{color:var(--muted);max-width:640px;line-height:1.55}.pill{display:inline-flex;border:1px solid rgba(91,211,255,.25);border-radius:999px;padding:7px 11px;color:var(--accent);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.log{width:min(580px,100%);display:grid;gap:8px;margin-top:14px;text-align:left}.log-row{border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;color:var(--muted);font-size:13px;background:rgba(255,255,255,.035)}.log-row.active{color:var(--accent);border-color:rgba(91,211,255,.28)}.log-row.done{color:var(--ok)}@media(max-width:860px){.brand,.status,.meter{display:none}.bar{gap:8px;padding:0 10px}.btn{font-size:12px;padding:8px 10px}}
-.ribbon{display:none;flex:0 0 auto;align-items:center;gap:16px;flex-wrap:nowrap;padding:9px 16px;background:#050b18;border-bottom:1px solid var(--line);overflow-x:auto}
-.ribbon.show{display:flex}
-.rg{display:flex;align-items:center;gap:8px;flex:0 0 auto}
-.rg .lab{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:800}
-.swatches{display:flex;gap:6px}
-.sw{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;display:grid;place-items:center;padding:0;transition:transform .12s}
-.sw:hover{transform:scale(1.12)}.sw i{width:9px;height:9px;border-radius:50%;display:block}.sw.on{border-color:#fff}
-.rb{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;transition:all .12s}
-.rb:hover{color:var(--text);border-color:rgba(255,255,255,.4)}.rb.on{background:#fff;color:#04101a;border-color:#fff}
-.rdiv{width:1px;height:24px;background:var(--line);flex:0 0 auto}
-.ctl{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
-.ctl:hover{border-color:rgba(91,211,255,.4)}.ctl .cval{color:var(--accent)}.ctl .car{color:var(--muted);font-size:10px}
-.pop{position:fixed;z-index:60;background:#08101f;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 24px 70px rgba(0,0,0,.55);display:none;width:min(92vw,330px);max-height:62vh;overflow:auto}
-.pop.show{display:block}
-.pop .ph{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:9px}
-.popswatch{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
-.poplist{display:flex;flex-wrap:wrap;gap:6px}
-.optb{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer}
-.optb:hover{color:var(--text);border-color:rgba(255,255,255,.4)}.optb.on{background:#fff;color:#04101a;border-color:#fff}
+:root{--bg:#030816;--line:rgba(255,255,255,.14);--text:#f6f8ff;--muted:#9cafc8;--accent:#5bd3ff;--ok:#22d87a;--bad:#ff4f6d}*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;overflow:hidden}body{display:flex;flex-direction:column}.bar{flex:0 0 auto;height:64px;display:flex;align-items:center;gap:12px;padding:0 18px;background:#050b18;border-bottom:1px solid var(--line)}.brand{font-weight:900}.btn{border:1px solid rgba(91,211,255,.3);background:rgba(91,211,255,.1);color:var(--text);border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer;text-decoration:none}.btn.primary{margin-left:auto;background:linear-gradient(135deg,#fff,var(--accent));color:#04101a}.btn:disabled{opacity:.55;cursor:wait}.meter{width:170px;height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,#f6c768,var(--accent));transition:width .35s}.status{font-size:12px;color:var(--muted);max-width:520px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.stage{flex:1;min-height:0;position:relative}iframe{width:100%;height:100%;border:0;background:#fff}.overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:14px;padding:28px;background:rgba(3,8,22,.94);z-index:3}.overlay.show{display:flex}.spin{width:46px;height:46px;border-radius:50%;border:4px solid rgba(91,211,255,.18);border-top-color:var(--accent);animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.note{color:var(--muted);max-width:640px;line-height:1.55}.pill{display:inline-flex;border:1px solid rgba(91,211,255,.25);border-radius:999px;padding:7px 11px;color:var(--accent);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.log{width:min(580px,100%);display:grid;gap:8px;margin-top:14px;text-align:left}.log-row{border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;color:var(--muted);font-size:13px;background:rgba(255,255,255,.035)}.log-row.active{color:var(--accent);border-color:rgba(91,211,255,.28)}.log-row.done{color:var(--ok)}@media(max-width:860px){.brand,.status,.meter{display:none}.bar{gap:8px;padding:0 10px}.btn{font-size:12px;padding:8px 10px}}
+.ribbon{display:none;flex:0 0 auto;align-items:center;gap:16px;flex-wrap:nowrap;padding:9px 16px;background:#050b18;border-bottom:1px solid var(--line);overflow-x:auto}.ribbon.show{display:flex}.ctl{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}.ctl .cval{color:var(--accent)}.ctl .car{color:var(--muted);font-size:10px}.pop{position:fixed;z-index:60;background:#08101f;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 24px 70px rgba(0,0,0,.55);display:none;width:min(92vw,330px);max-height:62vh;overflow:auto}.pop.show{display:block}.ph{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:9px}.popswatch{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.poplist{display:flex;flex-wrap:wrap;gap:6px}.sw{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;display:grid;place-items:center;padding:0}.sw i{width:9px;height:9px;border-radius:50%;display:block}.sw.on{border-color:#fff}.optb{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer}.optb.on{background:#fff;color:#04101a;border-color:#fff}
 </style>
 </head>
 <body>
-<div class="bar"><div class="brand">AI4 Platinum Preview</div><button class="btn" id="buildBtn" onclick="build('full')">Build</button><button class="btn" id="newBtn" onclick="build('design')">New Design</button><button class="btn" onclick="clearAndBuild()">Rebuild Fresh</button><div class="meter"><div class="fill" id="fill"></div></div><div class="status" id="status"></div><button class="btn primary" id="selectBtn" onclick="selectSite()" style="display:none">Select This Site</button></div>
+<div class="bar">
+  <div class="brand">AI4 Platinum Preview</div>
+  <button class="btn" id="buildBtn" onclick="build('full')">Build</button>
+  <button class="btn" id="newBtn" onclick="build('design')">New Design</button>
+  <button class="btn" onclick="clearAndBuild()">Rebuild Fresh</button>
+  <div class="meter"><div class="fill" id="fill"></div></div>
+  <div class="status" id="status"></div>
+  <a class="btn primary" id="selectBtn" href="https://ai4-product-purchasing.ai4businesses.org/webdesign-offer.html" onclick="return selectSite(event)" style="display:none">Select This Site</a>
+</div>
+
 <div class="ribbon" id="ribbon"></div>
-<div class="stage"><iframe id="frame" title="Generated website preview"></iframe><div class="overlay show" id="overlay"><div class="pill" id="stagePill">Ready</div><div class="spin" id="spin" style="display:none"></div><h2 id="otitle">Ready to build your Platinum website</h2><div class="note" id="onote">Click Build or New Design. The AI4 Platinum Agent will run as a background job so the browser does not time out.</div><div class="log" id="log"></div></div></div>
+
+<div class="stage">
+  <iframe id="frame" title="Generated website preview"></iframe>
+  <div class="overlay show" id="overlay">
+    <div class="pill" id="stagePill">Ready</div>
+    <div class="spin" id="spin" style="display:none"></div>
+    <h2 id="otitle">Ready to build your Platinum website</h2>
+    <div class="note" id="onote">Click Build or New Design. The AI4 Platinum Agent will run as a background job so the browser does not time out.</div>
+    <div class="log" id="log"></div>
+  </div>
+</div>
+
 <script src="/ai4-render.js"></script>
 <script>
 'use strict';
+
 const START='/.netlify/functions/start-website-build';
 const WORKER='/.netlify/functions/generate-website-background';
 const STATUS='/.netlify/functions/get-build-status';
+const OFFER_URL='https://ai4-product-purchasing.ai4businesses.org/webdesign-offer.html';
+
 let answers=null, html='', meta={}, jobId='', pollTimer=null;
 const $=id=>document.getElementById(id);
 const stages=['queued','creative-brief','platinum-agent-call','quality-gate','completed'];
-// Live styling state — the agent writes the copy once; these re-skin it instantly client-side.
+
 let style={copy:null,theme:'',layout:'',font:'',size:'m',style:'standard'};
+
 function AR(){return window.AI4Render}
-function persistStyle(){try{sessionStorage.setItem('ai4_built_html',html);sessionStorage.setItem('ai4_style_state',JSON.stringify({theme:style.theme,layout:style.layout,font:style.font,size:style.size,style:style.style}));if(style.copy)sessionStorage.setItem('ai4_copy_brief',JSON.stringify(style.copy));}catch(e){}}
-function applyStyling(){if(!style.copy||!AR())return false;html=AR().render(style.copy,style.theme,style.layout,style.font,style.size,style.style);$('frame').srcdoc=html;persistStyle();return true}
-const CTRLS=[{k:'theme',lab:'Color',sw:true},{k:'layout',lab:'Layout'},{k:'font',lab:'Type'},{k:'size',lab:'Size'},{k:'style',lab:'Style'}];
-function optsFor(k){const A=AR();if(k==='theme')return A.THEMES.map(function(t){return{id:t.id,name:t.name,bg:t.bg,accent:t.accent}});if(k==='layout')return A.LAYOUTS;if(k==='font')return[{id:'',name:'Theme'}].concat(A.FONTS);if(k==='size')return A.SIZES;if(k==='style')return A.STYLES;return[]}
-function nameOf(k){const o=optsFor(k).filter(function(x){return x.id===style[k]})[0];return o?o.name:'—'}
-function ribbonActive(){[].forEach.call($('ribbon').querySelectorAll('[data-cval]'),function(el){el.textContent=nameOf(el.dataset.cval)})}
-function buildRibbon(){const r=$('ribbon'),A=AR();if(!A||r.dataset.built)return;
-  CTRLS.forEach(function(c){const b=document.createElement('button');b.className='ctl';b.dataset.ctl=c.k;b.innerHTML=c.lab+' <span class="cval" data-cval="'+c.k+'"></span> <span class="car">▾</span>';b.onclick=function(e){e.stopPropagation();openPop(c,b)};r.appendChild(b)});
-  r.dataset.built='1';
-}
-let _pop;
-function ensurePop(){if(_pop)return _pop;_pop=document.createElement('div');_pop.className='pop';document.body.appendChild(_pop);_pop.onclick=function(e){e.stopPropagation()};return _pop}
-function openPop(c,btn){const p=ensurePop(),opts=optsFor(c.k);p.innerHTML='<div class="ph">'+c.lab+'</div>';
-  if(c.sw){const g=document.createElement('div');g.className='popswatch';opts.forEach(function(o){const s=document.createElement('button');s.className='sw'+(style[c.k]===o.id?' on':'');s.title=o.name;s.style.background=o.bg;s.innerHTML='<i style="background:'+o.accent+'"></i>';s.onclick=function(){pick(c.k,o.id)};g.appendChild(s)});p.appendChild(g)}
-  else{const g=document.createElement('div');g.className='poplist';opts.forEach(function(o){const b=document.createElement('button');b.className='optb'+(style[c.k]===o.id?' on':'');b.textContent=o.name;b.onclick=function(){pick(c.k,o.id)};g.appendChild(b)});p.appendChild(g)}
-  const rect=btn.getBoundingClientRect();p.style.left=Math.max(8,Math.min(rect.left,window.innerWidth-340))+'px';p.style.top=(rect.bottom+8)+'px';p.classList.add('show');
-}
-function pick(k,v){style[k]=v;applyStyling();ribbonActive();closePop()}
-function closePop(){if(_pop)_pop.classList.remove('show')}
-document.addEventListener('click',closePop);
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closePop()});
-function startStyling(meta){if(!AR()||!meta||!meta.copy)return false;style.copy=meta.copy;style.theme=meta.theme||AR().THEMES[0].id;style.layout=meta.layout||'split';buildRibbon();$('ribbon').classList.add('show');$('selectBtn').style.display='';show(false);setButtons(false);applyStyling();ribbonActive();return true}
 function text(v,f=''){return String(v==null?f:v).trim()||f}
 function readJson(k,f){try{return JSON.parse(sessionStorage.getItem(k)||localStorage.getItem(k)||'null')||f}catch(e){return f}}
 function hasAnswers(){return answers&&typeof answers==='object'&&Object.keys(answers).length>0}
@@ -74,36 +58,235 @@ function isComplete(s){return text(s).length>4500&&sections(s)>=4&&/<form[^>]+da
 function setButtons(disabled){['buildBtn','newBtn'].forEach(id=>{if($(id))$(id).disabled=!!disabled})}
 function setProgress(p){$('fill').style.width=Math.max(0,Math.min(100,Number(p)||0))+'%'}
 function setStatus(s){$('status').textContent=s||''}
-function show(on,title,note,stage,progress){$('overlay').classList.toggle('show',!!on);$('spin').style.display=on?'block':'none';if(title)$('otitle').textContent=title;if(note)$('onote').textContent=note;if(stage)$('stagePill').textContent=stage.replace(/-/g,' ');if(progress!==undefined)setProgress(progress)}
-function logRows(active){$('log').innerHTML=stages.map(s=>`<div class="log-row ${s===active?'active':stages.indexOf(s)<stages.indexOf(active)?'done':''}">${s.replace(/-/g,' ')}</div>`).join('')}
-function render(s,m){html=s;meta=m||{};$('frame').srcdoc=s;$('selectBtn').style.display='';show(false);setButtons(false);try{sessionStorage.setItem('ai4_generated_html',s);sessionStorage.setItem('ai4_built_html',s);sessionStorage.setItem('ai4_gen_content',JSON.stringify(meta));if(jobId)sessionStorage.setItem('ai4_platinum_job_id',jobId)}catch(e){}}
-function makePayload(mode){return{answers:answers||{},mode:mode||'full',existingContent:meta||null,variationSeed:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),background:true}}
-async function startBackgroundBuild(payload){const res=await fetch(START,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json().catch(()=>({}));if(!res.ok||!(data.jobId||data.buildId))throw new Error(data.error||'Unable to create background build job');jobId=data.jobId||data.buildId;try{sessionStorage.setItem('ai4_platinum_job_id',jobId)}catch(e){}return Object.assign(data,{jobId})}
-function triggerWorker(id,payload){fetch(WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jobId:id,payload})}).catch(e=>console.warn('Background worker dispatch warning:',e.message))}
-async function pollJob(id){let attempts=0;return new Promise((resolve,reject)=>{clearInterval(pollTimer);pollTimer=setInterval(async()=>{attempts++;try{const res=await fetch(STATUS+'?jobId='+encodeURIComponent(id));const data=await res.json().catch(()=>({}));if(data.status){const stage=data.stage||data.status;setStatus((data.status||'running')+' · '+(data.message||''));show(true,data.message||'Building your website...', 'The Platinum Agent is working in the background. You can leave this tab open while it completes.', stage, data.progress||20);logRows(stage)}if(data.status==='completed'){clearInterval(pollTimer);resolve(data)}if(data.status==='failed'||data.status==='error'){clearInterval(pollTimer);reject(new Error(data.error||data.message||'Background build failed'))}if(attempts>300){clearInterval(pollTimer);reject(new Error('Background build timed out while polling'))}}catch(e){if(attempts>10){clearInterval(pollTimer);reject(e)}}},2000)})}
-async function build(mode){setButtons(true);$('selectBtn').style.display='none';$('ribbon').classList.remove('show');const payload=makePayload(mode);show(true,'Creating background build job...','Step 1 should finish quickly. The AI work starts after the job ID is created.','queued',5);logRows('queued');setStatus('Creating job...');try{const job=await startBackgroundBuild(payload);show(true,'Starting Platinum Agent...','Job created. Starting the long-running background build now.','queued',10);setStatus('Job created · starting background worker');triggerWorker(job.jobId,payload);const data=await pollJob(job.jobId);let out=data.html||data.builtHtml||data.websiteHtml||'';meta=data.siteData||data.brief||data.content||{};if(meta&&meta.copy&&AR()){startStyling(meta);setStatus((data.quality&&data.quality.status?data.quality.status:'Completed')+' · style it your way');}else{if(!isComplete(out))throw new Error('Background build returned thin or incomplete HTML');render(out,meta);setStatus((data.quality&&data.quality.status?data.quality.status:'Completed')+' · '+sections(out)+' sections');}}catch(e){console.warn('Background build failed:',e.message);setButtons(false);show(true,'Background build did not complete',e.message+' — wait for Netlify deploy to finish, then click Rebuild Fresh.','failed',100);$('spin').style.display='none';setStatus('Background build failed')}}
-function clearAndBuild(){try{sessionStorage.removeItem('ai4_generated_html');sessionStorage.removeItem('ai4_built_html');sessionStorage.removeItem('ai4_templates');sessionStorage.removeItem('ai4_platinum_job_id');sessionStorage.removeItem('ai4_auto_build_started');sessionStorage.removeItem('ai4_copy_brief');sessionStorage.removeItem('ai4_style_state')}catch(e){}html='';jobId='';style.copy=null;build('full')}
-const SIGNUP_URL='https://ai4-product-purchasing.ai4businesses.org/Website-signup-intake.html';
-async function selectSite(){
+
+function show(on,title,note,stage,progress){
+  $('overlay').classList.toggle('show',!!on);
+  $('spin').style.display=on?'block':'none';
+  if(title)$('otitle').textContent=title;
+  if(note)$('onote').textContent=note;
+  if(stage)$('stagePill').textContent=stage.replace(/-/g,' ');
+  if(progress!==undefined)setProgress(progress);
+}
+
+function logRows(active){
+  $('log').innerHTML=stages.map(s=>`<div class="log-row ${s===active?'active':stages.indexOf(s)<stages.indexOf(active)?'done':''}">${s.replace(/-/g,' ')}</div>`).join('');
+}
+
+function persistStyle(){
+  try{
+    sessionStorage.setItem('ai4_built_html',html);
+    sessionStorage.setItem('ai4_style_state',JSON.stringify({theme:style.theme,layout:style.layout,font:style.font,size:style.size,style:style.style}));
+    if(style.copy)sessionStorage.setItem('ai4_copy_brief',JSON.stringify(style.copy));
+  }catch(e){}
+}
+
+function applyStyling(){
+  if(!style.copy||!AR())return false;
+  html=AR().render(style.copy,style.theme,style.layout,style.font,style.size,style.style);
+  $('frame').srcdoc=html;
+  persistStyle();
+  return true;
+}
+
+function render(s,m){
+  html=s;
+  meta=m||{};
+  $('frame').srcdoc=s;
+  $('selectBtn').style.display='';
+  show(false);
+  setButtons(false);
+  try{
+    sessionStorage.setItem('ai4_generated_html',s);
+    sessionStorage.setItem('ai4_built_html',s);
+    sessionStorage.setItem('ai4_gen_content',JSON.stringify(meta));
+    if(jobId)sessionStorage.setItem('ai4_platinum_job_id',jobId);
+  }catch(e){}
+}
+
+function startStyling(metaIn){
+  if(!AR()||!metaIn||!metaIn.copy)return false;
+  style.copy=metaIn.copy;
+  style.theme=metaIn.theme||AR().THEMES[0].id;
+  style.layout=metaIn.layout||'split';
+  $('ribbon').classList.add('show');
+  $('selectBtn').style.display='';
+  show(false);
+  setButtons(false);
+  applyStyling();
+  return true;
+}
+
+function makePayload(mode){
+  return{
+    answers:answers||{},
+    mode:mode||'full',
+    existingContent:meta||null,
+    variationSeed:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),
+    background:true
+  };
+}
+
+async function startBackgroundBuild(payload){
+  const res=await fetch(START,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok||!(data.jobId||data.buildId))throw new Error(data.error||'Unable to create background build job');
+  jobId=data.jobId||data.buildId;
+  try{sessionStorage.setItem('ai4_platinum_job_id',jobId)}catch(e){}
+  return Object.assign(data,{jobId});
+}
+
+function triggerWorker(id,payload){
+  fetch(WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jobId:id,payload})}).catch(e=>console.warn('Background worker dispatch warning:',e.message));
+}
+
+async function pollJob(id){
+  let attempts=0;
+  return new Promise((resolve,reject)=>{
+    clearInterval(pollTimer);
+    pollTimer=setInterval(async()=>{
+      attempts++;
+      try{
+        const res=await fetch(STATUS+'?jobId='+encodeURIComponent(id));
+        const data=await res.json().catch(()=>({}));
+        if(data.status){
+          const stage=data.stage||data.status;
+          setStatus((data.status||'running')+' · '+(data.message||''));
+          show(true,data.message||'Building your website...','The Platinum Agent is working in the background. You can leave this tab open while it completes.',stage,data.progress||20);
+          logRows(stage);
+        }
+        if(data.status==='completed'){clearInterval(pollTimer);resolve(data)}
+        if(data.status==='failed'||data.status==='error'){clearInterval(pollTimer);reject(new Error(data.error||data.message||'Background build failed'))}
+        if(attempts>300){clearInterval(pollTimer);reject(new Error('Background build timed out while polling'))}
+      }catch(e){
+        if(attempts>10){clearInterval(pollTimer);reject(e)}
+      }
+    },2000);
+  });
+}
+
+async function build(mode){
+  setButtons(true);
+  $('selectBtn').style.display='none';
+  $('ribbon').classList.remove('show');
+  const payload=makePayload(mode);
+  show(true,'Creating background build job...','Step 1 should finish quickly. The AI work starts after the job ID is created.','queued',5);
+  logRows('queued');
+  setStatus('Creating job...');
+  try{
+    const job=await startBackgroundBuild(payload);
+    show(true,'Starting Platinum Agent...','Job created. Starting the long-running background build now.','queued',10);
+    setStatus('Job created · starting background worker');
+    triggerWorker(job.jobId,payload);
+    const data=await pollJob(job.jobId);
+    let out=data.html||data.builtHtml||data.websiteHtml||'';
+    meta=data.siteData||data.brief||data.content||{};
+    if(meta&&meta.copy&&AR()){
+      startStyling(meta);
+      setStatus((data.quality&&data.quality.status?data.quality.status:'Completed')+' · style it your way');
+    }else{
+      if(!isComplete(out))throw new Error('Background build returned thin or incomplete HTML');
+      render(out,meta);
+      setStatus((data.quality&&data.quality.status?data.quality.status:'Completed')+' · '+sections(out)+' sections');
+    }
+  }catch(e){
+    console.warn('Background build failed:',e.message);
+    setButtons(false);
+    show(true,'Background build did not complete',e.message+' — wait for Netlify deploy to finish, then click Rebuild Fresh.','failed',100);
+    $('spin').style.display='none';
+    setStatus('Background build failed');
+  }
+}
+
+function clearAndBuild(){
+  try{
+    sessionStorage.removeItem('ai4_generated_html');
+    sessionStorage.removeItem('ai4_built_html');
+    sessionStorage.removeItem('ai4_templates');
+    sessionStorage.removeItem('ai4_platinum_job_id');
+    sessionStorage.removeItem('ai4_auto_build_started');
+    sessionStorage.removeItem('ai4_copy_brief');
+    sessionStorage.removeItem('ai4_style_state');
+  }catch(e){}
+  html='';
+  jobId='';
+  style.copy=null;
+  build('full');
+}
+
+async function selectSite(event){
+  if(event)event.preventDefault();
+
   if(style.copy)applyStyling();
-  var lead={};try{lead=JSON.parse(sessionStorage.getItem('ai4_lead')||'{}')}catch(e){}
+
+  var lead={};
+  try{lead=JSON.parse(sessionStorage.getItem('ai4_lead')||'{}')}catch(e){}
+
   var biz=(style.copy&&style.copy.businessName)||(meta&&(meta.businessName||meta.business_name))||'';
   var nm=[lead.firstName,lead.lastName].filter(Boolean).join(' ');
   var p=new URLSearchParams();
+
   if(lead.promoCode)p.set('promo',lead.promoCode);
   if(jobId)p.set('jobId',jobId);
   if(lead.email)p.set('email',lead.email);
   if(nm)p.set('name',nm);
   if(lead.phone)p.set('phone',lead.phone);
   if(biz)p.set('biz',biz);
-  p.set('theme',style.theme||'');p.set('layout',style.layout||'');p.set('font',style.font||'');p.set('size',style.size||'m');p.set('hs',style.style||'standard');
-  try{sessionStorage.setItem('ai4_built_html',html);sessionStorage.setItem('ai4_checkout_context',JSON.stringify({meta,answers,jobId,lead,style:{theme:style.theme,layout:style.layout,font:style.font,size:style.size,style:style.style},ts:Date.now()}))}catch(e){}
-  window.location.href=SIGNUP_URL+'?'+p.toString();
+
+  p.set('theme',style.theme||'');
+  p.set('layout',style.layout||'');
+  p.set('font',style.font||'');
+  p.set('size',style.size||'m');
+  p.set('hs',style.style||'standard');
+
+  try{
+    sessionStorage.setItem('ai4_built_html',html);
+    sessionStorage.setItem('ai4_checkout_context',JSON.stringify({
+      meta,answers,jobId,lead,
+      style:{theme:style.theme,layout:style.layout,font:style.font,size:style.size,style:style.style},
+      ts:Date.now()
+    }));
+  }catch(e){}
+
+  var url=OFFER_URL+'?'+p.toString();
+  var a=document.getElementById('selectBtn');
+  if(a)a.href=url;
+
+  window.location.assign(url);
+  return false;
 }
-(function init(){answers=readJson('ai4_answers',{})||{};
+
+(function init(){
+  answers=readJson('ai4_answers',{})||{};
   const savedCopy=readJson('ai4_copy_brief',null),savedStyle=readJson('ai4_style_state',null);
-  if(savedCopy&&AR()){if(savedStyle){style.font=savedStyle.font||'';style.size=savedStyle.size||'m';style.style=savedStyle.style||'standard';}startStyling({copy:savedCopy,theme:(savedStyle&&savedStyle.theme)||'',layout:(savedStyle&&savedStyle.layout)||''});setStatus('Stored preview loaded · style it your way');return;}
-  const old=sessionStorage.getItem('ai4_generated_html')||sessionStorage.getItem('ai4_built_html')||'';if(isComplete(old)){render(old,readJson('ai4_gen_content',{}));setStatus('Stored complete preview loaded');return;}logRows('queued');if(hasAnswers()){show(true,'Starting your Platinum website build','Your questionnaire answers were found. The background build is starting automatically.','queued',3);setTimeout(()=>build('full'),350);}else{show(true,'Ready to build your Platinum website','No questionnaire answers were found in this browser session. Click Build or return to the questionnaire.','ready',0);$('spin').style.display='none';}})();
+
+  if(savedCopy&&AR()){
+    if(savedStyle){
+      style.font=savedStyle.font||'';
+      style.size=savedStyle.size||'m';
+      style.style=savedStyle.style||'standard';
+    }
+    startStyling({copy:savedCopy,theme:(savedStyle&&savedStyle.theme)||'',layout:(savedStyle&&savedStyle.layout)||''});
+    setStatus('Stored preview loaded · style it your way');
+    return;
+  }
+
+  const old=sessionStorage.getItem('ai4_generated_html')||sessionStorage.getItem('ai4_built_html')||'';
+  if(isComplete(old)){
+    render(old,readJson('ai4_gen_content',{}));
+    setStatus('Stored complete preview loaded');
+    return;
+  }
+
+  logRows('queued');
+
+  if(hasAnswers()){
+    show(true,'Starting your Platinum website build','Your questionnaire answers were found. The background build is starting automatically.','queued',3);
+    setTimeout(()=>build('full'),350);
+  }else{
+    show(true,'Ready to build your Platinum website','No questionnaire answers were found in this browser session. Click Build or return to the questionnaire.','ready',0);
+    $('spin').style.display='none';
+  }
+})();
 </script>
 </body>
 </html>
