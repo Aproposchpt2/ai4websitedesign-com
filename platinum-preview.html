@@ -17,7 +17,7 @@
   <button class="btn" onclick="clearAndBuild()">Rebuild Fresh</button>
   <div class="meter"><div class="fill" id="fill"></div></div>
   <div class="status" id="status"></div>
-  <a class="btn primary" id="selectBtn" href="https://ai4-product-purchasing.ai4businesses.org/webdesign-offer.html" onclick="return selectSite(event)" style="display:none">Select This Site</a>
+  <a class="btn primary" id="selectBtn" href="https://ai4-product-purchasing.ai4businesses.org/Website-signup-intake.html" onclick="return selectSite(event)" style="display:none">Select This Site</a>
 </div>
 
 <div class="ribbon" id="ribbon"></div>
@@ -40,7 +40,7 @@
 const START='/.netlify/functions/start-website-build';
 const WORKER='/.netlify/functions/generate-website-background';
 const STATUS='/.netlify/functions/get-build-status';
-const OFFER_URL='https://ai4-product-purchasing.ai4businesses.org/webdesign-offer.html';
+const OFFER_URL='https://ai4-product-purchasing.ai4businesses.org/Website-signup-intake.html';
 
 let answers=null, html='', meta={}, jobId='', pollTimer=null;
 const $=id=>document.getElementById(id);
