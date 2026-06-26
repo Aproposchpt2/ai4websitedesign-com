@@ -1,0 +1,4 @@
+# Local Netlify folder
+.netlify
+# Dependencies (installed by Netlify CI; never commit locally)
+node_modules

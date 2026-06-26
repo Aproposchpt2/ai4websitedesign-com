@@ -88,6 +88,21 @@ async function findLatestSubscription(email) {
   return Array.isArray(data) && data.length ? data[0] : null;
 }
 
+async function findFamilyMember(email) {
+  const { data, error } = await supabase
+    .from('family_access')
+    .select('email, name, access_level')
+    .eq('email', email)
+    .maybeSingle();
+
+  if (error) {
+    console.error('family_access lookup error:', error.message);
+    return null;
+  }
+
+  return data && data.email ? data : null;
+}
+
 async function upsertUserFromMemberRecord(email, order, subscription) {
   const fullName =
     order?.full_name ||
@@ -196,6 +211,21 @@ exports.handler = async (event) => {
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { statusCode: 400, headers, body: JSON.stringify({ error: 'A valid email address is required.' }) };
+  }
+
+  // Family access — instant unlimited access. Skip OTP entirely and hand off to the builder.
+  const familyMember = await findFamilyMember(email);
+  if (familyMember) {
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        success: true,
+        family_access: true,
+        name: familyMember.name || '',
+        access_level: familyMember.access_level || 'unlimited'
+      })
+    };
   }
 
   let user = await findUser(email);

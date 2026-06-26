@@ -280,6 +280,26 @@ form.addEventListener('submit', async (event) => {
       throw new Error(data.error || 'Could not send access code. Please try again.');
     }
 
+    // Family access — no OTP. Set the unlimited session and go straight to the builder.
+    if (data.family_access === true) {
+      const sess = { email: email, name: data.name || '', family_access: true, access_level: data.access_level || 'unlimited' };
+      try {
+        sessionStorage.setItem('ai4_session', JSON.stringify(sess));
+        localStorage.setItem('ai4_session', JSON.stringify(sess));
+        sessionStorage.setItem('ai4_portal_email', email);
+        sessionStorage.setItem('ai4_portal_name', sess.name);
+        sessionStorage.setItem('ai4_family_access', 'true');
+        sessionStorage.setItem('ai4_access_level', sess.access_level);
+        localStorage.setItem('ai4_portal_email', email);
+        localStorage.setItem('ai4_portal_name', sess.name);
+        localStorage.setItem('ai4_family_access', 'true');
+        localStorage.setItem('ai4_access_level', sess.access_level);
+      } catch(e) {}
+      showStatus('Welcome, ' + (sess.name || 'family') + '! Unlimited access granted. Opening your builder…', 'ok');
+      window.location.href = '/website-builder.html';
+      return;
+    }
+
     try {
       sessionStorage.setItem('ai4_pending_login_email', email);
       localStorage.setItem('ai4_pending_login_email', email);
